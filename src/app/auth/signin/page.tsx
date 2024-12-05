@@ -4,7 +4,7 @@ import Image from "next/image";
 import Breadcrumb from "@/src/components/Breadcrumbs/Breadcrumb";
 import { Metadata } from "next";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signIn } from "@/auth"
 
 export const metadata: Metadata = {
   title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
@@ -174,7 +174,10 @@ const SignIn: React.FC = () => {
                 Sign In to TailAdmin
               </h2>
 
-              <form>
+              <form action={async () => {
+        "use server"
+        await signIn("google")
+      }}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
