@@ -28,7 +28,7 @@ const Select: React.FC<SelectProps> = ({
 
   return (
     <div className="flex flex-col space-y-1">
-      <label className="block text-sm font-medium text-black dark:text-white">
+      <label className="block text-sm font-medium text-white">
         {label}
       </label>
 
@@ -39,8 +39,8 @@ const Select: React.FC<SelectProps> = ({
             setSelectedOption(e.target.value);
             changeTextColor();
           }}
-          className={`w-[250px]  text-sm border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
-            isOptionSelected ? "text-black dark:text-white" : ""
+          className={`w-[250px]  text-sm border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary ${
+            isOptionSelected ? "text-white" : ""
           }`}
           {...rest}
         >
@@ -52,7 +52,7 @@ const Select: React.FC<SelectProps> = ({
             <option
               key={option.value}
               value={option.value}
-              className="text-body dark:text-bodydark"
+              className="text-black dark:text-white"
             >
               {option.label}
             </option>

@@ -20,6 +20,33 @@ const status = [
     { value: 'На объекте', label: 'На объекте' },
     { value: 'В ЧС', label: 'В ЧС' },
   ];
+  const documentsOptions = [
+  
+    { value: 'Виза', label: 'Виза' },
+    { value: 'Песель', label: 'Песель' },
+    { value: 'Паспорт', label: 'Паспорт' },
+    { value: 'Паспорт ЕС', label: 'Паспорт ЕС' },
+    { value: 'Паспорт Биометрия Украины', label: 'Паспорт Биометрия Украины' },
+    { value: 'Параграф 24', label: 'Параграф 24' },
+    { value: 'Карта побыту', label: 'Карта побыту' },
+    { value: 'Геверба', label: 'Геверба' },
+    { value: 'Карта сталого побыта', label: 'Карта сталого побыта' },
+    { value: 'Приглашение', label: 'Приглашение' }
+  ];
+  const citizenshipOptions = [
+    { value: 'Евросоюза', label: 'Евросоюза' },
+    { value: 'Молдовы', label: 'Молдовы' },
+    { value: 'Украины', label: 'Украины' },
+    { value: 'Беларусь', label: 'Беларусь' },
+    { value: 'Узбекистана', label: 'Узбекистана' },
+    { value: 'Таджикистана', label: 'Таджикистана' },
+    { value: 'Киргизии', label: 'Киргизии' },
+    { value: 'Армении', label: 'Армении' },
+    { value: 'Грузии', label: 'Грузии' },
+    { value: 'Казахстан', label: 'Казахстан' },
+    { value: 'Другое', label: 'Другое' }
+  ];
+  
   
 const AddCandidateForm = ({professions}: any) => {
     const { addNotification } = useNotifications();
@@ -58,7 +85,7 @@ const AddCandidateForm = ({professions}: any) => {
             addNotification({
               title: 'Номер свободен',
               content: 'Этот номер еще не зарегистрирован.',
-              type: 'info',
+              type: 'success',
               id: uuidv4Original(),
             });
           } else {
@@ -100,11 +127,11 @@ const AddCandidateForm = ({professions}: any) => {
   
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-center text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
+      <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
       <form className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         
         {/* Личные данные */}
-        <div className="col-span-1">
+        <div className="col-span-1 text-white">
           <h3 className="font-semibold text-lg mb-2">Личные данные</h3>
           {message && <p>{message}</p>}
           <DefaultInput id="name" label="ФИО" type="text" placeholder="Иван Иванов" />
@@ -148,15 +175,17 @@ const AddCandidateForm = ({professions}: any) => {
 
         {/* Работа */}
         <div className="col-span-1 flex flex-col gap-1">
-          <h3 className="font-semibold text-lg mb-2">Профессии / Документы</h3>
+          <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3>
           <MultiSelect id="profession" placeholder='Выберите профессии' label={'Профессия'} name="profession" options={professionOptions} />
-         
+          <MultiSelect id="nameDocument" placeholder='Выберите документы в наличии' label={'Документы'} name="nameDocument" options={documentsOptions} />
+
         </div>
 
         {/* Дополнительно */}
         <div className="col-span-1">
           <h3 className="font-semibold text-lg mb-2">Дополнительно</h3>
-          <DefaultInput label="Навыки" id={''} />
+          <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
+          <DefaultInput id='leaving' label='Готов выехать' type="date"  />
           <DefaultInput label="Языки" id={''} />
           <DefaultInput label="Ссылка на резюме" id={''} />
           <DefaultInput label="Примечания" id={''} />

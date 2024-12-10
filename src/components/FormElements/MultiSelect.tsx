@@ -56,7 +56,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div className="flex flex-col space-y-1">
-      <label className="block text-sm font-medium text-black dark:text-white">
+      <label className="block text-sm font-medium text-white">
         {label}
       </label>
 
