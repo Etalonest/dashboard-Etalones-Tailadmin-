@@ -7,6 +7,7 @@ import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableCandidaate";
 import CardDataStats from "../CardDataStats";
 import { useManager } from "@/src/context/ManagerContext";
+import TableCandidate from "../Tables/TableCandidaate";
 const MapOne = dynamic(() => import("@/src/components/Maps/MapOne"), {
   ssr: false,
 });
@@ -20,7 +21,7 @@ const ECommerce: React.FC = () => {
   const totalCandidates = manager?.candidates.length ?? 0;
   const totalPartners = manager?.partners.length ?? 0;
   const totalTasks = manager?.tasks.length ?? 0;
-  const totalVacancies = manager?.vacancy.lenght ?? 0;
+  // const totalVacancies = manager?.vacancy.lenght ?? 0;
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -43,7 +44,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Всего вакансий" total={totalVacancies.toString()} rate="4.35%" levelUp>
+        {/* <CardDataStats title="Всего вакансий" total={totalVacancies.toString()} rate="4.35%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -65,7 +66,7 @@ const ECommerce: React.FC = () => {
               fill=""
             />
           </svg>
-        </CardDataStats>
+        </CardDataStats> */}
         <CardDataStats title="Всего партнёров" total={totalPartners.toString()} rate="2.59%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
@@ -116,7 +117,7 @@ const ECommerce: React.FC = () => {
         <ChartThree />
         <MapOne />
         <div className="col-span-12 xl:col-span-8">
-          <TableOne />
+          <TableCandidate onOpenModal={undefined}  />
         </div>
         <ChatCard />
       </div>

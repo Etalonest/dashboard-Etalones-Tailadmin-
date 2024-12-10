@@ -1,5 +1,3 @@
-'use client';
-// Modal.tsx
 import React, { ReactNode, useEffect } from 'react';
 
 interface ModalProps {
@@ -27,12 +25,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 w-[100%] h-[100%] flex justify-center items-center ">
-      <div className="flex flex-col p-4 w-[800px] h-[800px] rounded text-white bg-black bg-opacity-50 shadow-lg relative overflow-auto">
-      <button onClick={onClose} className="self-end text-red-500 text-2xl ">
+    <div className="fixed  flex justify-end items-end   inset-0 w-[70%] "> 
+      <div className="p-4 rounded text-white bg-black bg-opacity-50 shadow-lg relative overflow-auto">
+        <button onClick={onClose} className="self-end text-red-500 text-2xl absolute right-4 top-4">
           &times;
         </button>
-        <div className="modal-content w-full overflow-y-auto">
+        
+        <div className="modal-content max-h-[80vh] overflow-y-auto">
           {children}
         </div>
         

@@ -3,18 +3,22 @@ import { useManager } from '@/src/context/ManagerContext';
 import { Eye, UserCog, UserRoundPlus } from "lucide-react";
 import { Candidate } from '@/src/types/candidate';
 import { useState, useEffect } from 'react';
-import  Modal  from '@/src/modal/globalModal/GlobalCandidateModal';
-import ModalAddCandidate from '../modals/ModalAddCandidate';
+import SidebarRight from '../SidebarRight';
+import { Profession } from "@/src/types/profession"; // Тип для профессий
 
 const TableCandidate = () => {
   const { manager } = useManager();
-  const [isModalAddCandidate, setIsModalAddCandidate] = useState(false);
+  const [professions, setProfessions] = useState<Profession[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
 
   const candidatesPerPage = 10;
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   // Считываем кандидатов для отображения на текущей странице
   const currentCandidates = filteredCandidates.slice(
@@ -38,7 +42,20 @@ const TableCandidate = () => {
       setFilteredCandidates(filtered);
     }
   }, [manager, searchQuery]);
+  
+  useEffect(() => {
+    const fetchProfessions = async () => {
+      try {
+        const response = await fetch("/api/profession");
+        const data = await response.json();
+        setProfessions(data);
+      } catch (error) {
+        console.error("Error fetching professions:", error);
+      }
+    };
 
+    fetchProfessions();
+  }, []);
   // Обработчик для изменения страницы
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -49,18 +66,24 @@ const TableCandidate = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handleOpenModalAddCandidate = () => {
-    setIsModalAddCandidate(true);
+  // Функция для переключения состояния сайдбара
+  const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
+    setFormType(type);
+    setSelectedCandidate(candidate || null);
+    setSidebarOpen(prevState => !prevState);
   };
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
         <div className='flex items-center gap-3 mb-6 '>
-      <h4 className="text-xl font-semibold text-black dark:text-white">
-        Мои кандидаты
-      </h4>
-      <UserRoundPlus color='green' onClick={() => handleOpenModalAddCandidate()} className='cursor-pointer' />
+          <h4 className="text-xl font-semibold text-black dark:text-white">
+            Мои кандидаты
+          </h4>
+          <UserRoundPlus color='green' onClick={() => toggleSidebar("addCandidate")} className='cursor-pointer' />
         </div>
+        <SidebarRight sidebarROpen={sidebarOpen} setSidebarROpen={setSidebarOpen} formType={formType} selectedCandidate={selectedCandidate} professions={professions}/>
+
       <input
         type="text"
         value={searchQuery}
@@ -106,8 +129,8 @@ const TableCandidate = () => {
           >
             <div className="flex items-center gap-3 p-2.5 xl:p-5">
               <div className="flex-shrink-0">
-                <Eye />
-                <UserCog />
+                <Eye onClick={() => toggleSidebar("viewCandidate", candidate)} />
+                <UserCog onClick={() => toggleSidebar("editCandidate", candidate)} />
               </div>
               <p className="hidden text-black dark:text-white sm:block">{candidate.name}</p>
             </div>
@@ -143,13 +166,7 @@ const TableCandidate = () => {
             </div>
           </div>
         ))}
-        {
-  isModalAddCandidate && (
-    <Modal isOpen={isModalAddCandidate} onClose={() => setIsModalAddCandidate(false)}>
-      <ModalAddCandidate  />
-    </Modal>
-  )
-}
+
       </div>
 
       {/* Пагинация */}
@@ -174,9 +191,7 @@ const TableCandidate = () => {
           </button>
         </div>
       )}
-      
     </div>
-    
   );
 };
 

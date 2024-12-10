@@ -1,12 +1,12 @@
 'use client'
 import Breadcrumb from "@/src/components/Breadcrumbs/Breadcrumb";
-import TableOne from "@/src/components/Tables/TableCandidaate";
 import TableThree from "@/src/components/Tables/TableThree";
-import TableTwo from "@/src/components/Tables/TableTwo";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
-
+import Modal from "@/src/modal/globalModal/GlobalCandidateModal";
+import ModalAddCandidate from "@/src/components/modals/ModalAddCandidate";
+import TableCandidate from "@/src/components/Tables/TableCandidaate";
 
 
 const TablesPage = () => {
@@ -17,7 +17,7 @@ const TablesPage = () => {
   const handleTableChange = (table: string) => {
     setActiveTable(table);
   };
-
+ 
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Tables" />
@@ -48,10 +48,11 @@ const TablesPage = () => {
 
       <div className="flex flex-col gap-10">
         {/* Условный рендеринг таблиц */}
-        {activeTable === "table1" && <TableOne />}
+        {activeTable === "table1" && <TableCandidate/>}
         {activeTable === "table2" && <TablePartner />}
         {activeTable === "table3" && <TableThree />}
       </div>
+    
     </DefaultLayout>
   );
 };
