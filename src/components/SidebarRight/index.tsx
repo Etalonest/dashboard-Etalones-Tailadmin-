@@ -40,7 +40,7 @@ const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions }: 
   return (
     <aside
       id="sidebar"
-      className={`fixed right-0 top-0 z-100 flex h-screen w-full flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark ${
+      className={`fixed right-0 top-0 z-1000 flex h-screen w-full flex-col overflow-y-hidden  bg-white  duration-300 ease-linear dark:bg-boxdark ${
         sidebarROpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
@@ -50,7 +50,7 @@ const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions }: 
         <button
           onClick={() => setSidebarROpen(false)} // кнопка для закрытия сайдбара
           aria-controls="sidebar"
-          className="text-white text-2xl"
+          className="text-black-2 dark:text-white text-2xl"
         >
           &times; {/* Символ крестика */}
         </button>

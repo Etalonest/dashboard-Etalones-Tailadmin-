@@ -56,7 +56,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div className="flex flex-col space-y-1">
-      <label className="block text-sm font-medium text-white">
+      <label className="block text-sm font-medium text-black-2 dark:text-white">
         {label}
       </label>
 
@@ -143,7 +143,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         {/* Dropdown Menu */}
         <div
           ref={dropdownRef}
-          className={`absolute left-0 top-full z-40 w-full max-h-64 overflow-y-auto rounded bg-white shadow dark:bg-form-input ${show ? "" : "hidden"}`}
+          className={`relative left-0  z-40 w-full max-h-64 overflow-y-auto rounded bg-white shadow dark:bg-form-input ${show ? "" : "hidden"}`}
         >
           <div className="flex flex-col">
             {options.map((option) => (

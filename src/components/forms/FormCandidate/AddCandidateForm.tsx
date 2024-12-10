@@ -1,7 +1,7 @@
 'use client'
 import React, { useContext, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
-import { CirclePlus, Plus, X } from 'lucide-react';
+import { CirclePlus,  X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import MultiSelect from '../../FormElements/MultiSelect';
 import { useNotifications } from '@/src/context/NotificationContext';
@@ -47,12 +47,46 @@ const status = [
     { value: 'Другое', label: 'Другое' }
   ];
   
-  
+  const drivePermisOptions = [
+    { value: 'B', label: 'B' },
+    { value: 'C', label: 'C' },
+    { value: 'D', label: 'D' },
+    { value: 'E', label: 'E' },
+    { value: 'Код 95', label: 'Код 95' },
+    { value: 'Разрешение на спецтехнику', label: 'Разрешение на спецтехнику' },
+  ]
+
+  const languesOptions = [
+    { value: 'Немецкий', label: 'Немецкий' },
+    { value: 'Английский', label: 'Английский' },
+    { value: 'Польский', label: 'Польский' },
+    { value: 'Турецкий', label: 'Турецкий' },
+    { value: 'Французский', label: 'Французский' },
+    { value: 'Итальянский', label: 'Итальянский' },
+  ]
 const AddCandidateForm = ({professions}: any) => {
+  const [selectedDrive, setSelectedDrive] = useState<{ label: string; value: string }[]>([]);
+  const [professionEntries, setProfessionEntries] = useState([{ name: '', experience: '' }]);
+  
+  const addProfessionEntry = () => {
+    setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
+  };
+
+  const handleProfessionChange = (index: number, field: string, value: string) => {
+    const newEntries = [...professionEntries];
+    newEntries[index] = { ...newEntries[index], [field]: value };
+    setProfessionEntries(newEntries);
+  };
+
+  const removeProfessionEntry = (index: number) => {
+    const newEntries = professionEntries.filter((_, i) => i !== index);
+    setProfessionEntries(newEntries);
+  };
     const { addNotification } = useNotifications();
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
     const generateId = () => uuidv4();  
+    console.log(generateId)
     const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPhone(event.target.value);
       };
@@ -125,21 +159,56 @@ const AddCandidateForm = ({professions}: any) => {
     setAdditionalPhones(phones);
   };
   
+  const handleSubmit = async(event: any) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    console.log(formData);
+    
+    const body = {
+      name: formData.get('name') || '',
+      phone: formData.get('phone') || '',
+      ageNum: formData.get('ageNum') || '',
+      status: formData.get('status') || '',
+      professions: professionEntries.filter(profession => profession.name.trim() !== '' || profession.experience.trim() !== ''),
+      nameDocument: formData.get('nameDocument'),
+      drivePermis: selectedDrive.map(d => d.value).join(', '),
+      citizenship: formData.get('citizenship'),
+      leaving: formData.get('leaving'),
+      langue: formData.get('langue'),
+      locations: formData.get('locations'),
+      cardNumber: formData.get('cardNumber'),
+    };
+    try {
+      const response = await fetch('/api/addCandidate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Ошибка при добавлении кандидата:', error);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
       <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
-      <form className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <form onSubmit={handleSubmit}
+      className="grid grid-cols-[1fr_2fr_1fr] gap-4">
         
         {/* Личные данные */}
-        <div className="col-span-1 text-white">
-          <h3 className="font-semibold text-lg mb-2">Личные данные</h3>
-          {message && <p>{message}</p>}
-          <DefaultInput id="name" label="ФИО" type="text" placeholder="Иван Иванов" />
+        <div className=" text-white">
+          <h3 className="font-semibold text-lg mb-2 text-black-2 dark:text-white">Личные данные</h3>
+          <DefaultInput id="name" label="ФИО" placeholder="Иван Иванов" />
+          
           <div className='relative'>
           <DefaultInput id="phone" label="Телефон" type="text" placeholder="+373696855446"
           onChange={handlePhoneChange}
           onBlur={handlePhoneBlur}/>
-          <button type="button" className="absolute top-0 left-15 text-green-500 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
+          <button type="button" className="absolute top-0 left-15 text-green-400 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
           </div>
           
           {additionalPhones.map((phone, index) => (
@@ -166,32 +235,63 @@ const AddCandidateForm = ({professions}: any) => {
 
           <DefaultInput id="ageNum" label="Возраст" type="text" placeholder="33" />
           <Select label={'Статус первого диалога'} id="status" name="status" options={status} />
-          <DefaultInput label="Телефон" id={''} />
-          <DefaultInput label="Имя" id={''} />
-          <DefaultInput label="Фамилия" id={''} />
-          <DefaultInput label="Возраст" id={''} />
-          <DefaultInput label="Телефон" id={''} />
+          
         </div>
 
         {/* Работа */}
-        <div className="col-span-1 flex flex-col gap-1">
-          <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3>
-          <MultiSelect id="profession" placeholder='Выберите профессии' label={'Профессия'} name="profession" options={professionOptions} />
-          <MultiSelect id="nameDocument" placeholder='Выберите документы в наличии' label={'Документы'} name="nameDocument" options={documentsOptions} />
+        <div className=" flex flex-col gap-1">
+          {/* <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3> */}
+          <label htmlFor="professions">
+                        <div className="flex justify-between items-start m-2">
+                          <h3 className="font-bold text-xl text-black-2 dark:text-white">Профессии</h3>
+                          <button
+                            className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out"
+                            type="button"
+                            onClick={addProfessionEntry}
+                          >
+                            <CirclePlus />
+                          </button>
+                        </div>
+                        {professionEntries.map((prof, index) => (
+                          <div key={index} className='flex w-full  gap-1 '>
+                            <label htmlFor="profession">
+                              <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
+                                <option>Нет профессии</option>
+                                {professions.map((profession: { _id: React.Key ; name: string  }) => (
+                                  <option key={profession._id} value={profession.name}>{profession.name}</option>
+                                ))}
+                              </select>
+                            </label>
+                            <label htmlFor="experience">
+                              <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.experience || ''} onChange={e => handleProfessionChange(index, 'experience', e.target.value || '')}>
+                                <option >Без опыта</option>
+                                <option >Меньше года</option>
+                                <option >Более года</option>
+                                <option >От 2-х лет</option>
+                                <option >Более 10-ти лет</option>
+                              </select>
+                            </label>
+                            <button
+                              className="btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
+                              type="button" onClick={() => removeProfessionEntry(index)}><X /></button>
+                          </div>
+                        ))}
+                      </label>
+          <MultiSelect  id="profession" placeholder='Выберите профессии' label={'Профессия'} name="profession" options={professionOptions} />
+          <MultiSelect  id="nameDocument" placeholder='Выберите документы в наличии' label={'Документы'} name="nameDocument" options={documentsOptions} />
+          <MultiSelect onChange={(selected: string[]) => setSelectedDrive(selected.map(value => ({ label: value, value })))}
+            id="drivePermis" placeholder='Выберите категории В/У' label={'Водительское удостоверение'} name="drivePermis" options={drivePermisOptions} />
 
         </div>
 
         {/* Дополнительно */}
-        <div className="col-span-1">
+        <div className="">
           <h3 className="font-semibold text-lg mb-2">Дополнительно</h3>
           <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
           <DefaultInput id='leaving' label='Готов выехать' type="date"  />
-          <DefaultInput label="Языки" id={''} />
-          <DefaultInput label="Ссылка на резюме" id={''} />
-          <DefaultInput label="Примечания" id={''} />
-          <DefaultInput label="Навыки" id={''} />
-          <DefaultInput label="Языки" id={''} />
-          <DefaultInput label="Ссылка на резюме" id={''} />
+          <MultiSelect id="langue" placeholder='Знание языков' label={'Знание языков'} name="langue" options={languesOptions} />
+          <DefaultInput label="Местоположение" id='locations' name='locations' />
+
           <DefaultInput id='cardNumber' label='Номер счёта' type="text" />
         </div>
 
