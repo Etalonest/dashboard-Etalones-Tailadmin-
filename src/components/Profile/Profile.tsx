@@ -1,15 +1,16 @@
 'use client'
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
-const ProfileComponent = () => {
-    const { data: session } = useSession();
+import { useManager } from '@/src/context/ManagerContext'; 
 
+const ProfileComponent = () => {
+  const { manager } = useManager();
+ 
   return (
+   
     <div className="mx-auto max-w-242.5">
     <Breadcrumb pageName="Profile" />
-
     <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="relative z-20 h-35 md:h-65">
         <Image
@@ -64,8 +65,8 @@ const ProfileComponent = () => {
       <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
         <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
           <div className="relative drop-shadow-2">
-            <Image
-              src={session?.user?.picture ?? "/images/cover/cover-01.png"}
+            {manager?.image && <Image
+              src={`data:${manager.image.contentType};base64,${Buffer.from(manager.image.data).toString('base64')}`}
               width={160}
               height={160}
               style={{
@@ -74,7 +75,7 @@ const ProfileComponent = () => {
                 height: "100%",
               }}
               alt="profile"
-            />
+            />}
             <label
               htmlFor="profile"
               className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
@@ -111,27 +112,27 @@ const ProfileComponent = () => {
         </div>
         <div className="mt-4">
           <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-            {session?.user?.name ?? "Danish Heilium"}
+            {manager?.name ?? "Danish Heilium"}
           </h3>
-          <p className="font-medium">Ui/Ux Designer</p>
+          <p className="font-medium">{manager?.phone ?? "Не указан номер телефона"}</p>
           <div className="mx-auto mb-5.5 mt-4.5 grid max-w-94 grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
             <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
               <span className="font-semibold text-black dark:text-white">
-                259
+              {manager?.candidates.length ?? 0}
               </span>
-              <span className="text-sm">Posts</span>
+              <span className="text-sm">Кандидатов</span>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
               <span className="font-semibold text-black dark:text-white">
-                129K
+                {manager?.partners.length ?? 0}
               </span>
-              <span className="text-sm">Followers</span>
+              <span className="text-sm">Партнёров</span>
             </div>
             <div className="flex flex-col items-center justify-center gap-1 px-4 xsm:flex-row">
               <span className="font-semibold text-black dark:text-white">
-                2K
+                {manager?.tasks.length ?? 0}
               </span>
-              <span className="text-sm">Following</span>
+              <span className="text-sm">Задач</span>
             </div>
           </div>
 

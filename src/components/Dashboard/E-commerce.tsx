@@ -4,9 +4,9 @@ import React from "react";
 import ChartOne from "../Charts/ChartOne";
 import ChartTwo from "../Charts/ChartTwo";
 import ChatCard from "../Chat/ChatCard";
-import TableOne from "../Tables/TableOne";
+import TableOne from "../Tables/TableCandidaate";
 import CardDataStats from "../CardDataStats";
-
+import { useManager } from "@/src/context/ManagerContext";
 const MapOne = dynamic(() => import("@/src/components/Maps/MapOne"), {
   ssr: false,
 });
@@ -16,10 +16,15 @@ const ChartThree = dynamic(() => import("@/src/components/Charts/ChartThree"), {
 });
 
 const ECommerce: React.FC = () => {
+  const { manager } = useManager();
+  const totalCandidates = manager?.candidates.length ?? 0;
+  const totalPartners = manager?.partners.length ?? 0;
+  const totalTasks = manager?.tasks.length ?? 0;
+  const totalVacancies = manager?.vacancy.lenght ?? 0;
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats title="Всего задач" total={totalTasks.toString()} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -38,7 +43,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Всего вакансий" total={totalVacancies.toString()} rate="4.35%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -61,7 +66,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats title="Всего партнёров" total={totalPartners.toString()} rate="2.59%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -80,7 +85,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Всего кандидатов" total={totalCandidates.toString()} rate="0.95%" levelDown>
           <svg
             className="fill-primary dark:fill-white"
             width="22"

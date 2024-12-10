@@ -4,6 +4,7 @@ import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
+import Search from "../Search/Search";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -68,8 +69,8 @@ const Header = (props: {
         </div>
 
         <div className="hidden sm:block">
-          <form action="https://formbold.com/s/unique_form_id" method="POST">
-            <div className="relative">
+          <form >
+            <div className="relative w-full">
               <button className="absolute left-0 top-1/2 -translate-y-1/2">
                 <svg
                   className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
@@ -93,12 +94,8 @@ const Header = (props: {
                   />
                 </svg>
               </button>
-
-              <input
-                type="text"
-                placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 font-medium focus:outline-none xl:w-125"
-              />
+<Search />
+              
             </div>
           </form>
         </div>

@@ -1,6 +1,6 @@
-import Calendar from "@/components/Calender";
+import Calendar from "@/src/components/Calender";
 import { Metadata } from "next";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 
 export const metadata: Metadata = {
   title: "Next.js Calender | TailAdmin - Next.js Dashboard Template",

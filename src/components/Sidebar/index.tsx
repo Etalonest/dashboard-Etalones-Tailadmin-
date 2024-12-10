@@ -45,7 +45,7 @@ const menuGroups = [
             />
           </svg>
         ),
-        label: "Dashboard",
+        label: "Информационная панель",
         route: "#",
         children: [{ label: "eCommerce", route: "/" }],
       },
@@ -65,7 +65,7 @@ const menuGroups = [
             />
           </svg>
         ),
-        label: "Calendar",
+        label: "Календарь",
         route: "/calendar",
       },
       {
@@ -88,7 +88,7 @@ const menuGroups = [
             />
           </svg>
         ),
-        label: "Profile",
+        label: "Профиль",
         route: "/profile",
       },
       {
@@ -158,7 +158,7 @@ const menuGroups = [
             </defs>
           </svg>
         ),
-        label: "Tables",
+        label: "Таблицы",
         route: "/tables",
       },
       {
@@ -193,7 +193,7 @@ const menuGroups = [
             </defs>
           </svg>
         ),
-        label: "Settings",
+        label: "Настройки",
         route: "/settings",
       },
     ],

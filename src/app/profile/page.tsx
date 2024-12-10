@@ -1,17 +1,36 @@
-import { Metadata } from "next";
+// import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
+// import ProfileComponent from "@/src/components/Profile/Profile";
+// import { auth } from "@/auth"
+
+// const Profile = async() => {
+//   const session = await auth()
+//   if (!session) 
+
+//     return <div>Not authenticated</div>
+//   return (
+//     <DefaultLayout>
+//      <ProfileComponent />
+//     </DefaultLayout>
+//   );
+// };
+
+// export default Profile;
+// Используем серверный компонент для асинхронной логики
+import { auth } from "@/auth";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import ProfileComponent from "@/src/components/Profile/Profile";
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: "Next.js Profile | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Profile page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-};
+const Profile = async () => {
+  const session = await auth();  // Получаем сессию на сервере
 
-const Profile = () => {
+  if (!session) {
+    redirect('/auth/signin');  // Перенаправляем на главную страницу, если нет сессии
+  }
+
   return (
     <DefaultLayout>
-     <ProfileComponent />
+      <ProfileComponent />
     </DefaultLayout>
   );
 };

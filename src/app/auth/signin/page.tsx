@@ -6,10 +6,7 @@ import { Metadata } from "next";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { signIn } from "@/auth"
 
-export const metadata: Metadata = {
-  title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Signin Page TailAdmin Dashboard Template",
-};
+
 
 const SignIn: React.FC = () => {
   return (
@@ -252,7 +249,7 @@ const SignIn: React.FC = () => {
                   />
                 </div>
 
-                <button onClick={() => signIn('google')}
+                <button type="submit"
                 className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
                     <svg
