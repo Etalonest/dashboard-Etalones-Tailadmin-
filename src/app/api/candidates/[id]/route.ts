@@ -1,5 +1,7 @@
-import { connectToDB } from '@/app/lib/utils';
-import { Candidate, Partner, Manager } from '@/app/lib/models';
+import { connectDB } from '@/src/lib/db';
+import  Candidate  from '@/src/models/Candidate';
+import Partner from '@/src/models/Partner';
+import Manager from '@/src/models/Manager';
 import { NextResponse } from 'next/server';
 
 // Интерфейсы для типизации
@@ -20,7 +22,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { id } = params;
   const body: CandidateUpdate = await request.json();
 
-  await connectToDB();
+  await connectDB();
 
   // Получаем старого кандидата
   const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
@@ -63,7 +65,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
-  await connectToDB();
+  await connectDB();
 
   const candidate = await Candidate.findById(id)
     .populate(['comment', 'manager', 'professions', 'langue', 'partners', 'tasks', 'documents', 'documentsFile']) // Добавили documents

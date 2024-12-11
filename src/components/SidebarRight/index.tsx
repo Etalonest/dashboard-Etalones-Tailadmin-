@@ -18,7 +18,7 @@ interface SidebarProps {
   professions: Profession[];
 }
 
-const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions }: SidebarProps) => {
+const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions, selectedCandidate }: SidebarProps) => {
 
   const pathname = usePathname();
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
@@ -29,14 +29,26 @@ const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions }: 
       case "addCandidate":
         return <AddCandidateForm professions={professions} />;
       case "editCandidate":
-        return <EditCandidateForm />;
+        return <EditCandidateForm professions={professions} id={selectedCandidate?._id} candidate={selectedCandidate} />;
       case "viewCandidate":
-        return <ViewCandidateForm />;
+        return <ViewCandidateForm id={selectedCandidate?._id} candidate={selectedCandidate}/>;
       default:
         return null;
     }
   };
+const handleCloseSidebar = () => {
+    setSidebarROpen(false);
+    // Например, сбрасываем статус о том, что сайдбар закрыт
+    localStorage.setItem("sidebarOpen", "false"); // Обновление кэша
+  };
 
+  useEffect(() => {
+    // При монтировании компонента проверяем, открыт ли сайдбар в localStorage
+    const sidebarStatus = localStorage.getItem("sidebarOpen");
+    if (sidebarStatus === "false") {
+      setSidebarROpen(false);
+    }
+  }, [setSidebarROpen]);
   return (
     <aside
       id="sidebar"
@@ -48,7 +60,7 @@ const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions }: 
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         {/* Кнопка закрытия (крестик) */}
         <button
-          onClick={() => setSidebarROpen(false)} // кнопка для закрытия сайдбара
+          onClick={handleCloseSidebar}
           aria-controls="sidebar"
           className="text-black-2 dark:text-white text-2xl"
         >

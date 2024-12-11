@@ -3,11 +3,34 @@ import React, { useContext, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
 import { CirclePlus,  X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
-import MultiSelect from '../../FormElements/MultiSelect';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
+import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
+import MultiSelect from '../../FormElements/MultiSelect';
+import { useSession } from 'next-auth/react';
 
-
+interface DriveOption {
+  value: string;
+  label: string;
+}
+interface DocumentEntry {
+  docType: string;
+  dateExp: string;
+  dateOfIssue: string;
+  numberDoc: string;
+}
+interface Language {
+  name: string;
+  level: string;
+}
+const drivePermis = [
+  { label: "В", value: "B" },
+  { label: "C", value: "C" },
+  { label: "D", value: "D" },
+  { label: "E", value: "E" },
+  { label: "Код 95", value: "Код 95" },
+  { label: "Есть своё авто", value: "Есть своё авто" },
+];
 const status = [
     { value: 'Не обработан', label: 'Не обработан' },
     { value: 'Нет месседжеров', label: 'Нет месседжеров' },
@@ -47,27 +70,46 @@ const status = [
     { value: 'Другое', label: 'Другое' }
   ];
   
-  const drivePermisOptions = [
-    { value: 'B', label: 'B' },
-    { value: 'C', label: 'C' },
-    { value: 'D', label: 'D' },
-    { value: 'E', label: 'E' },
-    { value: 'Код 95', label: 'Код 95' },
-    { value: 'Разрешение на спецтехнику', label: 'Разрешение на спецтехнику' },
-  ]
+ 
 
-  const languesOptions = [
-    { value: 'Немецкий', label: 'Немецкий' },
-    { value: 'Английский', label: 'Английский' },
-    { value: 'Польский', label: 'Польский' },
-    { value: 'Турецкий', label: 'Турецкий' },
-    { value: 'Французский', label: 'Французский' },
-    { value: 'Итальянский', label: 'Итальянский' },
-  ]
-const AddCandidateForm = ({professions}: any) => {
-  const [selectedDrive, setSelectedDrive] = useState<{ label: string; value: string }[]>([]);
-  const [professionEntries, setProfessionEntries] = useState([{ name: '', experience: '' }]);
   
+const AddCandidateForm = ({professions}: any) => {
+  const { data: session } = useSession();
+  
+    const managerId = session?.managerId;
+  const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
+  const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
+  const [langues, setLangues] = useState<Language[]>([]);
+  const addLanguage = () => {
+    setLangues([...langues, { name: 'Не знает языков', level: '' }]);
+  };
+  
+  const handleLanguageChange = (index: number, field: keyof Language, value: string) => {
+    const updatedLangues = [...langues];
+    updatedLangues[index] = { ...updatedLangues[index], [field]: value };
+    setLangues(updatedLangues);
+  };
+  
+  const removeLanguage = (index: number) => {
+    const updatedLangues = langues.filter((_, i) => i !== index);
+    setLangues(updatedLangues);
+  };
+  const addDocumentEntry = () => {
+    setDocumentEntries([...documentEntries, { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '' }]);
+  };
+
+  const handleDocumentChange = (index: number, field: string, value: string) => {
+    const newEntries = [...documentEntries];
+    newEntries[index] = { ...newEntries[index], [field]: value };
+    setDocumentEntries(newEntries);
+  };
+
+  const removeDocumentEntry = (index: number) => {
+    const newEntries = documentEntries.filter((_, i) => i !== index);
+    setDocumentEntries(newEntries);
+  };
+  const [professionEntries, setProfessionEntries] = useState([{ name: '', experience: '' }]);
+
   const addProfessionEntry = () => {
     setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
   };
@@ -84,7 +126,6 @@ const AddCandidateForm = ({professions}: any) => {
   };
     const { addNotification } = useNotifications();
     const [phone, setPhone] = useState('');
-    const [message, setMessage] = useState('');
     const generateId = () => uuidv4();  
     console.log(generateId)
     const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,11 +177,8 @@ const AddCandidateForm = ({professions}: any) => {
       };
     
     
-    const [additionalPhones, setAdditionalPhones] = useState<string[]>([]); // Массив для хранения телефонов
-    const professionOptions = professions.map((profession: { name: any; _id: any; }) => ({
-        label: profession.name,  // Название профессии
-        value: profession._id,   // Используем _id как значение
-      }));
+      const [additionalPhones, setAdditionalPhones] = useState([""]);
+    
     // Функция для добавления нового телефона
   const addAdditionalPhone = () => {
     setAdditionalPhones([...additionalPhones, ""]);
@@ -162,24 +200,29 @@ const AddCandidateForm = ({professions}: any) => {
   const handleSubmit = async(event: any) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    console.log(formData);
     
     const body = {
       name: formData.get('name') || '',
       phone: formData.get('phone') || '',
+      additionalPhones: additionalPhones.filter(phone => phone.trim() !== ''),
       ageNum: formData.get('ageNum') || '',
       status: formData.get('status') || '',
       professions: professionEntries.filter(profession => profession.name.trim() !== '' || profession.experience.trim() !== ''),
-      nameDocument: formData.get('nameDocument'),
+      documents: documentEntries.filter(document => document.docType.trim() !== '' || document.dateExp.trim() !== '' || document.dateOfIssue.trim() !== '' || document.numberDoc.trim() !== ''),
       drivePermis: selectedDrive.map(d => d.value).join(', '),
       citizenship: formData.get('citizenship'),
       leaving: formData.get('leaving'),
-      langue: formData.get('langue'),
+      langue: langues.filter(lang => lang.name.trim() !== '' || lang.level.trim() !== ''),
       locations: formData.get('locations'),
       cardNumber: formData.get('cardNumber'),
+      comment: formData.get('comment') ? [{
+        text: formData.get('comment'),
+        date: new Date()
+      }] : [],
+      manager: managerId,
     };
     try {
-      const response = await fetch('/api/addCandidate', {
+      const response = await fetch('/api/candidates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,7 +230,6 @@ const AddCandidateForm = ({professions}: any) => {
         body: JSON.stringify(body),
       });
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error('Ошибка при добавлении кандидата:', error);
     }
@@ -208,7 +250,7 @@ const AddCandidateForm = ({professions}: any) => {
           <DefaultInput id="phone" label="Телефон" type="text" placeholder="+373696855446"
           onChange={handlePhoneChange}
           onBlur={handlePhoneBlur}/>
-          <button type="button" className="absolute top-0 left-15 text-green-400 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
+          <button type="button" className="absolute top-0 right-0 text-green-400 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
           </div>
           
           {additionalPhones.map((phone, index) => (
@@ -243,7 +285,7 @@ const AddCandidateForm = ({professions}: any) => {
           {/* <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3> */}
           <label htmlFor="professions">
                         <div className="flex justify-between items-start m-2">
-                          <h3 className="font-bold text-xl text-black-2 dark:text-white">Профессии</h3>
+                          <h3 className="font-bold text-md text-black-2 dark:text-white">Профессии</h3>
                           <button
                             className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out"
                             type="button"
@@ -253,7 +295,7 @@ const AddCandidateForm = ({professions}: any) => {
                           </button>
                         </div>
                         {professionEntries.map((prof, index) => (
-                          <div key={index} className='flex w-full  gap-1 '>
+                          <div key={index} className='flex w-full  gap-1 pr-2'>
                             <label htmlFor="profession">
                               <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
                                 <option>Нет профессии</option>
@@ -272,29 +314,134 @@ const AddCandidateForm = ({professions}: any) => {
                               </select>
                             </label>
                             <button
-                              className="btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
+                              className=" btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
                               type="button" onClick={() => removeProfessionEntry(index)}><X /></button>
                           </div>
                         ))}
                       </label>
-          <MultiSelect  id="profession" placeholder='Выберите профессии' label={'Профессия'} name="profession" options={professionOptions} />
-          <MultiSelect  id="nameDocument" placeholder='Выберите документы в наличии' label={'Документы'} name="nameDocument" options={documentsOptions} />
-          <MultiSelect onChange={(selected: string[]) => setSelectedDrive(selected.map(value => ({ label: value, value })))}
-            id="drivePermis" placeholder='Выберите категории В/У' label={'Водительское удостоверение'} name="drivePermis" options={drivePermisOptions} />
+
+                      <div className='flex justify-between items-start m-2'>
+                          <h3 className="my-3 text-md font-bold">Документы</h3>
+                          <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addDocumentEntry}>
+                            <CirclePlus />
+                          </button>
+                        </div>
+                        <div className='flex flex-col gap-2 w-full'>
+                          {documentEntries.map((doc, index) => (
+                            <div key={index} className=" flex ">
+                              <p className="">{`${index + 1}.`}</p>&nbsp;
+                              <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
+                                <div className='flex  justify-center items-center'>
+                                <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" 
+                                value={doc.docType || ''} onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
+                                  <option value="Не указано">Не указано</option>
+                                  <option value="Виза">Виза</option>
+                                  <option value="Песель">Песель</option>
+                                  <option value="Паспорт">Паспорт</option>
+                                  <option value="Паспорт ЕС">Паспорт ЕС</option>
+                                  <option value="Паспорт Биометрия Украины">Паспорт Биометрия Украины</option>
+                                  <option value="Параграф 24">Параграф 24</option>
+                                  <option value="Карта побыту">Карта побыту</option>
+                                  <option value="Геверба">Геверба</option>
+                                  <option value="Карта сталого побыта">Карта сталого побыта</option>
+                                  <option value="Приглашение">Приглашение</option>
+                                </select>
+                                <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" defaultValue={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
+                                </div>
+                                <div className='flex justify-center items-center gap-3'>
+                                <DefaultInput id='dateOfIssue' label='Выдан' type="date" defaultValue={doc.dateOfIssue} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
+                                <DefaultInput id='documDate' label='До' type="date" defaultValue={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
+                                </div>
+                                <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
+                                  type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                        <p>Комментарий</p>
+                        <textarea
+                         id="comment" name="comment"
+                          rows={6}
+                          placeholder="Оставьте свой комментарий"
+                          className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        ></textarea>
 
         </div>
 
         {/* Дополнительно */}
-        <div className="">
+        <div >
           <h3 className="font-semibold text-lg mb-2">Дополнительно</h3>
           <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
           <DefaultInput id='leaving' label='Готов выехать' type="date"  />
-          <MultiSelect id="langue" placeholder='Знание языков' label={'Знание языков'} name="langue" options={languesOptions} />
           <DefaultInput label="Местоположение" id='locations' name='locations' />
-
+          <MultiSelect label='Водительское удостоверение' options={drivePermis} placeholder="Категории В/У" className="w-full my-1 text-sm" onChange={(selected: string[]) => setSelectedDrive(selected.map(value => ({ label: value, value })))} id='drivePermis' />
           <DefaultInput id='cardNumber' label='Номер счёта' type="text" />
-        </div>
+          <div className='flex justify-between items-center m-2'>
+  <h3 className="my-3 text-md font-bold">Языки</h3>
+  <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addLanguage}>
+    <CirclePlus />
+  </button>
+</div>
 
+{/* Отображение списка языков */}
+<div className='flex flex-col gap-2 w-full'>
+  {langues.map((lang, index) => (
+    <div key={index} className="flex flex-col gap-2">
+      <label htmlFor={`langue-${index}`} className="flex flex-col gap-1 items-start relative">
+        {/* Язык */}
+        <div className='flex flex-col justify-between items-start '>
+          <div>Знание языка</div>
+          <select
+            id={`langue-${index}`}
+            name={`langue-${index}`}
+            className="text-sm w-[250px] h-[25px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            value={lang.name}
+            onChange={(e) => handleLanguageChange(index, 'name', e.target.value)}
+          >
+            <option value='Не знает языков'>Не знает языков</option>
+            <option value='Немецкий'>Немецкий</option>
+            <option value='Английский'>Английский</option>
+            <option value='Польский'>Польский</option>
+            <option value='Турецкий'>Турецкий</option>
+            <option value='Французский'>Французский</option>
+            <option value='Итальянский'>Итальянский</option>
+          </select>
+        </div>
+        
+        {/* Уровень */}
+        <div className='flex flex-col justify-between items-start '>
+          <div>Уровень</div>
+          <select
+            className="text-sm h-[25px] w-[250px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            value={lang.level}
+            onChange={(e) => handleLanguageChange(index, 'level', e.target.value)}
+          >
+            <option value=''>Выберите уровень</option>
+            <option value='Самоучка'>Самоучка</option>
+            <option value='Уровень А1'>Уровень А1</option>
+            <option value='Уровень А2'>Уровень А2</option>
+            <option value='Уровень B1'>Уровень B1</option>
+            <option value='Уровень B2'>Уровень B2</option>
+          </select>
+        </div>
+        {/* Кнопка для удаления языка */}
+      <button
+        className="absolute right-2 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
+        type="button"
+        onClick={() => removeLanguage(index)}
+      >
+        <X />
+      </button>
+      </label>
+
+      
+    </div>
+  ))}
+</div>
+
+        </div>
+        
+        
         {/* Кнопка отправки формы */}
         <div className="col-span-full mt-6 text-center">
           <button type="submit" className="px-6 py-2 bg-blue-500 text-white rounded-md">

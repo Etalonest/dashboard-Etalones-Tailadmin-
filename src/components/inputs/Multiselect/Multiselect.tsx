@@ -32,13 +32,11 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   const toggleDropdown = () => setShow((prev) => !prev);
 
   const handleOptionToggle = (value: string) => {
-    setSelectedOptions((prev) => {
-      const newSelected = prev.includes(value)
+    setSelectedOptions((prev) =>
+      prev.includes(value)
         ? prev.filter((val) => val !== value)
-        : [...prev, value];
-      onChange(newSelected); // Передаем выбранные значения в родительский компонент
-      return newSelected;
-    });
+        : [...prev, value]
+    );
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -65,8 +63,12 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
       </label>
 
       <div className="relative w-[250px] z-20 bg-transparent">
-        <div ref={trigger} onClick={toggleDropdown} className="flex flex-col w-full">
-          <div className="relative flex rounded-lg border text-sm font-medium border-stroke outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
+        <div
+          ref={trigger}
+          onClick={toggleDropdown}
+          className="flex flex-col w-full"
+        >
+          <div className="relative flex rounded-lg border text-sm font-medium border-stroke   outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white">
             <div className="flex flex-wrap gap-3 px-5 py-1">
               {selectedOptions.length > 0 ? (
                 selectedOptions.map((value) => {
@@ -75,7 +77,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                     option && (
                       <div
                         key={value}
-                        className="flex items-center justify-center rounded border-[0.5px] border-stroke bg-gray px-2.5 py-0.5 text-sm font-medium dark:border-strokedark dark:bg-white/30"
+                        className="  flex items-center justify-center rounded border-[0.5px] border-stroke bg-gray px-2.5 py-0.5 text-sm font-medium dark:border-strokedark dark:bg-white/30"
                       >
                         <div className="max-w-full flex-initial">{option.label}</div>
                         <div
@@ -143,7 +145,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         {/* Dropdown Menu */}
         <div
           ref={dropdownRef}
-          className={`relative left-0 z-40 w-full max-h-64 overflow-y-auto rounded bg-white shadow dark:bg-form-input ${show ? "" : "hidden"}`}
+          className={`relative left-0  z-40 w-full max-h-64 overflow-y-auto rounded bg-white shadow dark:bg-form-input ${show ? "" : "hidden"}`}
         >
           <div className="flex flex-col">
             {options.map((option) => (
@@ -158,7 +160,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   }`}
                 >
                   <div className="flex w-full items-center">
-                    <div className="leading-6">{option.label}</div>
+                    <div className=" leading-6">{option.label}</div>
                   </div>
                 </div>
               </div>
@@ -171,4 +173,3 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 };
 
 export default MultiSelect;
-

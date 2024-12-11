@@ -82,7 +82,12 @@ const TableCandidate = () => {
           </h4>
           <UserRoundPlus color='green' onClick={() => toggleSidebar("addCandidate")} className='cursor-pointer' />
         </div>
-        <SidebarRight sidebarROpen={sidebarOpen} setSidebarROpen={setSidebarOpen} formType={formType} selectedCandidate={selectedCandidate} professions={professions}/>
+        <SidebarRight 
+        sidebarROpen={sidebarOpen} 
+        setSidebarROpen={setSidebarOpen} 
+        formType={formType} 
+        selectedCandidate={selectedCandidate} 
+        professions={professions}/>
 
       <input
         type="text"
@@ -132,37 +137,37 @@ const TableCandidate = () => {
                 <Eye onClick={() => toggleSidebar("viewCandidate", candidate)} />
                 <UserCog onClick={() => toggleSidebar("editCandidate", candidate)} />
               </div>
-              <p className="hidden text-black dark:text-white sm:block">{candidate.name}</p>
+              <div className="hidden text-black dark:text-white sm:block">{candidate.name}</div>
             </div>
 
             <div className="flex items-center justify-start p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">
-                {candidate.professions.map((profession) => (
-                  <div key={profession.id}>{profession.name}</div>
+              <div className="text-black dark:text-white">
+                {candidate.professions.map((profession, index) => (
+                  <div key={index}>{profession.name}</div>
                 ))}
-              </p>
+              </div>
             </div>
 
             <div className="flex items-center justify-start p-2.5 xl:p-5">
-              <p className="text-meta-3">
-                {candidate.documents.map((document) => (
-                  <div key={document.id}>{document.docType}</div>
+              <div className="text-meta-3">
+                {candidate.documents.map((document, index) => (
+                  <div key={index}>{document.docType}</div>
                 ))}
-              </p>
+              </div>
             </div>
 
             <div className="hidden text-sm items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-black dark:text-white">
+              <div className="text-black dark:text-white">
                 {`${new Date(candidate.createdAt).toLocaleDateString('ru-RU', {
                   day: '2-digit', month: 'long', year: '2-digit'
                 })} / ${new Date(candidate.updatedAt).toLocaleDateString('ru-RU', {
                   day: '2-digit', month: 'long', year: '2-digit'
                 })}`}
-              </p>
+              </div>
             </div>
 
             <div className="hidden items-center justify-end p-2.5 sm:flex xl:p-5">
-              <p className="text-meta-5">{candidate.phone}</p>
+              <div className="text-meta-5">{candidate.phone}</div>
             </div>
           </div>
         ))}

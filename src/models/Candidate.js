@@ -75,10 +75,10 @@ const CandidateSchema = new Schema({
         dateExp: String,
         numberDoc: String,
       }],
-      langue: {
+      langue: [{
         name: String,
         level: String,
-      },
+      }],
       manager: {
         type: Schema.Types.ObjectId,
         ref: 'Manager',
@@ -111,7 +111,19 @@ const CandidateSchema = new Schema({
         {
           type: Schema.Types.ObjectId, ref: 'Interview'
         }
-      ]
+      ],
+      comment: [{
+        author: {
+          type: String
+        },
+        text: {
+          type: String
+        },
+        date: {
+          type: Date,
+          default: Date.now
+        }
+      }]
     },
       { timestamps: true })
 

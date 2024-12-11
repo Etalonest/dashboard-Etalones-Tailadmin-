@@ -4,8 +4,6 @@ import TableThree from "@/src/components/Tables/TableThree";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
-import Modal from "@/src/modal/globalModal/GlobalCandidateModal";
-import ModalAddCandidate from "@/src/components/modals/ModalAddCandidate";
 import TableCandidate from "@/src/components/Tables/TableCandidaate";
 
 
