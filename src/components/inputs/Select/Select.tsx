@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 // Обновляем интерфейс, чтобы принимать список опций
 interface SelectProps {
+  defaultValue?: string;
   label: string;
   placeholder?: string;
   type?: string;
@@ -12,6 +13,7 @@ interface SelectProps {
 }
 
 const Select: React.FC<SelectProps> = ({
+  defaultValue = '',
   label,
   placeholder = "Введите значение",
   type = "text",
@@ -19,7 +21,7 @@ const Select: React.FC<SelectProps> = ({
   options, // Получаем опции через пропсы
   ...rest
 }) => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+const [selectedOption, setSelectedOption] = useState<string>(defaultValue);
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
 
   const changeTextColor = () => {
@@ -40,11 +42,11 @@ const Select: React.FC<SelectProps> = ({
             changeTextColor();
           }}
           className={`w-[250px]  text-sm text-black-2 dark:text-white border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1  outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${
-            isOptionSelected ? "text-white" : ""
+            isOptionSelected ? "text-black-2 dark:text-white" : ""
           }`}
           {...rest}
         >
-          <option value="" disabled className="text-body dark:text-bodydark">
+          <option value="" disabled className="text-black dark:text-bodydark">
             {placeholder} {/* Добавляем placeholder */}
           </option>
           {/* Отображаем все опции, переданные через пропс options */}

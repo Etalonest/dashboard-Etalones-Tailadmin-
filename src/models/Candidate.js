@@ -70,6 +70,10 @@ const CandidateSchema = new Schema({
        experience: String
       }],
       documents: [{
+        documentsFile: {
+          type: Schema.Types.ObjectId,
+          ref: 'Document'
+        },
         docType: String,
         dateOfIssue: String,
         dateExp: String,

@@ -1,7 +1,7 @@
 'use client'
 import React, { useContext, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
-import { CirclePlus,  X } from 'lucide-react';
+import { CirclePlus,  FileUp,  X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
@@ -18,6 +18,7 @@ interface DocumentEntry {
   dateExp: string;
   dateOfIssue: string;
   numberDoc: string;
+  file: any;
 }
 interface Language {
   name: string;
@@ -73,9 +74,10 @@ const status = [
  
 
   
-const AddCandidateForm = ({professions}: any) => {
+const AddCandidateForm = ({professions, setSidebarROpen, clearForm}: any) => {
   const { data: session } = useSession();
-  
+  const [file, setFile] = useState<File | null>(null); // Состояние для выбранного файла
+
     const managerId = session?.managerId;
   const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
@@ -95,9 +97,17 @@ const AddCandidateForm = ({professions}: any) => {
     setLangues(updatedLangues);
   };
   const addDocumentEntry = () => {
-    setDocumentEntries([...documentEntries, { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '' }]);
+    setDocumentEntries([...documentEntries, { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '',file: null }]);
   };
 
+  const handleFileChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file) {
+      const newEntries = [...documentEntries];
+      newEntries[index] = { ...newEntries[index], file: file };
+      setDocumentEntries(newEntries);
+    }
+  };
   const handleDocumentChange = (index: number, field: string, value: string) => {
     const newEntries = [...documentEntries];
     newEntries[index] = { ...newEntries[index], [field]: value };
@@ -132,49 +142,7 @@ const AddCandidateForm = ({professions}: any) => {
         setPhone(event.target.value);
       };
     
-      const handlePhoneBlur = async () => {
-        if (phone.trim() === '') {
-          return;
-        }
-    
-        try {
-          // Отправка запроса на сервер для поиска по номеру телефона
-          const response = await fetch('/api/checkPhone', {
-            method: 'POST',  // Используем POST
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ phone }), // Отправляем номер телефона в теле запроса
-          });
-    
-          const data = await response.json();
 
-          if (data.candidate) {
-            addNotification({
-              title: "Обновлено",
-              content: `Кандидат с таким номером уже существует. Имя: ${data.candidate.name} Номер: ${data.candidate.phone}`,
-              type: "error", // Пример успешного уведомления
-              id: uuidv4Original(), // Генерация уникального id
-            });
-          } else if (data.message === 'Номер свободен') {
-            addNotification({
-              title: 'Номер свободен',
-              content: 'Этот номер еще не зарегистрирован.',
-              type: 'success',
-              id: uuidv4Original(),
-            });
-          } else {
-            addNotification({
-              title: 'Ошибка',
-              content: 'Произошла неизвестная ошибка.',
-              type: 'error',
-              id: uuidv4Original(),
-            });
-          }
-                } catch (error) {
-          console.error('Ошибка при поиске:', error);
-        }
-      };
     
     
       const [additionalPhones, setAdditionalPhones] = useState([""]);
@@ -196,44 +164,192 @@ const AddCandidateForm = ({professions}: any) => {
     const phones = additionalPhones.filter((_, i) => i !== index);
     setAdditionalPhones(phones);
   };
-  
-  const handleSubmit = async(event: any) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    
-    const body = {
-      name: formData.get('name') || '',
-      phone: formData.get('phone') || '',
-      additionalPhones: additionalPhones.filter(phone => phone.trim() !== ''),
-      ageNum: formData.get('ageNum') || '',
-      status: formData.get('status') || '',
-      professions: professionEntries.filter(profession => profession.name.trim() !== '' || profession.experience.trim() !== ''),
-      documents: documentEntries.filter(document => document.docType.trim() !== '' || document.dateExp.trim() !== '' || document.dateOfIssue.trim() !== '' || document.numberDoc.trim() !== ''),
-      drivePermis: selectedDrive.map(d => d.value).join(', '),
-      citizenship: formData.get('citizenship'),
-      leaving: formData.get('leaving'),
-      langue: langues.filter(lang => lang.name.trim() !== '' || lang.level.trim() !== ''),
-      locations: formData.get('locations'),
-      cardNumber: formData.get('cardNumber'),
-      comment: formData.get('comment') ? [{
-        text: formData.get('comment'),
-        date: new Date()
-      }] : [],
-      manager: managerId,
-    };
+  const handlePhoneBlur = async () => {
+    if (phone.trim() === '') {
+      return;
+    }
+
     try {
-      const response = await fetch('/api/candidates', {
-        method: 'POST',
+      // Отправка запроса на сервер для поиска по номеру телефона
+      const response = await fetch('/api/checkPhone', {
+        method: 'POST',  // Используем POST
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ phone }), // Отправляем номер телефона в теле запроса
       });
+
       const data = await response.json();
+
+      if (data.candidate) {
+        addNotification({
+          title: "Обновлено",
+          content: `Кандидат с таким номером уже существует. Имя: ${data.candidate.name} Номер: ${data.candidate.phone}`,
+          type: "error", // Пример успешного уведомления
+          id: uuidv4Original(), // Генерация уникального id
+        });
+      } else if (data.message === 'Номер свободен') {
+        addNotification({
+          title: 'Номер свободен',
+          content: 'Этот номер еще не зарегистрирован.',
+          type: 'success',
+          id: uuidv4Original(),
+        });
+      } else {
+        addNotification({
+          title: 'Ошибка',
+          content: 'Произошла неизвестная ошибка.',
+          type: 'error',
+          id: uuidv4Original(),
+        });
+      }
+            } catch (error) {
+      console.error('Ошибка при поиске:', error);
+    }
+  };
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+  
+    const formData = new FormData(event.target);
+  
+    // Добавляем все текстовые поля в formData
+    formData.append('name', formData.get('name') || '');
+    formData.append('phone', formData.get('phone') || '');
+    formData.append('ageNum', formData.get('ageNum') || '');
+    formData.append('status', formData.get('status') || '');
+    formData.append('citizenship', formData.get('citizenship') || '');
+    formData.append('leaving', formData.get('leaving') || '');
+    formData.append('locations', formData.get('locations') || '');
+    formData.append('cardNumber', formData.get('cardNumber') || '');
+    formData.append('comment', formData.get('comment') || '');
+    formData.append('manager', formData.get('manager') || '');
+  
+    // Если есть дополнительные телефоны, добавляем их в formData
+    additionalPhones.forEach(phone => {
+      if (phone.trim() !== '') {
+        formData.append('additionalPhones', phone);
+      }
+    });
+  
+    // Добавляем профессии (если есть) в formData
+    professionEntries.forEach(profession => {
+      if (profession.name.trim() !== '' || profession.experience.trim() !== '') {
+        formData.append('professions', JSON.stringify(profession)); // Можно сериализовать объект профессии
+      }
+    });
+  
+    // Добавляем языки (если есть) в formData
+    langues.forEach(lang => {
+      if (lang.name.trim() !== '' || lang.level.trim() !== '') {
+        formData.append('langues', JSON.stringify(lang)); // Можно сериализовать объект языка
+      }
+    });
+  
+    // Добавляем документы (если есть) в formData
+    documentEntries.forEach(document => {
+      if (document.docType.trim() !== '' || document.dateExp.trim() !== '' || document.dateOfIssue.trim() !== '' || document.numberDoc.trim() !== '') {
+        formData.append('documents', JSON.stringify(document));  // Можно сериализовать объект документа
+      }
+    });
+  
+    // Добавляем файлы документов в formData (если они есть)
+    // documentEntries.forEach(document => {
+    //   if (document.documentsFile) {
+    //     formData.append('documentsFile', document.documentsFile); // Добавляем файл как part формы
+    //   }
+    // });
+  
+    // Отправляем данные через fetch
+    try {
+      const response = await fetch('/api/candidates', {
+        method: 'POST',
+        body: formData, // Используем formData, так как это содержит как текст, так и файлы
+      });
+  
+      const data = await response.json();
+      const message = data.message;
+      
+      if (data.success) {
+        addNotification({
+          title: 'Успешно',
+          content: message,
+          type: 'success',
+          id: uuidv4Original(),
+        });
+        // setSidebarROpen(false);
+        // clearForm();
+      }
+  
+      if (data.error) {
+        addNotification({
+          title: 'Ошибка',
+          content: message,
+          type: 'error',
+          id: uuidv4Original(),
+        });
+      }
     } catch (error) {
       console.error('Ошибка при добавлении кандидата:', error);
     }
   };
+  
+  
+  // const handleSubmit = async(event: any) => {
+  //   event.preventDefault();
+  //   const formData = new FormData(event.target);
+    
+  //   const body = {
+  //     name: formData.get('name') || '',
+  //     phone: formData.get('phone') || '',
+  //     additionalPhones: additionalPhones.filter(phone => phone.trim() !== ''),
+  //     ageNum: formData.get('ageNum') || '',
+  //     status: formData.get('status') || '',
+  //     professions: professionEntries.filter(profession => profession.name.trim() !== '' || profession.experience.trim() !== ''),
+  //     documents: documentEntries.filter(document => document.docType.trim() !== '' || document.dateExp.trim() !== '' || document.dateOfIssue.trim() !== '' || document.numberDoc.trim() !== ''),
+  //     drivePermis: selectedDrive.map(d => d.value).join(', '),
+  //     citizenship: formData.get('citizenship'),
+  //     leaving: formData.get('leaving'),
+  //     langue: langues.filter(lang => lang.name.trim() !== '' || lang.level.trim() !== ''),
+  //     locations: formData.get('locations'),
+  //     cardNumber: formData.get('cardNumber'),
+  //     comment: formData.get('comment') ? [{
+  //       text: formData.get('comment'),
+  //       date: new Date()
+  //     }] : [],
+  //     manager: managerId,
+  //   };
+  //   try {
+  //     const response = await fetch('/api/candidates', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(body),
+  //     });
+  //     const data = await response.json();
+  //     const message = data.message;
+  //     if (data.success) { 
+  //       addNotification({
+  //         title: 'Успешно',
+  //         content: message,
+  //         type: 'success',
+  //         id: uuidv4Original(),
+  //       });
+  //       setSidebarROpen(false);
+  //       clearForm();
+  //     }
+  //     if (data.error) {
+  //       addNotification({
+  //         title: 'Ошибка',
+  //         content: message,
+  //         type: 'error',
+  //         id: uuidv4Original(),
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('Ошибка при добавлении кандидата:', error);
+  //   }
+  // };
 
   return (
     <div className="max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
@@ -327,35 +443,57 @@ const AddCandidateForm = ({professions}: any) => {
                           </button>
                         </div>
                         <div className='flex flex-col gap-2 w-full'>
+                          
                           {documentEntries.map((doc, index) => (
-                            <div key={index} className=" flex ">
-                              <p className="">{`${index + 1}.`}</p>&nbsp;
-                              <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
-                                <div className='flex  justify-center items-center'>
-                                <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" 
-                                value={doc.docType || ''} onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
-                                  <option value="Не указано">Не указано</option>
-                                  <option value="Виза">Виза</option>
-                                  <option value="Песель">Песель</option>
-                                  <option value="Паспорт">Паспорт</option>
-                                  <option value="Паспорт ЕС">Паспорт ЕС</option>
-                                  <option value="Паспорт Биометрия Украины">Паспорт Биометрия Украины</option>
-                                  <option value="Параграф 24">Параграф 24</option>
-                                  <option value="Карта побыту">Карта побыту</option>
-                                  <option value="Геверба">Геверба</option>
-                                  <option value="Карта сталого побыта">Карта сталого побыта</option>
-                                  <option value="Приглашение">Приглашение</option>
-                                </select>
-                                <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" defaultValue={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
-                                </div>
-                                <div className='flex justify-center items-center gap-3'>
-                                <DefaultInput id='dateOfIssue' label='Выдан' type="date" defaultValue={doc.dateOfIssue} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
-                                <DefaultInput id='documDate' label='До' type="date" defaultValue={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
-                                </div>
-                                <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
-                                  type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
+                            <><div className="relative flex gap-3">
+                              {/* Скрытый инпут */}
+                              <input
+                                 type="file"
+                                 className="hidden" // Скрываем стандартный инпут
+                                 id={`fileInput-${index}`}
+                                 onChange={(e) => handleFileChange(index, e)} />
+
+                              {/* Иконка, которая будет выполнять функцию инпута */}
+                              <label
+                                htmlFor={`fileInput-${index}`}
+                                className="cursor-pointer"
+                                aria-label="Upload file"
+                              >
+                                <FileUp className="text-2xl" />  {/* Вставьте вашу иконку */}
                               </label>
+
+                              {/* Отображение имени файла, если он выбран */}
+                              {doc.file && <p className="mt-2 text-sm text-gray-500">{doc.file.name}</p>}
                             </div>
+                            <div key={index} className=" flex ">
+                                <p className="">{`${index + 1}.`}</p>&nbsp;
+                                <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
+                                  <div className='flex  justify-center items-center'>
+                                    <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
+                                      value={doc.docType || ''} onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
+                                      <option value="Не указано">Не указано</option>
+                                      <option value="Виза">Виза</option>
+                                      <option value="Песель">Песель</option>
+                                      <option value="Паспорт">Паспорт</option>
+                                      <option value="Паспорт ЕС">Паспорт ЕС</option>
+                                      <option value="Паспорт Биометрия Украины">Паспорт Биометрия Украины</option>
+                                      <option value="Параграф 24">Параграф 24</option>
+                                      <option value="Карта побыту">Карта побыту</option>
+                                      <option value="Геверба">Геверба</option>
+                                      <option value="Карта сталого побыта">Карта сталого побыта</option>
+                                      <option value="Приглашение">Приглашение</option>
+                                    </select>
+                                    <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" defaultValue={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
+                                  </div>
+                                  <div className='flex justify-center items-center gap-3'>
+                                    <DefaultInput id='dateOfIssue' label='Выдан' type="date" defaultValue={doc.dateOfIssue} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
+                                    <DefaultInput id='documDate' label='До' type="date" defaultValue={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
+                                  </div>
+
+                                  <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
+                                    type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
+                                </label>
+                              </div></>
                           ))}
                         </div>
                         <p>Комментарий</p>

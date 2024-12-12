@@ -19,36 +19,43 @@ interface SidebarProps {
 }
 
 const SidebarRight = ({ sidebarROpen, setSidebarROpen, formType, professions, selectedCandidate }: SidebarProps) => {
+  const [formData, setFormData] = useState<Candidate | null>(null);
 
   const pathname = usePathname();
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 
-  // Функция для рендеринга формы в зависимости от типа
+  useEffect(() => {
+    if (selectedCandidate) {
+      setFormData(selectedCandidate);  // Обновляем состояние формы с данными кандидата
+    }
+  }, [selectedCandidate]);
+
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":
-        return <AddCandidateForm professions={professions} />;
+        return <AddCandidateForm professions={professions} setSidebarROpen={setSidebarROpen}  />;
       case "editCandidate":
-        return <EditCandidateForm professions={professions} id={selectedCandidate?._id} candidate={selectedCandidate} />;
+        return <EditCandidateForm candidate={formData} professions={professions} />;
       case "viewCandidate":
-        return <ViewCandidateForm id={selectedCandidate?._id} candidate={selectedCandidate}/>;
+        return <ViewCandidateForm candidate={formData} />;
       default:
         return null;
     }
   };
-const handleCloseSidebar = () => {
-    setSidebarROpen(false);
-    // Например, сбрасываем статус о том, что сайдбар закрыт
-    localStorage.setItem("sidebarOpen", "false"); // Обновление кэша
-  };
-
   useEffect(() => {
-    // При монтировании компонента проверяем, открыт ли сайдбар в localStorage
-    const sidebarStatus = localStorage.getItem("sidebarOpen");
-    if (sidebarStatus === "false") {
+    const storedSidebarStatus = localStorage.getItem("sidebarOpen");
+    if (storedSidebarStatus === "false") {
       setSidebarROpen(false);
     }
-  }, [setSidebarROpen]);
+    // Можно очистить `selectedCandidate` в localStorage
+    localStorage.removeItem("selectedCandidate");
+  }, []);
+
+  useEffect(() => {
+    if (!sidebarROpen) {
+      selectedCandidate = null;
+    }
+  }, [sidebarROpen]);
   return (
     <aside
       id="sidebar"
@@ -60,7 +67,7 @@ const handleCloseSidebar = () => {
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         {/* Кнопка закрытия (крестик) */}
         <button
-          onClick={handleCloseSidebar}
+          onClick={() => setSidebarROpen(false)}
           aria-controls="sidebar"
           className="text-black-2 dark:text-white text-2xl"
         >

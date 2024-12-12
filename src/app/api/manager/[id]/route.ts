@@ -85,8 +85,13 @@ export async function GET(request: any, { params }: any) {
         // Логируем перед запросом
         console.log("Fetching manager with candidates and partners...");
 
-        const manager = await Manager.findById(id).populate(['candidates', 'partners']);
-        
+        const manager = await Manager.findById(id)
+        .populate({
+          path: 'candidates',
+          options: { sort: { updatedAt: -1 } } // сортировка по убыванию даты создания
+        })
+        .populate('partners');
+              
         // Логируем после выполнения запроса
         console.log("Manager data:", manager);
 

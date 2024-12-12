@@ -78,7 +78,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
 
     const managerId = session?.managerId;
   const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
-  const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
+  const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>(candidate?.documents || []);
   const [langues, setLangues] = useState<Language[]>([]);
   const addLanguage = () => {
     setLangues([...langues, { name: 'Не знает языков', level: '' }]);
@@ -108,7 +108,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
     const newEntries = documentEntries.filter((_, i) => i !== index);
     setDocumentEntries(newEntries);
   };
-  const [professionEntries, setProfessionEntries] = useState([{ name: '', experience: '' }]);
+  const [professionEntries, setProfessionEntries] = useState(candidate?.professions || []);
 
   const addProfessionEntry = () => {
     setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
@@ -121,7 +121,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
   };
 
   const removeProfessionEntry = (index: number) => {
-    const newEntries = professionEntries.filter((_, i) => i !== index);
+    const newEntries = professionEntries.filter((_: any, i: any) => i !== index);
     setProfessionEntries(newEntries);
   };
     const { addNotification } = useNotifications();
@@ -177,7 +177,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
       };
     
     
-      const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || [""]);
+      const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
     
     // Функция для добавления нового телефона
   const addAdditionalPhone = () => {
@@ -208,7 +208,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
       additionalPhones: additionalPhones.filter((phone: string) => phone.trim() !== ''),
       ageNum: formData.get('ageNum') || '',
       status: formData.get('status') || '',
-      professions: professionEntries.filter(profession => profession.name.trim() !== '' || profession.experience.trim() !== ''),
+      professions: professionEntries.filter((profession: { name: string; experience: string; }) => profession.name.trim() !== '' || profession.experience.trim() !== ''),
       documents: documentEntries.filter(document => document.docType.trim() !== '' || document.dateExp.trim() !== '' || document.dateOfIssue.trim() !== '' || document.numberDoc.trim() !== ''),
       drivePermis: selectedDrive.map(d => d.value).join(', '),
       citizenship: formData.get('citizenship'),
@@ -260,6 +260,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
           {additionalPhones.map((phone: string | undefined, index: any) => (
             <div key={index} className="flex gap-2">
               <DefaultInput
+                defaultValue={candidate?.additionalPhone}
                 label={`${index + 1} телефон`}
                 id={`additionalPhone${index}`}
                 name={`additionalPhone${index}`}
@@ -298,7 +299,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
                             <CirclePlus />
                           </button>
                         </div>
-                        {professionEntries.map((prof, index) => (
+                        {professionEntries.map((prof: { name: any; experience: any; }, index: any | null | undefined) => (
                           <div key={index} className='flex w-full  gap-1 pr-2'>
                             <label htmlFor="profession">
                               <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
@@ -363,6 +364,16 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
                           ))}
                         </div>
                         <p>Комментарий</p>
+                        <div>
+                          <p>Предыдущие Комментарий</p>
+                          {candidate?.comment.map((comment: { author: any; text: any; date: any; }, index: any | null | undefined) => (
+                            <div key={index} className="flex flex-col gap-2 items-start">
+                              <p className="text-sm">{comment.author}</p>
+                              <p className="text-sm">{comment.text}</p>
+                              <p className="text-sm">{comment.date}</p>
+                            </div>
+                          ))}
+                        </div>
                         <textarea
                          id="comment" name="comment"
                           rows={6}
