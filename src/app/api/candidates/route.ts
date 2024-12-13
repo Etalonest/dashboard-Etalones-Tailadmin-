@@ -88,19 +88,16 @@ export const GET = async (request: NextRequest) => {
 //     );
 //   }
 // };
-interface Document {
-  docType: string;
-  dateOfIssue: string;
-  dateExp: string;
-  numberDoc: string;
-  documentsFile?: File;
-}
+
 
 export const POST = async (request: Request) => {
   try {
-    const formData = await request.formData(); // Получаем данные из формы
+    console.log('Получен запрос:', request);
 
-    // Читаем поля формы
+    const formData = await request.formData();
+    console.log('Данные из формы:', formData);
+
+    // Чтение полей формы
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
     const ageNum = formData.get('ageNum') as string;
@@ -109,52 +106,60 @@ export const POST = async (request: Request) => {
     const leaving = formData.get('leaving') as string;
     const locations = formData.get('locations') as string;
     const cardNumber = formData.get('cardNumber') as string;
-    const comment = formData.get('comment') ? [{
-      text: formData.get('comment') as string,
-      date: new Date()
-    }] : [];
-    const managerId = formData.get('manager') as string;
 
-    // Обрабатываем документы
-    const documents: Document[] = [];  // Явно указываем тип
-    const documentEntries = formData.getAll('documents'); // Получаем все документы
+    console.log('Полученные значения:', { name, phone, ageNum, status, citizenship, leaving, locations, cardNumber });
 
-    documentEntries.forEach((doc) => {
-      if (doc instanceof File) {
-        // Если это файл, добавляем его в массив
-        documents.push({
-          docType: '', // Пример данных, их нужно заполнить из других полей
-          dateOfIssue: '',
-          dateExp: '',
-          numberDoc: '',
-          documentsFile: doc, // Добавляем файл
-        });
-      } else {
-        // Если это строка (например, JSON строка), парсим её
-        const parsedDoc = JSON.parse(doc as string);
-        documents.push(parsedDoc);
+    const commentRaw = formData.get('comment');
+    let comment = [];
+    if (commentRaw) {
+      try {
+        comment = JSON.parse(commentRaw as string);
+        if (!Array.isArray(comment)) {
+          comment = [];
+        }
+      } catch (error) {
+        console.error("Ошибка при парсинге комментария:", error);
+        comment = [];
       }
-    });
+    }
+    console.log('Комментарий:', comment);
 
-    // Дополнительные данные для кандидата
-    const additionalPhones = formData.getAll('additionalPhones') as string[];
-    const professions = formData.getAll('professions') as string[];
-    const drivePermis = formData.get('drivePermis') as string;
-    const langues = formData.getAll('langues') as string[];
+    // Чтение массива документов
+    const documentsRaw = formData.get('documents');
+    const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
+    console.log('Документы:', documents);
+
+    // Преобразуем строки в массивы для дополнительных данных
+    const additionalPhones = JSON.parse(formData.get('additionalPhones') as string);
+    console.log('Дополнительные телефоны:', additionalPhones);
+
+    const professionsRaw = formData.get('professions');
+    const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
+    console.log('Профессии:', professions);
+
+    const drivePermisRaw = formData.get('drivePermis');
+    const drivePermis = drivePermisRaw ? JSON.parse(drivePermisRaw as string) : [];
+    console.log('Водительские права:', drivePermis);
+
+    const langueRaw = formData.get('langue');
+    const langue = langueRaw ? JSON.parse(langueRaw as string) : [];
+    console.log('Языки:', langue);
+
+    const managerId = formData.get('managerId') as string;
+    console.log('Менеджер ID:', managerId);
 
     await connectDB();
 
-    // Проверяем, существует ли кандидат с таким номером телефона
+    // Проверка, существует ли кандидат с таким номером телефона
     const existingCandidate = await Candidate.findOne({ phone });
     if (existingCandidate) {
+      console.log('Кандидат с таким номером телефона уже существует:', existingCandidate);
       return new NextResponse(
         JSON.stringify({
           error: true,
-          message: `Кандидат с таким номером телефона уже существует ${name} ${phone}`, 
+          message: `Кандидат с таким номером телефона уже существует: ${name} ${phone}`,
         }),
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
 
@@ -170,40 +175,42 @@ export const POST = async (request: Request) => {
       drivePermis,
       citizenship,
       leaving,
-      langues,
+      langue,
       locations,
       cardNumber,
       comment,
       manager: managerId,
     });
 
+    console.log('Создание кандидата:', newCandidate);
+
     await newCandidate.save();
 
-    // Если у кандидата есть менеджер, добавляем его в массив кандидатов менеджера
+    // Если у кандидата есть менеджер, обновляем его список кандидатов
     if (newCandidate.manager) {
       const manager = await Manager.findById(newCandidate.manager);
       if (manager) {
         await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: newCandidate._id } });
+        console.log('Обновление менеджера с добавлением кандидата');
       }
     }
 
     return new NextResponse(
       JSON.stringify({
         success: true,
-        message: `Кандидат ${name} успешно создан`, 
-        candidate: newCandidate
+        message: `Кандидат ${name} успешно создан`,
+        candidate: newCandidate,
       }),
       { status: 201 }
     );
   } catch (error) {
+    console.error('Ошибка при создании кандидата:', error);
     return new NextResponse(
       JSON.stringify({
         message: "Серверная ошибка при создании кандидата",
         error,
       }),
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 };

@@ -17,7 +17,7 @@ const DefaultInput: React.FC<DefaultInputProps> = ({
 }) => {
   return (
     <div className="flex flex-col space-y-1">
-      <label className="block text-sm font-mediumtext-white">
+      <label className="block text-sm font-medium text-black dark:text-white">
         {label}
       </label>
       <input
