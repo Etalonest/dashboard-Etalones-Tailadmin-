@@ -118,7 +118,7 @@ const AddCandidateForm = ({professions, setSidebarROpen, clearForm}: any) => {
     const newEntries = documentEntries.filter((_, i) => i !== index);
     setDocumentEntries(newEntries);
   };
-  const [professionEntries, setProfessionEntries] = useState([{ name: '', experience: '' }]);
+  const [professionEntries, setProfessionEntries] = useState<{ name: string; experience: string }[]>([]);
 
   const addProfessionEntry = () => {
     setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
@@ -145,7 +145,7 @@ const AddCandidateForm = ({professions, setSidebarROpen, clearForm}: any) => {
 
     
     
-      const [additionalPhones, setAdditionalPhones] = useState([""]);
+      const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
     
     // Функция для добавления нового телефона
   const addAdditionalPhone = () => {
