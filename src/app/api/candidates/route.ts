@@ -92,7 +92,6 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: Request) => {
   try {
-    console.log('Получен запрос:', request);
 
     const formData = await request.formData();
     console.log('Данные из формы:', formData);
@@ -106,24 +105,10 @@ export const POST = async (request: Request) => {
     const leaving = formData.get('leaving') as string;
     const locations = formData.get('locations') as string;
     const cardNumber = formData.get('cardNumber') as string;
-
+    
     console.log('Полученные значения:', { name, phone, ageNum, status, citizenship, leaving, locations, cardNumber });
 
-    const commentRaw = formData.get('comment');
-    let comment = [];
-    if (commentRaw) {
-      try {
-        comment = JSON.parse(commentRaw as string);
-        if (!Array.isArray(comment)) {
-          comment = [];
-        }
-      } catch (error) {
-        console.error("Ошибка при парсинге комментария:", error);
-        comment = [];
-      }
-    }
-    console.log('Комментарий:', comment);
-
+    
     // Чтение массива документов
     const documentsRaw = formData.get('documents');
     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
@@ -137,6 +122,37 @@ export const POST = async (request: Request) => {
     const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
     console.log('Профессии:', professions);
 
+    const commentRaw = formData.get('comment');
+    const managerId = formData.get('managerId'); // Извлекаем ID менеджера из formData
+    
+    const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
+      // Проверяем, является ли строка валидным JSON
+      try {
+        // Пытаемся распарсить как JSON (если это строка в формате JSON)
+        const parsedItem = JSON.parse(item);
+        // Если это объект, то считаем его правильным и возвращаем
+        if (parsedItem.author && parsedItem.text && parsedItem.date) {
+          return parsedItem;
+        } else {
+          // Если это не правильный объект, то создаем новый объект
+          return {
+            author: managerId, // Используем переданный ID менеджера
+            text: item,
+            date: new Date().toISOString(),
+          };
+        }
+      } catch (e) {
+        // Если не JSON, то просто считаем это текстом и создаем объект с этим текстом
+        return {
+          author: managerId, // Используем переданный ID менеджера
+          text: item,
+          date: new Date().toISOString(),
+        };
+      }
+    }) : [];
+    
+    console.log('Комментарии:', comment);
+    
     const drivePermisRaw = formData.get('drivePermis');
     const drivePermis = drivePermisRaw ? JSON.parse(drivePermisRaw as string) : [];
     console.log('Водительские права:', drivePermis);
@@ -145,8 +161,9 @@ export const POST = async (request: Request) => {
     const langue = langueRaw ? JSON.parse(langueRaw as string) : [];
     console.log('Языки:', langue);
 
-    const managerId = formData.get('managerId') as string;
-    console.log('Менеджер ID:', managerId);
+
+
+   
 
     await connectDB();
 

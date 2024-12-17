@@ -7,7 +7,6 @@ const Notifications = () => {
   const [shownNotificationIds, setShownNotificationIds] = useState<Set<string>>(new Set()); // Множество для отслеживания уже показанных уведомлений
 
   useEffect(() => {
-    console.log("Notifications updated:", notifications);
 
     notifications.forEach(notification => {
       // Проверяем, было ли уже это уведомление показано

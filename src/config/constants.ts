@@ -28,7 +28,8 @@ export const drivePermis = [
     { value: 'Карта побыту', label: 'Карта побыту' },
     { value: 'Геверба', label: 'Геверба' },
     { value: 'Карта сталого побыта', label: 'Карта сталого побыта' },
-    { value: 'Приглашение', label: 'Приглашение' }
+    { value: 'Приглашение', label: 'Приглашение' },
+    { value: 'ВНЖ Евросоюза', label: 'ВНЖ Евросоюза' },
   ];
   export const citizenshipOptions = [
     { value: 'Евросоюза', label: 'Евросоюза' },

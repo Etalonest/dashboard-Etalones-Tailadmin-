@@ -43,19 +43,7 @@ const status = [
     { value: 'На объекте', label: 'На объекте' },
     { value: 'В ЧС', label: 'В ЧС' },
   ];
-  const documentsOptions = [
-  
-    { value: 'Виза', label: 'Виза' },
-    { value: 'Песель', label: 'Песель' },
-    { value: 'Паспорт', label: 'Паспорт' },
-    { value: 'Паспорт ЕС', label: 'Паспорт ЕС' },
-    { value: 'Паспорт Биометрия Украины', label: 'Паспорт Биометрия Украины' },
-    { value: 'Параграф 24', label: 'Параграф 24' },
-    { value: 'Карта побыту', label: 'Карта побыту' },
-    { value: 'Геверба', label: 'Геверба' },
-    { value: 'Карта сталого побыта', label: 'Карта сталого побыта' },
-    { value: 'Приглашение', label: 'Приглашение' }
-  ];
+
   const citizenshipOptions = [
     { value: 'Евросоюза', label: 'Евросоюза' },
     { value: 'Молдовы', label: 'Молдовы' },
@@ -176,7 +164,7 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
         }
       };
     
-    
+      const [showAdditionalPhone, setAdditionalPhone] = useState(true);
       const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
     
     // Функция для добавления нового телефона

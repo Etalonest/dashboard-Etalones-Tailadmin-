@@ -16,35 +16,33 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   const [phone, setPhone] = useState('');
   const { addNotification } = useNotifications();
   const [file, setFile] = useState<File | null>(null); // Состояние для выбранного файла
-  const [commentEntries, setCommentEntries] = useState<Comment[]>([]);
-  const [languesEntries, setLanguesEntries] = useState<Language[]>([]);
+  const [comment, setComment] = useState<Comment>({
+    author: '',
+    text: '',
+    date: new Date(),
+  });  const [languesEntries, setLanguesEntries] = useState<Language[]>([]);
   const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
   const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
 
-  const managerId = session?.managerId;
+  const managerId = session?.managerId || '';
 
   const getDriveDataForSubmit = () => {
     // Извлекаем только значения
     return selectedDrive.map(item => item.value);
   };
 
-  // const addComment = () => {
-  //   setCommentEntries([...commentEntries,{author: '', text:'', date: new Date}])
-  // }
-  const handleCommentChange = (index: number, field: string, value: string) => {
-    const updatedComment = [...commentEntries];
-    updatedComment[index] = { ...updatedComment[index], [field]: value };
-    setCommentEntries(updatedComment);
-  };
-  const getCommentDataForSubmit = () => {
-    return commentEntries.map(comment => ({
-      author: comment.author || '',  // Используем пустую строку, если нет значения
-      text: comment.text || ''  // Если нет опыта, также используем пустую строку
 
+  
+  const handleCommentChange = (field: keyof Comment, value: string) => {
+    setComment((prevComment) => ({
+      ...prevComment,
+      [field]: value, // обновляем только одно поле
     }));
   };
+ 
+
   const addLangue = () => {
     setLanguesEntries([...languesEntries, { name: '', level: '' }]);
   };
@@ -138,8 +136,8 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
     setProfessionEntries(newEntries);
   };
 
-  const generateId = () => uuidv4();
-  console.log(generateId)
+  // const generateId = () => uuidv4();
+  // console.log(generateId)
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(event.target.value);
   };
@@ -214,43 +212,42 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-
+  
     const additionalPhonesData = getAdditionalPhonesDataForSubmit();
     const driveData = getDriveDataForSubmit();
     const professionsData = getProfessionsDataForSubmit();
     const documentsData = getDocumentsDataForSubmit();
     const languesData = getLanguagesDataForSubmit();
-    const managerId = session?.managerId || '';
+    const commentData = {
+      author: managerId,
+      text: comment.text,
+      date: comment.date.toISOString(), // Преобразуем дату в строку
+    };
+  console.log("Комментарий----", commentData);
+    // Создайте новый объект FormData только для текстовых данных и файлов
     const formData = new FormData(event.target);
-    const commentData = getCommentDataForSubmit();
-
-
-    // Добавляем все текстовые поля в formData
-    formData.append('name', formData.get('name') || '');
-    formData.append('phone', formData.get('phone') || '');
-    formData.append('ageNum', formData.get('ageNum') || '');
-    formData.append('status', formData.get('status') || '');
-    formData.append('citizenship', formData.get('citizenship') || '');
-    formData.append('leaving', formData.get('leaving') || '');
-    formData.append('locations', formData.get('locations') || '');
-    formData.append('cardNumber', formData.get('cardNumber') || '');
-    formData.append('comment', JSON.stringify(commentData));
+  
+    // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
     formData.append('drivePermis', JSON.stringify(driveData));
     formData.append('professions', JSON.stringify(professionsData));
     formData.append('documents', JSON.stringify(documentsData));
     formData.append('langue', JSON.stringify(languesData));
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
+    formData.append('comment', JSON.stringify(commentData));
+
+    console.log('Данные перед отправкой комментариев:', commentData);
+  
     // Отправляем данные через fetch
     try {
       const response = await fetch('/api/candidates', {
         method: 'POST',
         body: formData, // Используем formData, так как это содержит как текст, так и файлы
       });
-
+  
       const data = await response.json();
       const message = data.message;
-
+  
       if (data.success) {
         addNotification({
           title: 'Успешно',
@@ -258,10 +255,8 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
           type: 'success',
           id: uuidv4Original(),
         });
-        // setSidebarROpen(false);
-        // clearForm();
       }
-
+  
       if (data.error) {
         addNotification({
           title: 'Ошибка',
@@ -274,52 +269,67 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
       console.error('Ошибка при добавлении кандидата:', error);
     }
   };
-
-
-  // const handleSubmit = async(event: any) => {
+  
+  // const handleSubmit = async (event: any) => {
   //   event.preventDefault();
-  //   const formData = new FormData(event.target);
+    
+  //   const additionalPhonesData = getAdditionalPhonesDataForSubmit();
+  //   const driveData = getDriveDataForSubmit();
+  //   const professionsData = getProfessionsDataForSubmit();
+  //   const documentsData = getDocumentsDataForSubmit();
+  //   const languesData = getLanguagesDataForSubmit();
+  //   const commentData = commentEntries.map(comment => ({
+  //     author: comment.author || '',
+  //     text: comment.text || '',
+  //     date: new Date().toISOString() // Текущая дата
+  //   }));
 
-  //   const body = {
-  //     name: formData.get('name') || '',
-  //     phone: formData.get('phone') || '',
-  //     additionalPhones: additionalPhones.filter(phone => phone.trim() !== ''),
-  //     ageNum: formData.get('ageNum') || '',
-  //     status: formData.get('status') || '',
-  //     professions: professionEntries.filter(profession => profession.name.trim() !== '' || profession.experience.trim() !== ''),
-  //     documents: documentEntries.filter(document => document.docType.trim() !== '' || document.dateExp.trim() !== '' || document.dateOfIssue.trim() !== '' || document.numberDoc.trim() !== ''),
-  //     drivePermis: selectedDrive.map(d => d.value).join(', '),
-  //     citizenship: formData.get('citizenship'),
-  //     leaving: formData.get('leaving'),
-  //     langue: langues.filter(lang => lang.name.trim() !== '' || lang.level.trim() !== ''),
-  //     locations: formData.get('locations'),
-  //     cardNumber: formData.get('cardNumber'),
-  //     comment: formData.get('comment') ? [{
-  //       text: formData.get('comment'),
-  //       date: new Date()
-  //     }] : [],
-  //     manager: managerId,
-  //   };
+  //   const formData = new FormData(event.target);
+    
+
+  //   // Добавляем все текстовые поля в formData
+  //   formData.append('name', formData.get('name') || '');
+  //   formData.append('phone', formData.get('phone') || '');
+  //   formData.append('ageNum', formData.get('ageNum') || '');
+  //   formData.append('status', formData.get('status') || '');
+  //   formData.append('citizenship', formData.get('citizenship') || '');
+  //   formData.append('leaving', formData.get('leaving') || '');
+  //   formData.append('locations', formData.get('locations') || '');
+  //   formData.append('cardNumber', formData.get('cardNumber') || '');
+  //   formData.append('comment', JSON.stringify(commentData));
+  //   formData.append('managerId', managerId);
+  //   formData.append('drivePermis', JSON.stringify(driveData));
+  //   formData.append('professions', JSON.stringify(professionsData));
+  //   formData.append('documents', JSON.stringify(documentsData));
+  //   formData.append('langue', JSON.stringify(languesData));
+  //   formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
+
+  //   console.log('Данные перед отправкой комментариев:', commentData);
+   
+    
+  //   // Логируем объект данных перед отправкой
+    
+  //   // Отправляем данные через fetch
   //   try {
   //     const response = await fetch('/api/candidates', {
   //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(body),
+  //       body: formData, // Используем formData, так как это содержит как текст, так и файлы
   //     });
+
   //     const data = await response.json();
   //     const message = data.message;
-  //     if (data.success) { 
+
+  //     if (data.success) {
   //       addNotification({
   //         title: 'Успешно',
   //         content: message,
   //         type: 'success',
   //         id: uuidv4Original(),
   //       });
-  //       setSidebarROpen(false);
-  //       clearForm();
+  //       // setSidebarROpen(false);
+  //       // clearForm();
   //     }
+
   //     if (data.error) {
   //       addNotification({
   //         title: 'Ошибка',
@@ -332,6 +342,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   //     console.error('Ошибка при добавлении кандидата:', error);
   //   }
   // };
+
 
   return (
     <div className="lg:max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
@@ -395,7 +406,8 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
             {professionEntries.map((prof, index) => (
               <div key={index} className='flex w-full  gap-1 pr-2'>
                 <label htmlFor="profession">
-                  <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
+                  <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" 
+                  value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
                     <option>Нет профессии</option>
                     {professions.map((profession: { _id: React.Key; name: string }) => (
                       <option key={profession._id} value={profession.name}>{profession.name}</option>
@@ -470,9 +482,9 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
             ))}
           </div>
           <p>Комментарий</p>
-          <textarea
-          onChange={(e) => handleCommentChange(0, 'text', e.target.value)}   
-          value={commentEntries[0]?.text}
+          <textarea               
+          value={comment.text || ''} 
+          onChange={(e) => handleCommentChange( 'text', e.target.value || '')}   
           id="comment" name="comment"
             rows={6}
             placeholder="Оставьте свой комментарий"
@@ -567,7 +579,4 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
 };
 
 export default AddCandidateForm;
-function uuidv4(): string {
-  throw new Error('Function not implemented.');
-}
 
