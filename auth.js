@@ -59,6 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Добавляем ID менеджера в сессию, если он был найден
       if (token.managerId) {
         session.managerId = token.managerId;
+        
       }
       return session;
     },

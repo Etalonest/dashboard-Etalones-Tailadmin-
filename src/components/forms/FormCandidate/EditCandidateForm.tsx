@@ -1,5 +1,5 @@
 'use client'
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
 import { CirclePlus,  X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
@@ -8,63 +8,21 @@ import { v4 as uuidv4Original } from 'uuid';
 import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
 import MultiSelect from '../../FormElements/MultiSelect';
 import { useSession } from 'next-auth/react';
-
-interface DriveOption {
-  value: string;
-  label: string;
-}
-interface DocumentEntry {
-  docType: string;
-  dateExp: string;
-  dateOfIssue: string;
-  numberDoc: string;
-}
-interface Language {
-  name: string;
-  level: string;
-}
-const drivePermis = [
-  { label: "В", value: "B" },
-  { label: "C", value: "C" },
-  { label: "D", value: "D" },
-  { label: "E", value: "E" },
-  { label: "Код 95", value: "Код 95" },
-  { label: "Есть своё авто", value: "Есть своё авто" },
-];
-const status = [
-    { value: 'Не обработан', label: 'Не обработан' },
-    { value: 'Нет месседжеров', label: 'Нет месседжеров' },
-    { value: 'Не подходят документы', label: 'Не подходят документы' },
-    { value: 'Документы не готовы', label: 'Документы не готовы' },
-    { value: 'Не подошла вакансия', label: 'Не подошла вакансия' },
-    { value: 'Нашел другую работу', label: 'Нашел другую работу' },
-    { value: 'Ждёт работу', label: 'Ждёт работу' },
-    { value: 'На собеседовании', label: 'На собеседовании' },
-    { value: 'На объекте', label: 'На объекте' },
-    { value: 'В ЧС', label: 'В ЧС' },
-  ];
-
-  const citizenshipOptions = [
-    { value: 'Евросоюза', label: 'Евросоюза' },
-    { value: 'Молдовы', label: 'Молдовы' },
-    { value: 'Украины', label: 'Украины' },
-    { value: 'Беларусь', label: 'Беларусь' },
-    { value: 'Узбекистана', label: 'Узбекистана' },
-    { value: 'Таджикистана', label: 'Таджикистана' },
-    { value: 'Киргизии', label: 'Киргизии' },
-    { value: 'Армении', label: 'Армении' },
-    { value: 'Грузии', label: 'Грузии' },
-    { value: 'Казахстан', label: 'Казахстан' },
-    { value: 'Другое', label: 'Другое' }
-  ];
-  
- 
-
+import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
+import {DriveOption, DocumentEntry, Comment, Profession, Language} from "../interfaces/FormCandidate.interface"
   
 const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
   const { data: session } = useSession();
-
     const managerId = session?.managerId;
+    const [selectedStatus, setSelectedStatus] = useState(candidate?.status);
+    useEffect(() => {
+      // Обновить выбранный статус, если данные кандидата изменились
+      setSelectedStatus(candidate?.status);
+    }, [candidate?.status]);
+  
+    const handleChange = (selectedOption: { value: any; }) => {
+      setSelectedStatus(selectedOption.value);
+    };
   const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>(candidate?.documents || []);
   const [langues, setLangues] = useState<Language[]>([]);
@@ -83,7 +41,10 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
     setLangues(updatedLangues);
   };
   const addDocumentEntry = () => {
-    setDocumentEntries([...documentEntries, { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '' }]);
+    setDocumentEntries([...documentEntries, {
+      docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '',
+      file: undefined
+    }]);
   };
 
   const handleDocumentChange = (index: number, field: string, value: string) => {
@@ -188,7 +149,6 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
   const handleSubmit = async(event: any) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    console.log(formData);
     
     const body = {
       name: formData.get('name') || '',
@@ -219,7 +179,6 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
         body: JSON.stringify(body),
       });
       const data = await response.json();
-      console.log(data);
     } catch (error) {
       console.error('Ошибка при добавлении кандидата:', error);
     }
@@ -269,7 +228,8 @@ const EditCandidateForm = ({id, candidate, professions, partners}: any) => {
           ))}
 
           <DefaultInput id="ageNum" label="Возраст" type="text" placeholder="33" defaultValue={candidate?.ageNum} />
-          <Select label={'Статус первого диалога'} id="status" name="status" options={status} defaultValue={candidate?.status} />
+          <Select label={'Статус первого диалога'} id="status" name="status" options={status} value={selectedStatus}  // Используем value для управления
+      onChange={handleChange} />
           
         </div>
 

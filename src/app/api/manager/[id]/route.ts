@@ -76,14 +76,10 @@ export const PUT = async (request: { formData: () => any; }, { params }: any) =>
 // }
 export async function GET(request: any, { params }: any) {
     const { id } = params; // Получаем параметр id из URL
-    console.log("Manager ID:", id); // Убедитесь, что id теперь доступен
 
     await connectDB();
-    console.log("Connected to the database"); // Логируем, что подключение к базе данных прошло успешно
 
     try {
-        // Логируем перед запросом
-        console.log("Fetching manager with candidates and partners...");
 
         const manager = await Manager.findById(id)
         .populate({
@@ -92,11 +88,8 @@ export async function GET(request: any, { params }: any) {
         })
         .populate('partners');
               
-        // Логируем после выполнения запроса
-        console.log("Manager data:", manager);
 
         if (!manager) {
-            console.log("Manager not found for ID:", id); // Логируем, если менеджер не найден
             return NextResponse.json({ error: "Manager not found" }, { status: 404 });
         }
 

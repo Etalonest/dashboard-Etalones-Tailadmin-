@@ -92,6 +92,10 @@ const CandidateSchema = new Schema({
         author: {
           type: String
         },
+        authorId:{
+          type: Schema.Types.ObjectId,
+          ref: 'Manager',
+        },
         text: {
           type: String
         },

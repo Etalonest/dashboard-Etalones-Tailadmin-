@@ -94,7 +94,6 @@ export const POST = async (request: Request) => {
   try {
 
     const formData = await request.formData();
-    console.log('Данные из формы:', formData);
 
     // Чтение полей формы
     const name = formData.get('name') as string;
@@ -106,21 +105,17 @@ export const POST = async (request: Request) => {
     const locations = formData.get('locations') as string;
     const cardNumber = formData.get('cardNumber') as string;
     
-    console.log('Полученные значения:', { name, phone, ageNum, status, citizenship, leaving, locations, cardNumber });
 
     
     // Чтение массива документов
     const documentsRaw = formData.get('documents');
     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
-    console.log('Документы:', documents);
 
     // Преобразуем строки в массивы для дополнительных данных
     const additionalPhones = JSON.parse(formData.get('additionalPhones') as string);
-    console.log('Дополнительные телефоны:', additionalPhones);
 
     const professionsRaw = formData.get('professions');
     const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
-    console.log('Профессии:', professions);
 
     const commentRaw = formData.get('comment');
     const managerId = formData.get('managerId'); // Извлекаем ID менеджера из formData
@@ -151,15 +146,12 @@ export const POST = async (request: Request) => {
       }
     }) : [];
     
-    console.log('Комментарии:', comment);
     
     const drivePermisRaw = formData.get('drivePermis');
     const drivePermis = drivePermisRaw ? JSON.parse(drivePermisRaw as string) : [];
-    console.log('Водительские права:', drivePermis);
 
     const langueRaw = formData.get('langue');
     const langue = langueRaw ? JSON.parse(langueRaw as string) : [];
-    console.log('Языки:', langue);
 
 
 
@@ -199,7 +191,6 @@ export const POST = async (request: Request) => {
       manager: managerId,
     });
 
-    console.log('Создание кандидата:', newCandidate);
 
     await newCandidate.save();
 
@@ -208,7 +199,6 @@ export const POST = async (request: Request) => {
       const manager = await Manager.findById(newCandidate.manager);
       if (manager) {
         await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: newCandidate._id } });
-        console.log('Обновление менеджера с добавлением кандидата');
       }
     }
 

@@ -17,6 +17,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   const { addNotification } = useNotifications();
   const [file, setFile] = useState<File | null>(null); // Состояние для выбранного файла
   const [comment, setComment] = useState<Comment>({
+    authorId: '',
     author: '',
     text: '',
     date: new Date(),
@@ -27,6 +28,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
 
   const managerId = session?.managerId || '';
+
 
   const getDriveDataForSubmit = () => {
     // Извлекаем только значения
@@ -219,11 +221,11 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
     const documentsData = getDocumentsDataForSubmit();
     const languesData = getLanguagesDataForSubmit();
     const commentData = {
+      authorId: managerId,
       author: managerId,
       text: comment.text,
       date: comment.date.toISOString(), // Преобразуем дату в строку
     };
-  console.log("Комментарий----", commentData);
     // Создайте новый объект FormData только для текстовых данных и файлов
     const formData = new FormData(event.target);
   
@@ -236,7 +238,6 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('comment', JSON.stringify(commentData));
 
-    console.log('Данные перед отправкой комментариев:', commentData);
   
     // Отправляем данные через fetch
     try {
@@ -270,80 +271,6 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
     }
   };
   
-  // const handleSubmit = async (event: any) => {
-  //   event.preventDefault();
-    
-  //   const additionalPhonesData = getAdditionalPhonesDataForSubmit();
-  //   const driveData = getDriveDataForSubmit();
-  //   const professionsData = getProfessionsDataForSubmit();
-  //   const documentsData = getDocumentsDataForSubmit();
-  //   const languesData = getLanguagesDataForSubmit();
-  //   const commentData = commentEntries.map(comment => ({
-  //     author: comment.author || '',
-  //     text: comment.text || '',
-  //     date: new Date().toISOString() // Текущая дата
-  //   }));
-
-  //   const formData = new FormData(event.target);
-    
-
-  //   // Добавляем все текстовые поля в formData
-  //   formData.append('name', formData.get('name') || '');
-  //   formData.append('phone', formData.get('phone') || '');
-  //   formData.append('ageNum', formData.get('ageNum') || '');
-  //   formData.append('status', formData.get('status') || '');
-  //   formData.append('citizenship', formData.get('citizenship') || '');
-  //   formData.append('leaving', formData.get('leaving') || '');
-  //   formData.append('locations', formData.get('locations') || '');
-  //   formData.append('cardNumber', formData.get('cardNumber') || '');
-  //   formData.append('comment', JSON.stringify(commentData));
-  //   formData.append('managerId', managerId);
-  //   formData.append('drivePermis', JSON.stringify(driveData));
-  //   formData.append('professions', JSON.stringify(professionsData));
-  //   formData.append('documents', JSON.stringify(documentsData));
-  //   formData.append('langue', JSON.stringify(languesData));
-  //   formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
-
-  //   console.log('Данные перед отправкой комментариев:', commentData);
-   
-    
-  //   // Логируем объект данных перед отправкой
-    
-  //   // Отправляем данные через fetch
-  //   try {
-  //     const response = await fetch('/api/candidates', {
-  //       method: 'POST',
-  //       body: formData, // Используем formData, так как это содержит как текст, так и файлы
-  //     });
-
-  //     const data = await response.json();
-  //     const message = data.message;
-
-  //     if (data.success) {
-  //       addNotification({
-  //         title: 'Успешно',
-  //         content: message,
-  //         type: 'success',
-  //         id: uuidv4Original(),
-  //       });
-  //       // setSidebarROpen(false);
-  //       // clearForm();
-  //     }
-
-  //     if (data.error) {
-  //       addNotification({
-  //         title: 'Ошибка',
-  //         content: message,
-  //         type: 'error',
-  //         id: uuidv4Original(),
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error('Ошибка при добавлении кандидата:', error);
-  //   }
-  // };
-
-
   return (
     <div className="lg:max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
       <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>

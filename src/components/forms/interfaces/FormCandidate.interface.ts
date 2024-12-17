@@ -10,6 +10,7 @@ export interface DriveOption {
     file: any;
   }
   export interface Comment {
+    authorId: Object;
     author: string;
     text: string;
     date: Date;
