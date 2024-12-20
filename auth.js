@@ -61,6 +61,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.managerId = token.managerId;
         
       }
+      if (token.role) {
+        session.user.role = token.role; // Добавляем роль пользователя
+      }
       return session;
     },
 
@@ -77,6 +80,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: profile.email,
             name: profile.name,
             image: profile.picture,
+            role: profile.role,
           });
         }
 

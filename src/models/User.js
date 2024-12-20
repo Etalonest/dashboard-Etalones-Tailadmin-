@@ -11,7 +11,10 @@ const UserSchema = new Schema({
     required: [true, "Name is required"]
   },
   image:{type: String},
- 
+  role:{
+    type: Schema.Types.ObjectId,
+    ref: 'Role'
+  }
 });
 
 const User = models?.User || model("User", UserSchema);
