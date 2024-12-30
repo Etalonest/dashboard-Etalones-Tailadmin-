@@ -86,9 +86,10 @@ export async function GET(request: any, { params }: any) {
           path: 'candidates',
           options: { sort: { updatedAt: -1 } } // сортировка по убыванию даты создания
         })
+        .populate('role')
         .populate('partners');
               
-
+console.log(manager.role.name);
         if (!manager) {
             return NextResponse.json({ error: "Manager not found" }, { status: 404 });
         }

@@ -1,68 +1,31 @@
-
-// import NextAuth from "next-auth"
-// import Google from "next-auth/providers/google"
-// import {connectDB} from "./src/lib/db"
-// import User from "./src/models/User"
-
-// const providers = [
-//   Google({
-//     clientId: process.env.AUTH_GOOGLE_ID,
-//     clientSecret: process.env.AUTH_GOOGLE_SECRET,
-//   })
-// ]
-// export const { handlers, signIn, signOut, auth } = NextAuth({
-//   providers,
-//   callbacks: {
-//    async session({ session}) {
-//       return session
-//     },
-//     async signIn({profile}) {
-// console.log(profile)
-// try {
-//   await connectDB()
-//   const userExist = await User.findOne({email: profile.email})
-//   if (!userExist) {
-//     await User.create({
-//       email: profile.email,
-//       name: profile.name,
-//       image: profile.picture,
-//     })
-//   }
-// return true
-// } catch (error) {
-//   console.log(error)
-//   return false
-// }
-
-//     },
-   
-//   },
-// })
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { connectDB } from "./src/lib/db";
 import User from "./src/models/User";
-import Manager from "./src/models/Manager"; // Импорт модели Manager для проверки
+import Manager from "./src/models/Manager";
+import Role from "./src/models/Role";  // Импортируем модель Role
 
 const providers = [
   Google({
     clientId: process.env.AUTH_GOOGLE_ID,
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
-  })
+  }),
 ];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
   callbacks: {
-    // Этот колбэк выполняется при создании сессии
+    // Этот колбэк выполняется при получении сессии
     async session({ session, token }) {
-      // Добавляем ID менеджера в сессию, если он был найден
+      // Проверяем наличие данных в токене и добавляем их в сессию
       if (token.managerId) {
-        session.managerId = token.managerId;
-        
+        session.managerId = token.managerId;  // ID менеджера
+      }
+      if (token.managerRole) {
+        session.managerRole = token.managerRole;  // Роль менеджера
       }
       if (token.role) {
-        session.user.role = token.role; // Добавляем роль пользователя
+        session.user.role = token.role;  // Роль пользователя
       }
       return session;
     },
@@ -80,7 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: profile.email,
             name: profile.name,
             image: profile.picture,
-            role: profile.role,
+            role: 'user',  // Роль пользователя по умолчанию
           });
         }
 
@@ -88,8 +51,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const manager = await Manager.findOne({ email: profile.email });
 
         if (manager) {
-          // Если менеджер найден, сохраняем его ID в токен
-          return true;
+          // Если менеджер найден, сохраняем его ID и роль в токен
+          return true;  // Разрешаем вход
         }
 
         // Если менеджер не найден, возвращаем false (не разрешаем вход)
@@ -99,15 +62,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false;
       }
     },
-    // В колбэке `jwt` можно добавлять дополнительные данные в токен
+
+    // Этот колбэк выполняется при генерации токена
     async jwt({ token, user }) {
-      // Если у пользователя есть менеджер, добавляем его ID в токен
+      console.log("JWT Token before:", token);  // Выводим текущий токен в консоль
       if (user && user.email) {
-        const manager = await Manager.findOne({ email: user.email });
+        // Ищем менеджера по email пользователя
+        const manager = await Manager.findOne({ email: user.email }).populate('role');  // Используем populate для роли
         if (manager) {
-          token.managerId = manager._id.toString(); // Сохраняем ID менеджера в токен
+          // Проверяем, существует ли роль у менеджера
+          if (manager.role && manager.role.name) {
+            token.managerRole = manager.role.name.toString();  // Сохраняем роль менеджера
+          } else {
+            console.log("Manager role not found or incorrect structure");
+          }
+
+          token.managerId = manager._id.toString();  // Сохраняем ID менеджера
+        }
+
+        // Добавляем роль пользователя в токен
+        if (user.role) {
+          token.role = user.role;
         }
       }
+      console.log("JWT Token after:", token);  // Проверяем изменения токена
       return token;
     },
   },

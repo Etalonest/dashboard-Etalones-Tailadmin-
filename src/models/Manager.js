@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
+import {Role} from './Role';
 const ManagerSchema = new Schema({
     email: {
         type: String,
