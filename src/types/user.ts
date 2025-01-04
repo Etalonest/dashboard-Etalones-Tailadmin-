@@ -3,5 +3,6 @@ export type USER = {
     role: string;
     name: string;
     email: string;
+    managerRole: string;
   };
   

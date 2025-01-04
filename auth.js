@@ -65,7 +65,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     // Этот колбэк выполняется при генерации токена
     async jwt({ token, user }) {
-      console.log("JWT Token before:", token);  // Выводим текущий токен в консоль
       if (user && user.email) {
         // Ищем менеджера по email пользователя
         const manager = await Manager.findOne({ email: user.email }).populate('role');  // Используем populate для роли
@@ -85,7 +84,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.role = user.role;
         }
       }
-      console.log("JWT Token after:", token);  // Проверяем изменения токена
       return token;
     },
   },
