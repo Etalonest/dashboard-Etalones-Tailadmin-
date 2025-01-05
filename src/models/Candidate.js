@@ -1,4 +1,7 @@
 import { Schema, model, models } from "mongoose";
+import {Document} from './Document';
+import {Partner} from './Partner';
+import {Task} from './Task';
 
 const CandidateSchema = new Schema({
     avatar: {

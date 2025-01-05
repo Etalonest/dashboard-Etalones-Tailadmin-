@@ -201,12 +201,11 @@ import { ApexOptions } from "apexcharts";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
-// Загружаем компонент ReactApexChart
+// Динамическая загрузка для компонента ApexCharts (не поддерживает серверный рендеринг)
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-// Опции для графика
 const options: ApexOptions = {
   legend: {
     show: false,
@@ -273,14 +272,17 @@ const options: ApexOptions = {
     strokeColors: ["#3056D3", "#80CAEE"],
     strokeWidth: 3,
     strokeOpacity: 0.9,
+    strokeDashArray: 0,
     fillOpacity: 1,
+    discrete: [],
     hover: {
+      size: undefined,
       sizeOffset: 5,
     },
   },
   xaxis: {
     type: "category",
-    categories: [], // Месяцы будут динамически подставляться
+    categories: Array.from({ length: 31 }, (_, i) => (i + 1).toString()), // Дни месяца (1-31)
     axisBorder: {
       show: false,
     },
@@ -295,56 +297,38 @@ const options: ApexOptions = {
       },
     },
     min: 0,
-    max: 100,
   },
 };
 
-interface Candidate {
-  createdAt: string; // Строка с датой создания кандидата
-}
-
 const ChartOne: React.FC = () => {
-  const [chartData, setChartData] = useState<{ months: string[]; candidateCounts: number[] }>({
-    months: [],
-    candidateCounts: [],
-  });
+  // Состояние для данных графика
+  const [series, setSeries] = useState([{ name: "Candidates Added", data: Array(31).fill(0) }]);
+  // Состояние для выбранного месяца
+  const [selectedMonth, setSelectedMonth] = useState("2025-01");
 
-  // Функция для группировки кандидатов по месяцам
-  const groupCandidatesByMonth = (candidates: Candidate[]) => {
-    const grouped: { [key: string]: number } = {};
-
-    candidates.forEach((candidate) => {
-      const month = new Date(candidate.createdAt).toISOString().slice(0, 7); // Форматируем дату "YYYY-MM"
-      grouped[month] = (grouped[month] || 0) + 1; // Увеличиваем счетчик для месяца
-    });
-
-    return grouped;
+  // Функция для получения данных о кандидатах по выбранному месяцу
+  const fetchCandidatesData = async (month: string) => {
+    try {
+      const response = await fetch(`/api/apex/candidates?month=${month}`); // Запрос к API с выбранным месяцем
+      if (!response.ok) {
+        throw new Error('Failed to fetch candidates data');
+      }
+      const data = await response.json();
+      setSeries([{ name: "Candidates Added", data: data.candidateCounts }]);
+    } catch (error) {
+      console.error("Error fetching candidates data:", error);
+    }
   };
 
-  // Загружаем данные о кандидатах при монтировании компонента
+  // Получаем данные при монтировании компонента и при изменении месяца
   useEffect(() => {
-    // Допустим, что вы получаете данные о кандидатах с API
-    fetch("/api/candidates")
-      .then((response) => response.json())
-      .then((candidates: Candidate[]) => {
-        // Группируем кандидатов по месяцам
-        const grouped = groupCandidatesByMonth(candidates);
+    fetchCandidatesData(selectedMonth);
+  }, [selectedMonth]);
 
-        // Подготавливаем данные для графика
-        const months = Object.keys(grouped);
-        const candidateCounts = Object.values(grouped);
-
-        setChartData({ months, candidateCounts });
-      })
-      .catch((error) => console.error("Ошибка при загрузке данных:", error));
-  }, []);
-
-  const series = [
-    {
-      name: "Количество кандидатов",
-      data: chartData.candidateCounts,
-    },
-  ];
+  // Обработчик изменения месяца
+  const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMonth(event.target.value);
+  };
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -355,44 +339,36 @@ const ChartOne: React.FC = () => {
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-primary">Total Revenue</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-primary">Candidates Added</p>
+              <p className="text-sm font-medium">{selectedMonth}</p>
             </div>
-          </div>
-          <div className="flex min-w-47.5">
-            <span className="mr-2 mt-1 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-secondary">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
-            </span>
-            <div className="w-full">
-              <p className="font-semibold text-secondary">Total Sales</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex w-full max-w-45 justify-end">
-          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
-            <button className="rounded bg-white px-3 py-1 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
-              Day
-            </button>
-            <button className="rounded px-3 py-1 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Week
-            </button>
-            <button className="rounded px-3 py-1 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
-              Month
-            </button>
           </div>
         </div>
       </div>
 
+      {/* Переключатель месяца */}
+      <div className="mb-5">
+        <label htmlFor="month-select" className="text-sm font-medium text-primary mr-2">
+          Select Month:
+        </label>
+        <select
+          id="month-select"
+          value={selectedMonth}
+          onChange={handleMonthChange}
+          className="p-2 border border-gray-300 rounded"
+        >
+          <option value="2025-01">January 2025</option>
+          <option value="2025-02">February 2025</option>
+          <option value="2025-03">March 2025</option>
+          <option value="2024-10">October 2024</option>
+          <option value="2024-11">November 2024</option>
+          {/* Добавьте другие месяцы, если необходимо */}
+        </select>
+      </div>
+
       <div>
         <div id="chartOne" className="-ml-5">
-          <ReactApexChart
-            options={{ ...options, xaxis: { categories: chartData.months } }}
-            series={series}
-            type="area"
-            height={350}
-            width={"100%"}
-          />
+          <ReactApexChart options={options} series={series} type="area" height={350} width={"100%"} />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 // Пример модели Mongoose
-import mongoose from "mongoose";
+import { Schema, model, models } from "mongoose";
 
-const documentShema = new mongoose.Schema({
+const DocumentShema = new Schema({
     
         file: {
           name: String,
@@ -11,6 +11,6 @@ const documentShema = new mongoose.Schema({
       
 });
 
-const Document = mongoose.model("Status", documentShema);
+const Document = models?.Document || model("Document", DocumentShema);
 
 export default Document;
