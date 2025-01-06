@@ -40,6 +40,10 @@ const ManagerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Task'
       }],
+      onSite:{
+        type: Boolean,
+        default: false
+      },
       role:{
         type: Schema.Types.ObjectId,
         ref: 'Role'

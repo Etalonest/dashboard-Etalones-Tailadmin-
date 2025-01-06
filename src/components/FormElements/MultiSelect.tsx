@@ -146,7 +146,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           className={`relative left-0 z-40 w-full max-h-64 overflow-y-auto rounded bg-white shadow dark:bg-form-input ${show ? "" : "hidden"}`}
         >
           <div className="flex flex-col">
-            {options.map((option) => (
+            {/* {options.map((option) => (
               <div
                 key={option.value}
                 className="w-full cursor-pointer rounded-t border-b border-stroke hover:bg-primary/5 dark:border-form-strokedark"
@@ -162,7 +162,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   </div>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>

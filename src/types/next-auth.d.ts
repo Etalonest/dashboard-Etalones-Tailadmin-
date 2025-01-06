@@ -5,6 +5,7 @@ import { Session } from "next-auth";
 // Расширяем тип Session, добавляя managerId
 declare module "next-auth" {
   interface Session {
+    managerRole: string;
     managerId?: string; // Добавляем managerId как необязательное строковое поле
   }
 }
