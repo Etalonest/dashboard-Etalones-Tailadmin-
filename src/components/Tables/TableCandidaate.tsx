@@ -5,7 +5,6 @@ import { Candidate } from '@/src/types/candidate';
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
 import { Profession } from "@/src/types/profession"; // Тип для профессий
-import { create } from 'domain';
 
 const TableCandidate = () => {
   const { manager } = useManager();
@@ -69,9 +68,9 @@ const TableCandidate = () => {
 
   // Функция для переключения состояния сайдбара
   const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
-    setFormType(type);              // Устанавливаем тип формы (добавить, редактировать, просматривать)
-    setSelectedCandidate(candidate || null); // Обновляем состояние с текущим кандидатом или null
-    setSidebarOpen(prevState => !prevState);  // Переключаем состояние сайдбара
+    setFormType(type);             
+    setSelectedCandidate(candidate || null); 
+    setSidebarOpen(prevState => !prevState);  
   };
 
   return (

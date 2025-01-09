@@ -1,8 +1,8 @@
 
 export type Profession = {
-  name: string;            // Название профессии
-  experience: string;      // Опыт работы
-  category: string;        // Категория профессии
+  name: string;            
+  experience: string;      
+  category: string;        
 };
 
 

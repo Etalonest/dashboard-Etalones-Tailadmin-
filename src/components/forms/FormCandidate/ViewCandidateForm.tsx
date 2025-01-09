@@ -1,14 +1,30 @@
-// ViewCandidateForm.tsx
 import React from 'react';
 
-const ViewCandidateForm = (candidate: any) => {
+interface Candidate {
+  name: string;
+  phone: string;
+  professions: { name: string }[];
+  // добавьте другие поля, которые вам нужны
+}
+
+const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
+  console.log("CANDIDATE1", candidate);
+
+  // Проверка на null
+  if (!candidate) {
+    return <p>Нет данных о кандидате</p>;
+  }
+
   return (
     <div>
+        
+      
       <h2>Просмотр кандидата</h2>
-      <p><strong>Имя:</strong>{candidate.name}</p>
-      <p><strong>Телефон:</strong> +7 123 456 78 90</p>
-      <p><strong>Профессия:</strong> Разработчик</p>
-      {/* Вывод информации о кандидате */}
+      <p><strong>Имя:</strong> {candidate.name}</p>
+      <p><strong>Телефон:</strong> {candidate.phone}</p>
+      <p><strong>Профессии:</strong> {candidate.professions.map((profession, index) => (
+        <span key={index}>{profession.name}{index < candidate.professions.length - 1 ? ', ' : ''}</span>
+      ))}</p>
     </div>
   );
 };

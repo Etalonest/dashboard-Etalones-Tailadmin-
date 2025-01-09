@@ -11,6 +11,9 @@ const UserSchema = new Schema({
     required: [true, "Name is required"]
   },
   image:{type: String},
+  password: { 
+    type: String, 
+  },
   role:{
     type: Schema.Types.ObjectId,
     ref: 'Role'

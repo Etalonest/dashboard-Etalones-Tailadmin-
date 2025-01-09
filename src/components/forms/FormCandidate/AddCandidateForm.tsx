@@ -116,7 +116,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
 
 
   const addProfessionEntry = () => {
-    setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
+    setProfessionEntries([...professionEntries, { name: 'Нет профессии', level: '',experience: '', category: '' }]);
   };
 
   const handleProfessionChange = (index: number, field: string, value: string) => {
@@ -127,7 +127,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   const getProfessionsDataForSubmit = () => {
     return professionEntries.map(prof => ({
       name: prof.name || '',  // Используем пустую строку, если нет значения
-      experience: prof.experience || ''  // Если нет опыта, также используем пустую строку
+      level: prof.level || ''  // Если нет опыта, также используем пустую строку
     }));
   };
 
@@ -239,7 +239,6 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
     formData.append('comment', JSON.stringify(commentData));
 
   
-    // Отправляем данные через fetch
     try {
       const response = await fetch('/api/candidates', {
         method: 'POST',
@@ -341,8 +340,8 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
                     ))}
                   </select>
                 </label>
-                <label htmlFor="experience">
-                  <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.experience || ''} onChange={e => handleProfessionChange(index, 'experience', e.target.value || '')}>
+                <label htmlFor="level">
+                  <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.level || ''} onChange={e => handleProfessionChange(index, 'level', e.target.value || '')}>
                     <option >Без опыта</option>
                     <option >Меньше года</option>
                     <option >Более года</option>

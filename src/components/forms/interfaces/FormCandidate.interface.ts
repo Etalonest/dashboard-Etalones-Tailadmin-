@@ -15,7 +15,9 @@ export interface DriveOption {
     text: string;
     date: Date;
   }
-  export interface Profession { name: string; experience: string }
+  export interface Profession {
+    level: string; name: string; experience: string; category: string; 
+}
   export interface Language {
     name: string;
     level: string;
