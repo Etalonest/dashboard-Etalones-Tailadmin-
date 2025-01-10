@@ -1,4 +1,3 @@
-// app/api/send-email/route.ts
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
@@ -7,18 +6,15 @@ const transporter = nodemailer.createTransport({
     port: 465,               
     secure: true, 
   auth: {
-    user: "office@etalones.com",
-    // user: "developerar4y@mail.ru", 
-    pass: "P3AEYkrnT5VJFihkdv71", 
+    user: "support@etalones.com",
+    pass: "dbtJyyuS7VrudkrtrJ3n", 
   },
 });
 
-// API-роут для отправки email
 export const POST = async (request: Request) => {
   try {
     const { email, subject, text } = await request.json();
 
-    // Проверка, что все данные есть
     if (!email || !subject || !text) {
       return new NextResponse(
         JSON.stringify({ message: "Все поля обязательны для отправки почты." }),
@@ -26,15 +22,15 @@ export const POST = async (request: Request) => {
       );
     }
 
-    // Настройка письма
+ 
     const mailOptions = {
-      from: "developerar4y@mail.ru", // Адрес отправителя
-      to: email, // Адрес получателя
-      subject: subject, // Тема письма
-      text: text, // Текст письма
+      from: "support@etalones.com", 
+      to: email, 
+      subject: subject, 
+      text: text, 
     };
 
-    // Отправка письма
+   
     const info = await transporter.sendMail(mailOptions);
 
     return new NextResponse(
