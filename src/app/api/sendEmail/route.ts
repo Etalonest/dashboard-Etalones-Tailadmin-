@@ -6,8 +6,8 @@ const transporter = nodemailer.createTransport({
     port: 465,               
     secure: true, 
   auth: {
-    user: "support@etalones.com",
-    pass: "dbtJyyuS7VrudkrtrJ3n", 
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
   },
 });
 
@@ -24,7 +24,7 @@ export const POST = async (request: Request) => {
 
  
     const mailOptions = {
-      from: "support@etalones.com", 
+      from: process.env.EMAIL,
       to: email, 
       subject: subject, 
       text: text, 
