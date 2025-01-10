@@ -8,6 +8,9 @@
     body {
         @apply relative z-1 bg-whiten font-satoshi text-base font-normal text-body;
     }
+  :root {
+        --radius: 0.5rem;
+    }
 }
 
 @layer components {

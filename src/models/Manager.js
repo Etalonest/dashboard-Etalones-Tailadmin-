@@ -2,8 +2,9 @@ import { Schema, model, models } from "mongoose";
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
 import {Role} from './Role';
+import { image } from "framer-motion/client";
 const ManagerSchema = new Schema({
-    email: {
+      email: {
         type: String,
         unique: true,
       },
@@ -49,6 +50,7 @@ const ManagerSchema = new Schema({
         ref: 'Role'
       }
 });
+
 
 const Manager = models?.Manager || model("Manager", ManagerSchema);
 export default Manager;

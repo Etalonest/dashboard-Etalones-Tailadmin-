@@ -3,10 +3,11 @@
 // Тип для изображения менеджера
 export interface ManagerImage {
     name: string;
-    data: {
-      base64: string;
-      subType: string;
-    };
+    data: Buffer;
+    // data: {
+    //   base64: string;
+    //   subType: string;
+    // };
     contentType: string;
   }
   
@@ -25,20 +26,20 @@ export interface ManagerImage {
   
   // Основной тип для менеджера
   export interface Manager {
-    _id: IdReference;
-    name: string;
-    phone: string;
-    image: ManagerImage;
-    telegram: string;
-    viber: string;
-    whatsapp: string;
-    email: string;
-    __v: { $numberInt: string };
-    candidates: IdReference[];
-    partners: IdReference[];
-    vacancy: IdReference[];
-    onSite: boolean;
-    tasks: IdReference[];
-    role: string;
+    _id?: IdReference;
+    name?: string;
+    phone?: string;
+    image?: ManagerImage;
+    telegram?: string;
+    viber?: string;
+    whatsapp?: string;
+    email?: string;
+    __v?: { $numberInt: string };
+    candidates?: IdReference[];
+    partners?: IdReference[];
+    vacancy?: IdReference[];
+    onSite?: boolean;
+    tasks?: IdReference[];
+    role?: string;
   }
   

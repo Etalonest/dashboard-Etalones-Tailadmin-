@@ -46,7 +46,6 @@ const SidebarRight = ({
   }, [sidebarROpen, formType]); // Зависимость от состояния сайдбара и типа формы
 
   const renderForm = () => {
-    console.log("Rendering form type:", formType);
     switch (formType) {
       case "addCandidate":
         return <AddCandidateForm professions={professions} setSidebarROpen={setSidebarROpen} />;

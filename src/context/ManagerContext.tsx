@@ -2,9 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { IdReference } from '../types/manager';
 
 // Тип данных менеджера
 interface Manager {
+  _id?: IdReference;
   name: string;
   email: string;
   phone: string;

@@ -88,7 +88,7 @@ const FormCreateManager = () => {
         label: role.name, // и name, измените это под структуру данных API
     }));
     return (
-        <form onSubmit={handleSubmit} className="flex gap-5">
+        <form onSubmit={handleSubmit} className="flex gap-5 z-[9999]">
             <div>
                 <DefaultInput
                     label="Имя менеджера"
