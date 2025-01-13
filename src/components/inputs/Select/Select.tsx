@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Обновляем интерфейс, чтобы принимать список опций
 interface SelectProps {
@@ -23,7 +23,9 @@ const Select: React.FC<SelectProps> = ({
 }) => {
 const [selectedOption, setSelectedOption] = useState<string>(defaultValue);
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
-
+  useEffect(() => {
+    setSelectedOption(defaultValue);
+  }, [defaultValue]);
   const changeTextColor = () => {
     setIsOptionSelected(true);
   };

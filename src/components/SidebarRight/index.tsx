@@ -72,7 +72,7 @@ const SidebarRight = ({
   return (
     <aside
       id="sidebar"
-      className={`fixed right-0 top-0 z-[9999] flex h-screen w-full flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark ${
+      className={`fixed right-0 top-0 z-[9998] flex h-screen w-full flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark ${
         sidebarROpen ? "translate-x-0" : "translate-x-full"
       }`}
     >

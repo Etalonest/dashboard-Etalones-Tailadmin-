@@ -3,10 +3,7 @@ import { useEffect, useState } from "react";
 import DefaultInput from "@/src/components/inputs/DefaultInput/DefaultInput";
 import Select from "@/src/components/inputs/Select/Select";
 
-const options = [
-    { value: "admin", label: "Права администратора" },
-    { value: "manager", label: "Права менеджера" },
-];
+
 
 const FormCreateManager = () => {
     // Состояния формы

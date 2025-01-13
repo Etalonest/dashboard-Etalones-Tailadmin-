@@ -9,19 +9,19 @@ import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
 import MultiSelect from '../../FormElements/MultiSelect';
 import { useSession } from 'next-auth/react';
 import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
-import {DriveOption, DocumentEntry, Comment, Profession, Language} from "../interfaces/FormCandidate.interface"
+import {DriveOption, DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
 
-const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
+const AddCandidateForm = ({ professions }: any) => {
   const { data: session } = useSession();
   const [phone, setPhone] = useState('');
   const { addNotification } = useNotifications();
   const [file, setFile] = useState<File | null>(null); // Состояние для выбранного файла
-  const [comment, setComment] = useState<Comment>({
+  const [comment, setComment] = useState<CommentEntry>({
     authorId: '',
     author: '',
     text: '',
     date: new Date(),
-  });  const [languesEntries, setLanguesEntries] = useState<Language[]>([]);
+  });  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
   const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
@@ -37,10 +37,10 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
 
 
   
-  const handleCommentChange = (field: keyof Comment, value: string) => {
+  const handleCommentChange = (field: keyof CommentEntry, value: string) => {
     setComment((prevComment) => ({
       ...prevComment,
-      [field]: value, // обновляем только одно поле
+      [field]: value, 
     }));
   };
  
@@ -55,14 +55,14 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   };
 
   // Функция для удаления языка
-  const removeLanguage = (index: number) => {
+  const removeLangue = (index: number) => {
     const updatedLangues = languesEntries.filter((_, i) => i !== index);
     setLanguesEntries(updatedLangues);
   };
 
 
   // Функция для подготовки данных для отправки
-  const getLanguagesDataForSubmit = () => {
+  const getLanguesDataForSubmit = () => {
     return languesEntries.map(lang => ({
       name: lang.name || '',
       level: lang.level || ''
@@ -105,11 +105,11 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
 
   const getDocumentsDataForSubmit = () => {
     return documentEntries.map(doc => ({
-      docType: doc.docType || '', // Обязательно указываем значение, даже если оно пустое
-      dateExp: doc.dateExp || '', // Добавляем пустую строку, если дата не указана
-      dateOfIssue: doc.dateOfIssue || '', // Добавляем пустую строку для даты выдачи
-      numberDoc: doc.numberDoc || '', // Указываем пустую строку для номера документа
-      file: doc.file || null, // Если файл есть, добавляем его, если нет - null
+      docType: doc.docType || '', 
+      dateExp: doc.dateExp || '', 
+      dateOfIssue: doc.dateOfIssue || '', 
+      numberDoc: doc.numberDoc || '', 
+      file: doc.file || null, 
     }));
   };
 
@@ -122,12 +122,12 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
   const handleProfessionChange = (index: number, field: string, value: string) => {
     const updatedProfessions = [...professionEntries];
     updatedProfessions[index] = { ...updatedProfessions[index], [field]: value };
-    setProfessionEntries(updatedProfessions); // Обновляем состояние
+    setProfessionEntries(updatedProfessions); 
   };
   const getProfessionsDataForSubmit = () => {
     return professionEntries.map(prof => ({
-      name: prof.name || '',  // Используем пустую строку, если нет значения
-      level: prof.level || ''  // Если нет опыта, также используем пустую строку
+      name: prof.name || '',  
+      level: prof.level || ''  
     }));
   };
 
@@ -219,14 +219,13 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
     const driveData = getDriveDataForSubmit();
     const professionsData = getProfessionsDataForSubmit();
     const documentsData = getDocumentsDataForSubmit();
-    const languesData = getLanguagesDataForSubmit();
+    const languesData = getLanguesDataForSubmit();
     const commentData = {
       authorId: managerId,
       author: managerId,
       text: comment.text,
-      date: comment.date.toISOString(), // Преобразуем дату в строку
+      date: comment.date.toISOString(), 
     };
-    // Создайте новый объект FormData только для текстовых данных и файлов
     const formData = new FormData(event.target);
   
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
@@ -312,7 +311,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
 
           <DefaultInput id="ageNum" label="Возраст" type="text" placeholder="33" />
           <Select label={'Статус первого диалога'} id="status" name="status" options={status} />
-
+          
         </div>
 
         {/* Работа */}
@@ -394,11 +393,14 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
                         <option value="Не указано">Не указано</option>
                         {documentsOptions.map(({value, label}) =>  <option key={value} value={value}>{label}</option>)}
                       </select>
-                      <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" defaultValue={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
+                      <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" 
+                      value={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
                     </div>
                     <div className='flex justify-center items-center gap-3'>
-                      <DefaultInput id='dateOfIssue' label='Выдан' type="date" defaultValue={doc.dateOfIssue} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
-                      <DefaultInput id='documDate' label='До' type="date" defaultValue={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
+                      <DefaultInput id='dateOfIssue' label='Выдан' type="date" 
+                      value={doc.dateOfIssue} 
+                      onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
+                      <DefaultInput id='documDate' label='До' type="date" value={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
                     </div>
 
                     <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
@@ -479,7 +481,7 @@ const AddCandidateForm = ({ professions, setSidebarROpen, clearForm }: any) => {
                   <button
                     className="absolute right-2 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
                     type="button"
-                    onClick={() => removeLanguage(index)}
+                    onClick={() => removeLangue(index)}
                   >
                     <X />
                   </button>

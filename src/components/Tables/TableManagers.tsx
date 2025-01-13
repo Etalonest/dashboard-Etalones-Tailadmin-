@@ -50,14 +50,14 @@ if (session?.managerRole === 'admin') {
               <TableCell className="text-center">{manager.phone}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
-                <DropdownMenuTrigger><Button ><span>Просмотреть</span></Button></DropdownMenuTrigger>
+                <DropdownMenuTrigger><Button ><span>Подробнее</span></Button></DropdownMenuTrigger>
                 <DropdownMenuContent>
     <DropdownMenuLabel>{manager.name}</DropdownMenuLabel>
     <DropdownMenuSeparator />
-    <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Billing</DropdownMenuItem>
-    <DropdownMenuItem>Team</DropdownMenuItem>
-    <DropdownMenuItem>Subscription</DropdownMenuItem>
+    <DropdownMenuItem>Профиль</DropdownMenuItem>
+    <DropdownMenuItem>Партнёры</DropdownMenuItem>
+    <DropdownMenuItem>Кандидаты</DropdownMenuItem>
+    <DropdownMenuItem className="success">Удалить</DropdownMenuItem>
   </DropdownMenuContent>
                 </DropdownMenu>
                 </TableCell>

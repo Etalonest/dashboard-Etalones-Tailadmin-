@@ -4,6 +4,10 @@ import {Partner} from './Partner';
 import {Task} from './Task';
 
 const CandidateSchema = new Schema({
+  private: { 
+    type: Boolean, 
+    default: true 
+  },
     avatar: {
         name: String,
         data: Buffer,

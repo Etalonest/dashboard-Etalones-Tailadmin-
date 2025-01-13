@@ -6,7 +6,7 @@ import { useManager } from '@/src/context/ManagerContext';
 import SidebarRight from "../SidebarRight";
 import { useState } from "react";
 import { Camera, Pencil } from "lucide-react";
-import { TableManagers } from "../TableManagers/TableManagers";
+import { TableManagers } from "@/src/components//Tables/TableManagers";
 import { useManagers } from '@/src/context/ManagersContext';
 
 const ProfileComponent = () => {

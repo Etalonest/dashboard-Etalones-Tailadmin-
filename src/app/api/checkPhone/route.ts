@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import Candidate from "@/src/models/Candidate";  // Модель кандидата
+import { log } from 'console';
 
 export async function POST(req: Request) {
   try {
-    // Парсим тело запроса для получения номера телефона
     const body = await req.json();
     const phone = body.phone;
+    console.log("PHONE", phone);
 
     if (!phone || typeof phone !== 'string' || phone.trim() === "") {
       return NextResponse.json(

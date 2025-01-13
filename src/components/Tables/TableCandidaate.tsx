@@ -127,10 +127,10 @@ const TableCandidate = () => {
           </div>
         </div>
 
-        {manager && currentCandidates.map((candidate) => (
+        {manager && currentCandidates.map((candidate, index) => (
           <div
             className={`grid grid-cols-3 sm:grid-cols-5 ${'border-b border-stroke dark:border-strokedark'}`}
-            key={candidate.id}
+            key={candidate.id || index}
           >
             <div className="flex items-center gap-3 p-2.5 xl:p-5">
               <div className="flex-shrink-0">

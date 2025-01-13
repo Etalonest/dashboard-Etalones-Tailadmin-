@@ -9,16 +9,17 @@ export interface DriveOption {
     numberDoc: string;
     file: any;
   }
-  export interface Comment {
-    authorId: Object;
-    author: string;
-    text: string;
+
+  export interface CommentEntry {
+    authorId: any;
+    author?: string;
+    text?: string;
     date: Date;
   }
   export interface Profession {
     level: string; name: string; experience: string; category: string; 
 }
-  export interface Language {
+  export interface Langue {
     name: string;
     level: string;
   }
