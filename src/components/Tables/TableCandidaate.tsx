@@ -4,7 +4,7 @@ import { Eye, UserCog, UserRoundPlus } from "lucide-react";
 import { Candidate } from '@/src/types/candidate';
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
-import { Profession } from "@/src/types/profession"; // Тип для профессий
+import { Profession } from "@/src/types/profession"; 
 
 const TableCandidate = () => {
   const { manager } = useManager();
@@ -20,13 +20,11 @@ const TableCandidate = () => {
   const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
-  // Считываем кандидатов для отображения на текущей странице
   const currentCandidates = filteredCandidates.slice(
     (currentPage - 1) * candidatesPerPage,
     currentPage * candidatesPerPage
   );
 
-  // Фильтрация кандидатов по имени, телефону или профессии
   useEffect(() => {
     if (manager) {
       const filtered = manager.candidates.filter((candidate) => {
@@ -56,17 +54,14 @@ const TableCandidate = () => {
 
     fetchProfessions();
   }, []);
-  // Обработчик для изменения страницы
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // Обработчик для изменения поиска
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
-  // Функция для переключения состояния сайдбара
   const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
     setFormType(type);             
     setSelectedCandidate(candidate || null); 

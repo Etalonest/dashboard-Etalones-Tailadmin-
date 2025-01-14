@@ -1,11 +1,14 @@
 'use client'
-import { useManager } from '@/src/context/ManagerContext';  // Предположим, что у нас есть контекст для партнёров
-import { Eye, UserCog } from "lucide-react";
-import { Partner } from '@/src/types/partner';  // Тип для партнёра
+import { useManager } from '@/src/context/ManagerContext';  
+import { Eye, UserCog, UserRoundPlus } from "lucide-react";
+import { Partner } from '@/src/types/partner';  
 import { useState, useEffect } from 'react';
+import SidebarRight from '../SidebarRight';
+import { Profession } from "@/src/types/profession"; 
 
 const TablePartner = () => {
-  const { manager } = useManager();  // Получаем данные партнёров из контекста
+  const { manager } = useManager();  
+  const [professions, setProfessions] = useState<Profession[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,13 +16,15 @@ const TablePartner = () => {
 
   const partnersPerPage = 10;
 
-  // Считываем партнёров для отображения на текущей странице
-  const currentPartners = filteredPartners.slice(
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [formType, setFormType] = useState<"addPartner" | "editPartner" | "viewPartner" | null>(null);
+    const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+
+    const currentPartners = filteredPartners.slice(
     (currentPage - 1) * partnersPerPage,
     currentPage * partnersPerPage
   );
 
-  // Фильтрация партнёров по имени, телефону или бизнес-услуге
   useEffect(() => {
     if (manager) {
       const filtered = manager.partners.filter((partner: Partner) => {
@@ -35,9 +40,20 @@ const TablePartner = () => {
     }
   }, [manager, searchQuery]);
   
-  
+  useEffect(() => {
+    const fetchProfessions = async () => {
+      try {
+        const response = await fetch("/api/profession");
+        const data = await response.json();
+        setProfessions(data);
+      } catch (error) {
+        console.error("Error fetching professions:", error);
+      }
+    };
 
-  // Обработчик для изменения страницы
+    fetchProfessions();
+  }, []); 
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -47,12 +63,27 @@ const TablePartner = () => {
     setSearchQuery(event.target.value);
   };
 
+    const toggleSidebar = (type: "addPartner" | "editPartner" | "viewPartner", partner?: Partner) => {
+      setFormType(type);             
+      setSelectedPartner(partner || null); 
+      setSidebarOpen(prevState => !prevState);  
+    };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
-        <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">
+      <div className='flex items-center gap-3 mb-6 '>
+
+        <h4 className="text-xl font-semibold text-black dark:text-white">
           Мои партнёры
         </h4>
+        <UserRoundPlus color='green' onClick={() => toggleSidebar("addPartner")} className='cursor-pointer' />
+        </div>
+        <SidebarRight 
+        sidebarROpen={sidebarOpen} 
+        setSidebarROpen={setSidebarOpen} 
+        formType={formType} 
+        selectedPartner={selectedPartner} 
+        professions={professions}/>
         <input
           type="text"
           value={searchQuery}

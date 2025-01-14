@@ -6,13 +6,12 @@ import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
 import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
+import MultiSelect from '../../FormElements/MultiSelect';
 import { useSession } from 'next-auth/react';
 import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
 import {DriveOption, DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
-import { Badge } from '@/components/ui/badge';
-import MyMultiSelect from '../../inputs/MyMultiselect/MyMultiselect';
 
-const AddCandidateForm = ({ professions }: any) => {
+const AddpartnerForm = ({ professions }: any) => {
   const { data: session } = useSession();
   const [phone, setPhone] = useState('');
   const { addNotification } = useNotifications();
@@ -23,7 +22,7 @@ const AddCandidateForm = ({ professions }: any) => {
     text: '',
     date: new Date(),
   });  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
-  const [selectedDrive, setSelectedDrive] = useState<string[]>([]); // Состояние для выбранных значений
+  const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
   const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
@@ -31,12 +30,9 @@ const AddCandidateForm = ({ professions }: any) => {
   const managerId = session?.managerId || '';
 
 
-
-  const handleDriveChange = (selected: string[]) => {
-    setSelectedDrive(selected); // Просто сохраняем массив строк
-  };
   const getDriveDataForSubmit = () => {
-    return selectedDrive;
+    // Извлекаем только значения
+    return selectedDrive.map(item => item.value);
   };
 
 
@@ -382,16 +378,17 @@ const AddCandidateForm = ({ professions }: any) => {
                   className="cursor-pointer"
                   aria-label="Upload file"
                 >
-                  <FileUp className="text-2xl" />  
+                  <FileUp className="text-2xl" />  {/* Вставьте вашу иконку */}
                 </label>
 
+                {/* Отображение имени файла, если он выбран */}
                 {doc.file && <p className="mt-2 text-sm text-gray-500">{doc.file.name}</p>}
               </div>
                 <div key={index} className=" flex ">
                   <p className="">{`${index + 1}.`}</p>&nbsp;
                   <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
                     <div className='flex  justify-center items-center'>
-                      <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
+                      <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
                         value={doc.docType || ''} onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
                         <option value="Не указано">Не указано</option>
                         {documentsOptions.map(({value, label}) =>  <option key={value} value={value}>{label}</option>)}
@@ -430,15 +427,7 @@ const AddCandidateForm = ({ professions }: any) => {
           <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
           <DefaultInput id='leaving' label='Готов выехать' type="date" />
           <DefaultInput label="Местоположение" id='locations' name='locations' />
-          <MyMultiSelect
-  label="Водительское удостоверение"
-  options={drivePermis}
-  placeholder="Категории В/У"
-  className="w-full my-1 text-sm"
-  value={selectedDrive} // Передаем массив строк в value
-  onChange={handleDriveChange} // Обработчик изменений
-  id="drivePermis"
-/>
+          <MultiSelect label='Водительское удостоверение' options={drivePermis} placeholder="Категории В/У" className="w-full my-1 text-sm" onChange={(selected: string[]) => setSelectedDrive(selected.map(value => ({ label: value, value })))} id='drivePermis' />
           <DefaultInput id='cardNumber' label='Номер счёта' type="text" />
           <div className='flex justify-between items-center m-2'>
             <h3 className="my-3 text-md font-bold">Языки</h3>
@@ -517,5 +506,5 @@ const AddCandidateForm = ({ professions }: any) => {
   );
 };
 
-export default AddCandidateForm;
+export default AddpartnerForm;
 

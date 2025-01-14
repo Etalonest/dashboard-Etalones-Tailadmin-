@@ -5,15 +5,20 @@ import React, { useState, useEffect } from "react";
 import AddCandidateForm from "@/src/components/forms/FormCandidate/AddCandidateForm";
 import EditCandidateForm from "@/src/components/forms/FormCandidate/EditCandidateForm";
 import ViewCandidateForm from "@/src/components/forms/FormCandidate/ViewCandidateForm";
+import AddPartnerForm from "@/src/components/forms/FormPartner/AddpartnerForm";
+import EditPartnerForm from "@/src/components/forms/FormPartner/EditPartnerForm";
+import ViewPartnerForm from "@/src/components/forms/FormPartner/ViewParnterForm";
 import { Candidate } from "@/src/types/candidate";
 import { Profession } from "@/src/types/profession";
 import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
+import { Partner } from "@/src/types/partner";
 
 interface SidebarProps {
   sidebarROpen?: boolean;
   setSidebarROpen: (arg: boolean) => void;
   selectedCandidate?: Candidate | null;
-  formType?: "addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | null;
+  selectedPartner?: Partner | null;
+  formType?: "addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | "addPartner" | "viewPartner" | "editPartner" |null;
   professions?: Profession[];
 }
 
@@ -23,6 +28,7 @@ const SidebarRight = ({
   formType,
   professions,
   selectedCandidate,
+  selectedPartner,
 }: SidebarProps) => {
   const [formData, setFormData] = useState<Candidate | null>(null);
 
@@ -31,15 +37,13 @@ const SidebarRight = ({
   useEffect(() => {
     console.log("selectedCandidate updated:", selectedCandidate);
     if (selectedCandidate) {
-      setFormData(selectedCandidate); // Обновление состояния формы
+      setFormData(selectedCandidate);
     }
   }, [selectedCandidate]);
 
-  // Очистка данных формы при закрытии сайдбара, за исключением формы для просмотра
   useEffect(() => {
     if (!sidebarROpen) {
-      console.log("Sidebar closed, clearing formData");
-      if (formType !== "viewCandidate") {
+      if (formType !== "viewCandidate" && formType !== "viewPartner") {
         setFormData(null); // Очистка формы при закрытии сайдбара (не для просмотра)
       }
     }
@@ -55,6 +59,12 @@ const SidebarRight = ({
         return <ViewCandidateForm candidate={formData} />;
       case "createManager":
         return <FormCreateManager />;
+      case "addPartner":
+        return <AddPartnerForm partner={formData} />; 
+      case "editPartner":
+        return <EditPartnerForm partner={formData} />; 
+      case "viewPartner":
+        return <ViewPartnerForm partner={formData} />;  
       default:
         return null;
     }
@@ -81,7 +91,7 @@ const SidebarRight = ({
           onClick={() => {
             setSidebarROpen(false);
             // Не очищаем formData, если это форма для просмотра
-            if (formType !== "viewCandidate") {
+            if (formType !== "viewCandidate" && formType !== "viewPartner") {
               setFormData(null); // Очистка формы при закрытии, если не просмотр
             }
           }}

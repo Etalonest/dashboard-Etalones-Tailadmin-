@@ -19,7 +19,7 @@ import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
 
-const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
+const EditPartnerForm = ({ id, candidate, professions, partners }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
   const [isOpen, setIsOpen] = useState(false)
@@ -626,7 +626,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
             options={drivePermis}
             placeholder="Категории В/У"
             className="w-full my-1 text-sm"
-            value={candidate?.drivePermis || []} 
+            value={candidate?.drivePermis || []} // Массив выбранных значений
             onChange={handleDriveChange}
             id="drivePermis"
           />
@@ -711,7 +711,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   );
 };
 
-export default EditCandidateForm;
+export default EditPartnerForm;
 function uuidv4(): string {
   throw new Error('Function not implemented.');
 }
