@@ -42,9 +42,10 @@ export type Profession = {
   export type Candidate = {
     docType: any;
     id: string;
-    _id: {
-      $oid: string; // ID в MongoDB
-    };
+    _id: string;
+    // _id: {
+    //   $oid: string; // ID в MongoDB
+    // };
     name: string;
     phone: string;
     age: string;

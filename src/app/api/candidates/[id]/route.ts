@@ -3,6 +3,7 @@ import  Candidate  from '@/src/models/Candidate';
 import Partner from '@/src/models/Partner';
 import Manager from '@/src/models/Manager';
 import { NextResponse } from 'next/server';
+import { CommentEntry } from '@/src/components/forms/interfaces/FormCandidate.interface';
 
 // Интерфейсы для типизации
 interface CandidateUpdate {
@@ -15,53 +16,77 @@ interface CandidateDoc {
   _id: string;
   partners?: string;
   manager?: string;
+  comment?: CommentEntry[];
   // Добавьте другие поля, если необходимо
 }
-
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
-  const body: CandidateUpdate = await request.json();
+  try {
+    // Получаем тело запроса
+    const body = await request.json();
+    console.log('Request Body:', body);  // Логируем тело запроса
 
-  await connectDB();
+    // Подключаемся к базе данных
+    await connectDB();
 
-  // Получаем старого кандидата
-  const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
+    // Получаем старого кандидата
+    const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
 
-  // Проверяем, существует ли старый кандидат
-  if (!oldCandidate) {
-    return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
-  }
-
-  // Обновляем информацию о кандидате
-  await Candidate.findByIdAndUpdate(id, body, { new: true });
-
-  // Если партнер изменился, обновляем массив candidates у старого и нового партнеров
-  if (body.partners && oldCandidate.partners !== body.partners) {
-    // Удаляем кандидата из старого партнера
-    if (oldCandidate.partners) {
-      await Partner.findByIdAndUpdate(oldCandidate.partners, { $pull: { candidates: id } });
+    if (!oldCandidate) {
+      return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
     }
-    // Добавляем кандидата в новый партнер
-    await Partner.findByIdAndUpdate(body.partners, { $addToSet: { candidates: id } });
-  }
 
-  // Обновляем массив кандидатов у менеджера
-  if (body.manager && oldCandidate.manager && oldCandidate.manager.toString() !== body.manager) {
-    const oldManager = await Manager.findById(oldCandidate.manager);
-    if (oldManager) {
-      await Manager.findByIdAndUpdate(oldManager._id, { $pull: { candidates: id } });
+    // Обновляем информацию о комментариях
+    if (body.comment) {
+      // Если у старого кандидата уже есть комментарии, добавляем новый
+      if (Array.isArray(oldCandidate.comment)) {
+        oldCandidate.comment.push(...body.comment);
+      } else {
+        // Если комментариев нет, создаем новый массив
+        oldCandidate.comment = body.comment;
+      }
     }
-  }
 
-  if (body.manager) {
-    const newManager = await Manager.findById(body.manager);
-    if (newManager) {
-      await Manager.findByIdAndUpdate(body.manager, { $addToSet: { candidates: id } });
-    }
-  }
+    // Обновляем кандидата, включая обновленный массив комментариев
+    await Candidate.findByIdAndUpdate(id, {
+      ...body,  // Все остальные поля из body
+      comment: oldCandidate.comment,  // Обновляем комментарии
+    }, { new: true });
 
-  return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
+    return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
+  } catch (error: any) {
+    console.error('Error parsing JSON or processing the request:', error);
+    return NextResponse.json({ message: 'Error processing request', error: error.message }, { status: 500 });
+  }
 }
+
+// export async function PUT(request: Request, { params }: { params: { id: string } }) {
+//   const { id } = params;
+//   try {
+//     const body = await request.json();
+//     console.log('Request Body:', body);  // Логируем тело запроса
+
+//     await connectDB();
+
+//     // Получаем старого кандидата
+//     const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
+
+//     if (!oldCandidate) {
+//       return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
+//     }
+
+//     // Обновляем информацию о кандидате
+//     await Candidate.findByIdAndUpdate(id, body, { new: true });
+
+//     // Логика с партнерами и менеджерами остаётся без изменений...
+
+//     return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
+//   } catch (error: any) {
+//     console.error('Error parsing JSON or processing the request:', error);
+//     return NextResponse.json({ message: 'Error processing request', error: error.message }, { status: 500 });
+//   }
+// }
+
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
