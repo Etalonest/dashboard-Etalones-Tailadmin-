@@ -171,13 +171,36 @@ export async function GET(request: any, { params }: any) {
         const manager = await Manager.findById(id)
         .populate({
           path: 'candidates',
-          options: { sort: { updatedAt: -1 } } // сортировка по убыванию даты создания
+          options: { sort: { updatedAt: -1 } }, 
+          populate: {
+            path: 'documents', // Популяция массива документов
+            populate: {
+              path: 'file', 
+              select: 'name data contentType', 
+            }
+          }
         })
         .populate('role')
         .populate('partners');
 
+        // Проверка на пустого менеджера
+        if (!manager) {
+          console.log("Менеджер с ID", id, "не найден.");
+          return NextResponse.json({ error: "Manager not found" }, { status: 404 });
+        }
+        
+        // Доступ к файлам
+        manager.candidates.forEach((candidate: { documents: any[]; }) => {
+          candidate.documents.forEach((document: { file: { name: any; }; }) => {
+            if (document.file) {
+              console.log(`File Name: ${document.file.name}`);
+            }
+          });
+        });
+        console.log("FileName: ", manager.candidates[0].documents[0].file.name);
         if (!manager) {
             console.log("Менеджер с ID", id, "не найден.");
+
             return NextResponse.json({ error: "Manager not found" }, { status: 404 });
         }
 

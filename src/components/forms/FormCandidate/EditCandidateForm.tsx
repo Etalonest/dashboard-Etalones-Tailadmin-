@@ -19,7 +19,7 @@ import {Card} from "@/components/ui/card";
 import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
-
+import Image from "next/image";
 
 const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   const { data: session } = useSession();
@@ -45,7 +45,8 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   const [selectCardNumber, setSelectCardNumber] = useState(candidate?.cardNumber || '')
   const [selectLangues, setSelectLangues] = useState<Langue[]>(candidate?.langue || []);
 
-  const managerId = session?.managerId ?? 'defaultManagerId'; // Задаем значение по умолчанию
+  const managerId = session?.managerId ?? 'defaultManagerId'; 
+  console.log(candidate?.documents[0].file.name)
   useEffect(() => {
     if (candidate?.name) { setSelectName(candidate.name); }
   }, [candidate?.name]);
@@ -515,7 +516,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
                 <CirclePlus />
               </button>
             </div>
-            {professionEntries.map((prof: { name: any; experience: any; }, index: any | null | undefined) => (
+            {professionEntries.map((prof: { name: any; experience: any; }, index: any ) => (
               <div key={index} className='flex w-full  gap-1 pr-2'>
                 <label htmlFor="profession">
                   <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
@@ -552,10 +553,9 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
           <div className='flex flex-col gap-1 w-full'>
             {documentEntries.map((doc, index) => (
               
-              <Card className=' rounded-md'>
-              <div key={index} className=" flex m-3 mr-1">
+              <Card key={index} className=' rounded-md'>
+              <div  className=" flex m-3 mr-1">
                 <p className="">{`${index + 1}.`}</p>
-                {/* <AddDocument/> */}
                 <ImageDown onClick={() => handleClick(index)} style={{ cursor: 'pointer' }} />
           <input
             type="file"
@@ -592,11 +592,34 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
                       value={doc.dateExp}
                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
                   </div>
-                  {doc.file && (
-        <div className="text-sm text-gray-500 mt-2">
-          <span>Выбран файл: {doc.file.name}</span>
-        </div>
-      )}
+                  <div className='max-w-[50px]'>
+                  <Image
+  src={
+    doc.file?.data && doc.file?.contentType
+      ? `data:${doc.file.contentType};base64,${Buffer.from(doc.file.data).toString('base64')}`
+      : '/images/logo/logo-dark.svg' // Путь к изображению по умолчанию, если данных нет
+  }
+  width={60}
+  height={60}
+  style={{
+    borderRadius: '50%',
+    width: '100%',
+    height: '100%',
+  }}
+  alt={doc.file?.name ?? 'Документ'} // Подставляем имя файла или дефолтный текст
+/>
+
+
+</div>   
+{doc.file ? (
+  <div className="text-sm text-gray-500 mt-2">
+    <span>Выбран файл: {doc.file.name}</span>
+  </div>
+) : (
+  <div className="text-sm text-gray-500 mt-2">
+    <span>Файл не выбран</span>
+  </div>
+)}   
                   <button className="absolute right-0 top-0 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
                     type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
                 </label>
@@ -634,7 +657,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
                 </div>
               )}      </div>
             <CollapsibleContent>
-              {commentEntries.map((comment, index: any | null | undefined) => (
+              {commentEntries.map((comment, index: any) => (
                 <div key={index} className="flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
                   <Badge>{new Date(commentEntries[commentEntries.length - 1].date)
                     .toLocaleString()
@@ -698,6 +721,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
           {/* Отображение списка языков */}
           <div className='flex flex-col gap-2 w-full'>
             {selectLangues.map((lang, index) => (
+              
               <div key={index} className="flex flex-col gap-2">
                 <label htmlFor={`langue-${index}`} className="flex flex-col gap-1 items-start relative">
                   {/* Язык */}

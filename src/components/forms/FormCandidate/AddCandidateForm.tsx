@@ -368,7 +368,7 @@ const AddCandidateForm = ({ professions }: any) => {
           <div className='flex flex-col gap-2 w-full'>
 
             {documentEntries.map((doc, index) => (
-              <><div className="relative flex gap-3">
+              <><div key={index} className="relative flex gap-3">
                 {/* Скрытый инпут */}
                 <input
                   type="file"

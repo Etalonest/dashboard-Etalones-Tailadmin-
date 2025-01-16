@@ -84,7 +84,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     console.log(`Old Candidate Retrieved: ${JSON.stringify(oldCandidate)}`);
 
-    // Обрабатываем файлы и сохраняем их
+    // Обрабатываем документы
     const documentEntries = JSON.parse(formData.get('documents') as string);
     const documentsData = [];
 
@@ -99,7 +99,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         const bufferData = await file.arrayBuffer();
         const buffer = Buffer.from(bufferData);
 
-        // Сохраняем файл в базе данных
+        // Сохраняем файл в коллекции документов
         const document = new Document({
           name: file.name, // Имя файла
           data: buffer,    // Данные файла
@@ -110,13 +110,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
         console.log(`Document saved with ID: ${savedDocument._id}`);
 
-        // Добавляем ID файла в документ
+        // Добавляем ID файла в массив документов
         documentsData.push({
           docType: doc.docType || '',
           dateExp: doc.dateExp || '',
           dateOfIssue: doc.dateOfIssue || '',
           numberDoc: doc.numberDoc || '',
-          file: savedDocument._id,  // ID сохраненного документа
+          file: savedDocument._id,  // Сохраняем ID сохраненного файла
         });
       } else {
         documentsData.push({
@@ -124,15 +124,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           dateExp: doc.dateExp || '',
           dateOfIssue: doc.dateOfIssue || '',
           numberDoc: doc.numberDoc || '',
-          file: null,
+          file: null,  // Если файл не передан, сохраняем null
         });
       }
     }
 
-    // Обновляем документы кандидата в базе данных
+    // Обновляем кандидата в базе данных, добавляем новые документы
     await Candidate.findByIdAndUpdate(id, {
       $set: {
-        documents: documentsData,
+        documents: documentsData, // Обновляем документы с правильными ID
       },
     }, { new: true });
 
@@ -148,14 +148,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 
 
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
   await connectDB();
 
   const candidate = await Candidate.findById(id)
-    .populate(['comment', 'manager', 'professions', 'langue', 'partners', 'tasks', 'documents', 'documentsFile']) // Добавили documents
+    .populate(['comment', 'manager', 'professions', 'langue', 'partners', 'tasks', 'documents']) 
     .lean() as CandidateDoc | null;
-
   if (!candidate) {
     return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
   }

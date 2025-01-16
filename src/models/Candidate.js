@@ -77,7 +77,7 @@ const CandidateSchema = new Schema({
        experience: String
       }],
       documents: [{
-        documentsFile: {
+        file: {
           type: Schema.Types.ObjectId,
           ref: 'Document'
         },
