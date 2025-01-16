@@ -2,12 +2,11 @@
 import { Schema, model, models } from "mongoose";
 
 const DocumentShema = new Schema({
-    
-        file: {
+
           name: String,
           data: Buffer,
           contentType: String
-        }
+        
       
 });
 

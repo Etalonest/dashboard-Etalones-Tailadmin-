@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
-import { CirclePlus, X } from 'lucide-react';
+import { CirclePlus, ImageDown, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
@@ -15,15 +15,21 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import {Card} from "@/components/ui/card";
 import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
 
+
 const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
+  
+      const handleClick = (index: number) => {
+        document.getElementById(`fileInput-${index}`)?.click();
+      };
   const [isOpen, setIsOpen] = useState(false)
-
+  const [file, setFile] = useState<File | null>(null);
   const [selectesName, setSelectName] = useState(candidate?.name);
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
   const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
@@ -94,6 +100,15 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
     }
   }, [candidate?.langue]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      const updatedDocuments = [...documentEntries];
+      updatedDocuments[index] = { ...updatedDocuments[index], file: selectedFile };
+      setDocumentEntries(updatedDocuments);
+    }
+  };
+  
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectName(e.target.value);
   };
@@ -117,9 +132,9 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
     setSelectLangues(updatedLangues);
   };
   const handleDocumentChange = (index: number, field: string, value: string) => {
-    const newEntries = [...documentEntries];
-    newEntries[index] = { ...newEntries[index], [field]: value };
-    setDocumentEntries(newEntries);
+    const updatedDocuments = [...documentEntries];
+    updatedDocuments[index] = { ...updatedDocuments[index], [field]: value };
+    setDocumentEntries(updatedDocuments);
   };
   const handleProfessionChange = (index: number, field: string, value: string) => {
     const newEntries = [...professionEntries];
@@ -127,10 +142,8 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
     setProfessionEntries(newEntries);
   };
   const handleDriveChange = (selected: string[]) => {
-    console.log("Updated drive permissions:", selected);
     setSelectDrive(selected);
   };
-
 
   const addAdditionalPhone = () => {
     setAdditionalPhones([...additionalPhones, ""]);
@@ -140,10 +153,8 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   };
 
   const addDocumentEntry = () => {
-    setDocumentEntries([...documentEntries, {
-      docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '',
-      file: undefined
-    }]);
+    setDocumentEntries([...documentEntries, 
+      { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '', file: undefined }]);
   };
 
   const addProfessionEntry = () => {
@@ -171,8 +182,8 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   };
 
   const removeDocumentEntry = (index: number) => {
-    const newEntries = documentEntries.filter((_, i) => i !== index);
-    setDocumentEntries(newEntries);
+    const updatedDocuments = documentEntries.filter((_, i) => i !== index);
+    setDocumentEntries(updatedDocuments);
   };
 
   const removeProfessionEntry = (index: number) => {
@@ -200,14 +211,15 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   };
 
   const getDocumentsDataForSubmit = () => {
-    return documentEntries.map(doc => ({
+    return documentEntries.map((doc: { docType: any; dateExp: any; dateOfIssue: any; numberDoc: any; file: any; }) => ({
       docType: doc.docType || '',
       dateExp: doc.dateExp || '',
       dateOfIssue: doc.dateOfIssue || '',
       numberDoc: doc.numberDoc || '',
-      file: doc.file || null, // Если файл есть, сохраняем его, если нет, оставляем null
+      file: doc.file ? doc.file : null,  
     }));
   };
+  
 
   const getLanguesDataForSubmit = () => {
     return selectLangues.map((lang) => ({
@@ -260,6 +272,8 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+  
+    // Проверка на наличие кандидата
     if (!candidate || !candidate._id) {
       addNotification({
         title: 'Ошибка',
@@ -269,42 +283,65 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
       });
       return;
     }
+  
+    // Формируем FormData
     const formData = new FormData(event.target);
     const additionalPhonesData = getAdditionalPhonesDataForSubmit();
     const driveData = getDriveDataForSubmit();
     const professionsData = getProfessionsDataForSubmit();
-    const documentsData = getDocumentsDataForSubmit();
     const languesData = getLanguesDataForSubmit();
-
+  
+    // Добавляем комментарии
     const commentData = formData.get('comment') ? [{
       authorId: managerId,
       author: managerId,
       text: formData.get('comment'),
       date: new Date().toISOString()
     }] : [];
-
-    const dataToSend = {
-      managerId,
-      drivePermis: driveData,
-      professions: professionsData,
-      documents: documentsData,
-      langue: languesData,
-      additionalPhones: additionalPhonesData,
-      comment: commentData,
-    };
-
+  
+    formData.append('managerId', managerId);
+    formData.append('drivePermis', JSON.stringify(driveData)); // Преобразуем в строку JSON
+    formData.append('professions', JSON.stringify(professionsData)); // Преобразуем в строку JSON
+    formData.append('langue', JSON.stringify(languesData)); // Преобразуем в строку JSON
+    formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
+    formData.append('comment', JSON.stringify(commentData));
+  
+    // Сформируем массив данных документов с мета-информацией
+    const documentsData = documentEntries.map((doc, index) => {
+      const documentObj: any = {
+        docType: doc.docType || '',
+        dateExp: doc.dateExp || '',
+        dateOfIssue: doc.dateOfIssue || '',
+        numberDoc: doc.numberDoc || '',
+      };
+  
+      if (doc.file) {
+        documentObj.file = doc.file;
+      }
+  
+      return documentObj;
+    });
+  
+    // Преобразуем массив в строку JSON и добавляем в FormData
+    formData.append('documents', JSON.stringify(documentsData));
+  
+    // Для каждого файла добавляем его в отдельные поля FormData
+    documentEntries.forEach((doc, index) => {
+      if (doc.file) {
+        formData.append(`documents[${index}][file]`, doc.file); // Добавляем файл
+      }
+    });
+  
+    // Отправляем запрос на сервер
     try {
       const res = await fetch(`/api/candidates/${candidate._id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
+        body: formData,
       });
-
+  
       const data = await res.json();
       const message = data.message;
-
+  
       if (data.success) {
         addNotification({
           title: 'Успешно',
@@ -313,7 +350,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
           id: uuidv4Original(),
         });
       }
-
+  
       if (data.error) {
         addNotification({
           title: 'Ошибка',
@@ -332,6 +369,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
       });
     }
   };
+  
 
   // const handleSubmit = async (event: any) => {
   //   event.preventDefault();
@@ -434,7 +472,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
             <div key={index} className="flex gap-2">
               <DefaultInput
                 label={`${index + 1} телефон`}
-                id={`additionalPhone${index}`}
+                id={`additionalPhone${index}`} 
                 name={`additionalPhone${index}`}
                 type="phone"
                 placeholder={phone}
@@ -511,10 +549,20 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
               <CirclePlus />
             </button>
           </div>
-          <div className='flex flex-col gap-2 w-full'>
+          <div className='flex flex-col gap-1 w-full'>
             {documentEntries.map((doc, index) => (
-              <div key={index} className=" flex ">
-                <p className="">{`${index + 1}.`}</p>&nbsp;
+              
+              <Card className=' rounded-md'>
+              <div key={index} className=" flex m-3 mr-1">
+                <p className="">{`${index + 1}.`}</p>
+                {/* <AddDocument/> */}
+                <ImageDown onClick={() => handleClick(index)} style={{ cursor: 'pointer' }} />
+          <input
+            type="file"
+            id={`fileInput-${index}`}  
+            onChange={(e) => handleFileChange(e, index)}
+            style={{ display: 'none' }}
+          />
                 <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
                   <div className='flex  justify-center items-center'>
                     <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent p-0 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
@@ -544,10 +592,16 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
                       value={doc.dateExp}
                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
                   </div>
-                  <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
+                  {doc.file && (
+        <div className="text-sm text-gray-500 mt-2">
+          <span>Выбран файл: {doc.file.name}</span>
+        </div>
+      )}
+                  <button className="absolute right-0 top-0 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
                     type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
                 </label>
               </div>
+              </Card>
             ))}
           </div>
           <Collapsible

@@ -11,7 +11,6 @@ import { useManagers } from '@/src/context/ManagersContext';
 
 const ProfileComponent = () => {
   const { managers } = useManagers();
-  console.log("MANAGERS",managers);
   const { manager } = useManager();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | null>(null);
