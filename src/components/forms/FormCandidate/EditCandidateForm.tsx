@@ -1,5 +1,5 @@
 'use client'
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
 import { CirclePlus, ImageDown, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
@@ -20,16 +20,14 @@ import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
 import Image from "next/image";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
-const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
+const EditCandidateForm = ({ candidate, professions }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
   
-      const handleClick = (index: number) => {
-        document.getElementById(`fileInput-${index}`)?.click();
-      };
+      
   const [isOpen, setIsOpen] = useState(false)
-  const [file, setFile] = useState<File | null>(null);
   const [selectesName, setSelectName] = useState(candidate?.name);
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
   const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
@@ -100,7 +98,9 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
       setSelectLangues(candidate.langue);
     }
   }, [candidate?.langue]);
-
+  const handleClick = (index: number) => {
+    document.getElementById(`fileInput-${index}`)?.click();
+  };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -162,14 +162,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
     setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
   };
 
-  // const addCommentEntry = () => {
-  //   const newComment = {
-  //     text: "",
-  //     authorId: managerId,
-  //     date: new Date()
-  //   };
-  //   setCommentEntries([...commentEntries, newComment]);
-  // }
+
 
 
   const removeAdditionalPhone = (index: number) => {
@@ -211,15 +204,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
     }));
   };
 
-  const getDocumentsDataForSubmit = () => {
-    return documentEntries.map((doc: { docType: any; dateExp: any; dateOfIssue: any; numberDoc: any; file: any; }) => ({
-      docType: doc.docType || '',
-      dateExp: doc.dateExp || '',
-      dateOfIssue: doc.dateOfIssue || '',
-      numberDoc: doc.numberDoc || '',
-      file: doc.file ? doc.file : null,  
-    }));
-  };
+
   
 
   const getLanguesDataForSubmit = () => {
@@ -372,80 +357,6 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   };
   
 
-  // const handleSubmit = async (event: any) => {
-  //   event.preventDefault();
-
-  //   const formData = new FormData(event.target);
-  //   console.log("FORMDATA", formData)
-
-  //   // Получаем данные для отправки (с использованием аналогичных функций)
-  //   const additionalPhonesData = getAdditionalPhonesDataForSubmit();
-  //   const driveData = getDriveDataForSubmit();
-  //   const professionsData = getProfessionsDataForSubmit();
-  //   const documentsData = getDocumentsDataForSubmit();
-  //   const languesData = getLanguesDataForSubmit();
-
-  //   // Получаем комментарий, если он есть
-  //   const commentData = formData.get('comment') ? [{
-  //     authorId: managerId,
-  //     author: managerId,  
-  //     text: formData.get('comment'),
-  //     date: new Date().toISOString() 
-  //   }] : [];
-
-  //   // Формируем formData для отправки
-  //   formData.append('managerId', managerId);
-  //   formData.append('drivePermis', JSON.stringify(driveData));
-  //   formData.append('professions', JSON.stringify(professionsData));
-  //   formData.append('documents', JSON.stringify(documentsData));
-  //   formData.append('langue', JSON.stringify(languesData));
-  //   formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
-  //   formData.append('comment', JSON.stringify(commentData));
-
-  //   try {
-  //     const res = await fetch(`/api/candidates/${candidate._id}`, {
-  //       method: 'PUT',  
-  //       headers: {
-  //         'Content-Type': 'application/json',  // Устанавливаем Content-Type как application/json
-  //       },
-  //       body: formData, 
-  //     });
-
-  //     const data = await res.json();
-  //     const message = data.message;
-
-  //     // Обработка успешного ответа
-  //     if (data.success) {
-  //       addNotification({
-  //         title: 'Успешно',
-  //         content: message,
-  //         type: 'success',
-  //         id: uuidv4Original(),
-  //       });
-  //     }
-
-  //     // Обработка ошибки
-  //     if (data.error) {
-  //       addNotification({
-  //         title: 'Ошибка',
-  //         content: message,
-  //         type: 'error',
-  //         id: uuidv4Original(),
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error('Ошибка при редактировании кандидата:', error);
-  //     addNotification({
-  //       title: 'Ошибка',
-  //       content: 'Произошла ошибка при редактировании кандидата.',
-  //       type: 'error',
-  //       id: uuidv4Original(),
-  //     });
-  //   }
-  // };
-
-
-
   return (
     <div className="max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
       <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
@@ -593,7 +504,18 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
                   </div>
                   <div className='max-w-[50px]'>
-                  <Image
+                    <Dialog>
+                    <DialogTrigger><div className="text-sm text-gray-500 mt-2">
+    <span>{doc.file?.name}</span>
+  </div></DialogTrigger>
+  <DialogContent className="w-full max-w-[800px] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] ">
+  <DialogHeader>
+      <DialogTitle><span className="text-sm text-gray-500 mt-2">{doc.file?.name}</span></DialogTitle>
+      <DialogDescription>
+        
+      </DialogDescription>
+    </DialogHeader>
+  <Image
   src={
     doc.file?.data && doc.file?.contentType
       ? `data:${doc.file.contentType};base64,${Buffer.from(doc.file.data).toString('base64')}`
@@ -602,16 +524,18 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   width={60}
   height={60}
   style={{
-    borderRadius: '50%',
     width: '100%',
     height: '100%',
   }}
   alt={doc.file?.name ?? 'Документ'} // Подставляем имя файла или дефолтный текст
 />
+  </DialogContent>
+                    </Dialog>
+                  
 
 
 </div>   
-{doc.file ? (
+{/* {doc.file ? (
   <div className="text-sm text-gray-500 mt-2">
     <span>Выбран файл: {doc.file.name}</span>
   </div>
@@ -619,7 +543,7 @@ const EditCandidateForm = ({ id, candidate, professions, partners }: any) => {
   <div className="text-sm text-gray-500 mt-2">
     <span>Файл не выбран</span>
   </div>
-)}   
+)}    */}
                   <button className="absolute right-0 top-0 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
                     type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
                 </label>
