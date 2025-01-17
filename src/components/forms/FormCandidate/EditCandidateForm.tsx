@@ -1,7 +1,7 @@
 'use client'
 import React, {  useEffect, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
-import { CirclePlus, ImageDown, X } from 'lucide-react';
+import { CirclePlus, ImageDown, Save, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
 import Image from "next/image";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { p } from 'framer-motion/client';
+import DownloadButton from '../../DownloadButton/DownloadButton';
 
 const EditCandidateForm = ({ candidate, professions }: any) => {
   const { data: session } = useSession();
@@ -28,6 +30,7 @@ const EditCandidateForm = ({ candidate, professions }: any) => {
   
       
   const [isOpen, setIsOpen] = useState(false)
+  const [fileId, setFileId] = useState<string>('');
   const [selectesName, setSelectName] = useState(candidate?.name);
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
   const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
@@ -44,7 +47,6 @@ const EditCandidateForm = ({ candidate, professions }: any) => {
   const [selectLangues, setSelectLangues] = useState<Langue[]>(candidate?.langue || []);
 
   const managerId = session?.managerId ?? 'defaultManagerId'; 
-  console.log(candidate?.documents[0].file.name)
   useEffect(() => {
     if (candidate?.name) { setSelectName(candidate.name); }
   }, [candidate?.name]);
@@ -109,6 +111,11 @@ const EditCandidateForm = ({ candidate, professions }: any) => {
       setDocumentEntries(updatedDocuments);
     }
   };
+  const handleSetFileId = (id: string) => {
+    setFileId(id); 
+  };
+
+
   
   const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectName(e.target.value);
@@ -286,9 +293,9 @@ const EditCandidateForm = ({ candidate, professions }: any) => {
     }] : [];
   
     formData.append('managerId', managerId);
-    formData.append('drivePermis', JSON.stringify(driveData)); // Преобразуем в строку JSON
-    formData.append('professions', JSON.stringify(professionsData)); // Преобразуем в строку JSON
-    formData.append('langue', JSON.stringify(languesData)); // Преобразуем в строку JSON
+    formData.append('drivePermis', JSON.stringify(driveData)); 
+    formData.append('professions', JSON.stringify(professionsData)); 
+    formData.append('langue', JSON.stringify(languesData)); 
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('comment', JSON.stringify(commentData));
   
@@ -504,37 +511,51 @@ const EditCandidateForm = ({ candidate, professions }: any) => {
                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
                   </div>
                   <div className='max-w-[50px]'>
-                    <Dialog>
-                    <DialogTrigger><div className="text-sm text-gray-500 mt-2">
-    <span>{doc.file?.name}</span>
-  </div></DialogTrigger>
-  <DialogContent className="w-full max-w-[800px] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] ">
-  <DialogHeader>
-      <DialogTitle><span className="text-sm text-gray-500 mt-2">{doc.file?.name}</span></DialogTitle>
-      <DialogDescription>
-        
-      </DialogDescription>
-    </DialogHeader>
-  <Image
-  src={
-    doc.file?.data && doc.file?.contentType
-      ? `data:${doc.file.contentType};base64,${Buffer.from(doc.file.data).toString('base64')}`
-      : '/images/logo/logo-dark.svg' // Путь к изображению по умолчанию, если данных нет
-  }
-  width={60}
-  height={60}
-  style={{
-    width: '100%',
-    height: '100%',
-  }}
-  alt={doc.file?.name ?? 'Документ'} // Подставляем имя файла или дефолтный текст
-/>
-  </DialogContent>
-                    </Dialog>
-                  
+  {/* Проверяем, что имя файла заканчивается на .jpg, .jpeg, или .png */}
+  <DownloadButton data={doc.file} />
+  {doc.file?.name && (doc.file.name.endsWith('.jpg') || doc.file.name.endsWith('.jpeg') || doc.file.name.endsWith('.png')) ? (
+  
+    <Dialog>
+      <div className='flex items-center justify-center'>
+      <DialogTrigger>
+        <div className="text-sm text-gray-500 mt-2">
+          <span>{doc.file?.name}</span>
+        </div>
+      </DialogTrigger>
+      </div>
+      <DialogContent className="w-full max-w-[600px] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
+        <DialogHeader>
+          <DialogTitle>
+            <span className="text-sm text-gray-500 mt-2">{doc.file?.name}</span>
+          </DialogTitle>
+          <DialogDescription>
+            {/* Здесь можно добавить описание */}
+          </DialogDescription>
+        </DialogHeader>
+        <Image
+          src={
+            doc.file?.data && doc.file?.contentType
+              ? `data:${doc.file.contentType};base64,${Buffer.from(doc.file.data).toString('base64')}`
+              : '/images/logo/logo-dark.svg' // Путь к изображению по умолчанию, если данных нет
+          }
+          width={60}
+          height={60}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+          alt={doc.file?.name ?? 'Документ'} // Подставляем имя файла или дефолтный текст
+        />
+      </DialogContent>
+    </Dialog>
+  ) : (
+    // Если файл не подходит, просто показываем название
+    <div className="text-sm text-gray-500 mt-2">
+      <span>{doc.file?.name}</span>
+    </div>
+  )}
+</div>
 
-
-</div>   
 {/* {doc.file ? (
   <div className="text-sm text-gray-500 mt-2">
     <span>Выбран файл: {doc.file.name}</span>
