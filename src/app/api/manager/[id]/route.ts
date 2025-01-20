@@ -160,58 +160,38 @@ export const PUT = async (request: { formData: () => any; }, { params }: any) =>
 };
 
 export async function GET(request: any, { params }: any) {
-    const { id } = params; // Получаем параметр id из URL
-    console.log("Запрос GET для получения менеджера с ID:", id); // Логируем id
+  const { id } = params;
+  console.log("Запрос GET для получения менеджера с ID:", id);
 
-    await connectDB();
+  try {
+      await connectDB();
+      console.log("Подключение к базе данных успешно выполнено.");
 
-    try {
-        console.log("Подключение к базе данных успешно выполнено.");
+      const manager = await Manager.findById(id)
+          .populate({
+              path: 'candidates',
+              options: { sort: { updatedAt: -1 } },
+              populate: {
+                  path: 'documents',
+                  populate: {
+                      path: 'file',
+                      select: 'name data contentType',
+                  }
+              }
+          })
+          .populate('role')
+          .populate('partners');
 
-        const manager = await Manager.findById(id)
-        .populate({
-          path: 'candidates',
-          options: { sort: { updatedAt: -1 } }, 
-          populate: {
-            path: 'documents', // Популяция массива документов
-            populate: {
-              path: 'file', 
-              select: 'name data contentType', 
-            }
-          }
-        })
-        .populate('role')
-        .populate('partners');
-
-        // Проверка на пустого менеджера
-        if (!manager) {
+      if (!manager) {
           console.log("Менеджер с ID", id, "не найден.");
           return NextResponse.json({ error: "Manager not found" }, { status: 404 });
-        }
-        
-        // Доступ к файлам
-        manager.candidates.forEach((candidate: { documents: any[]; }) => {
-          candidate.documents.forEach((document: { file: { name: any; }; }) => {
-            if (document.file) {
-              console.log(`File Name: ${document.file.name}`);
-            }
-          });
-        });
-        console.log("FileName: ", manager.candidates[0].documents[0].file.name);
-        if (!manager) {
-            console.log("Менеджер с ID", id, "не найден.");
+      }
 
-            return NextResponse.json({ error: "Manager not found" }, { status: 404 });
-        }
+      console.log("Менеджер найден:", manager);
+      return NextResponse.json({ manager }, { status: 200 });
 
-       
-        
-        // Если менеджер найден, возвращаем данные
-        return NextResponse.json({ manager }, { status: 200 });
-
-    } catch (error) {
-        // Логируем ошибку
-        console.error("Ошибка при получении данных менеджера:", error);
-        return NextResponse.json({ error: "Failed to fetch manager data" }, { status: 500 });
-    }
+  } catch (error) {
+      console.error("Ошибка при получении данных менеджера:", error);
+      return NextResponse.json({ error: "Failed to fetch manager data" }, { status: 500 });
+  }
 }

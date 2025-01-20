@@ -44,3 +44,20 @@ export const drivePermis = [
     { value: 'Казахстан', label: 'Казахстан' },
     { value: 'Другое', label: 'Другое' }
   ];
+
+export const experiences = [
+    { value: 'Новичок', label: 'Новичок' },
+    { value: 'Около 6 месяцев', label: 'Около 6 месяцев' },
+    { value: '6 - 12 месяцев', label: '6 - 12 месяцев' },
+    { value: '12 - 18 месяцев', label: '12 - 18 месяцев' },
+    { value: '18 - 24 месяцев', label: '18 - 24 месяцев' },
+    { value: 'Специалист', label: 'Специалист' },
+    { value: 'Уверенный специалист', label: 'Уверенный специалист' },
+  ];
+
+export const langues = [
+  { value: 'Русский', label: 'Русский' },
+  { value: 'Английский', label: 'Английский' },
+  { value: 'Немецкий', label: 'Немецкий' },
+  { value: 'Украинский', label: 'Украинский' },
+]

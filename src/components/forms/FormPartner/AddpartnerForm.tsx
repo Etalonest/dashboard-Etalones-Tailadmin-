@@ -1,508 +1,373 @@
 'use client'
-import React, { useContext, useState } from 'react';
-import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
-import { CirclePlus, FileUp, X } from 'lucide-react';
-import Select from '../../inputs/Select/Select';
-import { useNotifications } from '@/src/context/NotificationContext';
-import { v4 as uuidv4Original } from 'uuid';
-import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
-import MultiSelect from '../../FormElements/MultiSelect';
-import { useSession } from 'next-auth/react';
-import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
-import {DriveOption, DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ProfessionSelect, ExpirienceSelect } from '@/src/components/Select/Select';
+import { useState } from 'react';
+import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
+import { suggestionsData } from '@/src/config/suggestions';
+import CMultiSelect from '../../Multiselect/Multiselect';
+import { drivePermis, langues } from '@/src/config/constants';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { X } from 'lucide-react';
 
-const AddpartnerForm = ({ professions }: any) => {
-  const { data: session } = useSession();
-  const [phone, setPhone] = useState('');
-  const { addNotification } = useNotifications();
-  const [file, setFile] = useState<File | null>(null); // Состояние для выбранного файла
-  const [comment, setComment] = useState<CommentEntry>({
-    authorId: '',
-    author: '',
-    text: '',
-    date: new Date(),
-  });  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
-  const [selectedDrive, setSelectedDrive] = useState<DriveOption[]>([]);
-  const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
-  const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
-  const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
-
-  const managerId = session?.managerId || '';
-
-
-  const getDriveDataForSubmit = () => {
-    // Извлекаем только значения
-    return selectedDrive.map(item => item.value);
-  };
-
-
-  
-  const handleCommentChange = (field: keyof CommentEntry, value: string) => {
-    setComment((prevComment) => ({
-      ...prevComment,
-      [field]: value, 
+type ProfessionElement = {
+  id: number;
+};
+const AddpartnerForm = () => {
+  const [professions, setProfessions] = useState<ProfessionElement[]>([]);
+  const [inputs, setInputs] = useState<{ [key: string]: string }>({
+    expirience: '',
+    contractType: '',
+    contractPrice: '',
+    sallary: '',
+    homePrice: '',
+    avance: '',
+    workwear: '',
+  });
+  const handleInputChange = (inputKey: string, value: string) => {
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [inputKey]: value,
     }));
   };
- 
-
-  const addLangue = () => {
-    setLanguesEntries([...languesEntries, { name: '', level: '' }]);
-  };
-  const handleLangueChange = (index: number, field: string, value: string) => {
-    const updatedLangues = [...languesEntries];
-    updatedLangues[index] = { ...updatedLangues[index], [field]: value };
-    setLanguesEntries(updatedLangues);
-  };
-
-  // Функция для удаления языка
-  const removeLangue = (index: number) => {
-    const updatedLangues = languesEntries.filter((_, i) => i !== index);
-    setLanguesEntries(updatedLangues);
-  };
-
-
-  // Функция для подготовки данных для отправки
-  const getLanguesDataForSubmit = () => {
-    return languesEntries.map(lang => ({
-      name: lang.name || '',
-      level: lang.level || ''
-    }));
-  };
-
-  const addDocumentEntry = () => {
-    setDocumentEntries([
-      ...documentEntries,
-      { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '', file: null }
-    ]);
-  };
-
-  const handleFileChange = (index: number, e: any) => {
-    const updatedDocuments = [...documentEntries];
-    const file = e.target.files[0]; // Получаем файл
-
-    if (file) {
-      updatedDocuments[index] = {
-        ...updatedDocuments[index],
-        file: file, // Добавляем файл в объект документа
-      };
-      setDocumentEntries(updatedDocuments);
-    }
-  };
-
-  const handleDocumentChange = (index: number, field: string, value: string) => {
-    const updatedDocuments = [...documentEntries];
-    updatedDocuments[index] = {
-      ...updatedDocuments[index],
-      [field]: value
+  const handleButtonClick = () => {
+    const newProfession: ProfessionElement = {
+      id: professions.length + 1, 
     };
-    setDocumentEntries(updatedDocuments);
+    
+    setProfessions((prevProfessions) => [...prevProfessions, newProfession]);
   };
-
-  const removeDocumentEntry = (index: number) => {
-    const newEntries = documentEntries.filter((_, i) => i !== index);
-    setDocumentEntries(newEntries);
+  const handleRemoveProfession = (id: number) => {
+    // Удаляем элемент по id
+    setProfessions((prevProfessions) =>
+      prevProfessions.filter((profession) => profession.id !== id)
+    );
   };
-
-  const getDocumentsDataForSubmit = () => {
-    return documentEntries.map(doc => ({
-      docType: doc.docType || '', 
-      dateExp: doc.dateExp || '', 
-      dateOfIssue: doc.dateOfIssue || '', 
-      numberDoc: doc.numberDoc || '', 
-      file: doc.file || null, 
-    }));
-  };
-
-
-
-  const addProfessionEntry = () => {
-    setProfessionEntries([...professionEntries, { name: 'Нет профессии', level: '',experience: '', category: '' }]);
-  };
-
-  const handleProfessionChange = (index: number, field: string, value: string) => {
-    const updatedProfessions = [...professionEntries];
-    updatedProfessions[index] = { ...updatedProfessions[index], [field]: value };
-    setProfessionEntries(updatedProfessions); 
-  };
-  const getProfessionsDataForSubmit = () => {
-    return professionEntries.map(prof => ({
-      name: prof.name || '',  
-      level: prof.level || ''  
-    }));
-  };
-
-
-
-  const removeProfessionEntry = (index: number) => {
-    const newEntries = professionEntries.filter((_, i) => i !== index);
-    setProfessionEntries(newEntries);
-  };
-
-  // const generateId = () => uuidv4();
-  // console.log(generateId)
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(event.target.value);
-  };
-
-  // Функция для добавления нового телефона
-  const addAdditionalPhone = () => {
-    setAdditionalPhones([...additionalPhones, '']);
-  };
-
-  // Функция для изменения номера телефона
-  const handleAdditionalPhoneChange = (index: number, value: string) => {
-    const updatedPhones = [...additionalPhones];
-    updatedPhones[index] = value;  // Обновляем телефон по индексу
-    setAdditionalPhones(updatedPhones);
-  };
-
-  // Функция для удаления телефона
-  const removeAdditionalPhone = (index: number) => {
-    const updatedPhones = additionalPhones.filter((_, i) => i !== index);
-    setAdditionalPhones(updatedPhones);
-  };
-
-  // Функция для подготовки данных телефонов для отправки
-  const getAdditionalPhonesDataForSubmit = () => {
-    // Возвращаем массив строк, не включающий пустые значения
-    return additionalPhones.filter(phone => phone.trim() !== '');
-  };
-
-
-  const handlePhoneBlur = async () => {
-    if (phone.trim() === '') {
-      return;
-    }
-
-    try {
-      // Отправка запроса на сервер для поиска по номеру телефона
-      const response = await fetch('/api/checkPhone', {
-        method: 'POST',  // Используем POST
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phone }), // Отправляем номер телефона в теле запроса
-      });
-
-      const data = await response.json();
-
-      if (data.candidate) {
-        addNotification({
-          title: "Обновлено",
-          content: `Кандидат с таким номером уже существует. Имя: ${data.candidate.name} Номер: ${data.candidate.phone}`,
-          type: "error", // Пример успешного уведомления
-          id: uuidv4Original(), // Генерация уникального id
-        });
-      } else if (data.message === 'Номер свободен') {
-        addNotification({
-          title: 'Номер свободен',
-          content: 'Этот номер еще не зарегистрирован.',
-          type: 'success',
-          id: uuidv4Original(),
-        });
-      } else {
-        addNotification({
-          title: 'Ошибка',
-          content: 'Произошла неизвестная ошибка.',
-          type: 'error',
-          id: uuidv4Original(),
-        });
-      }
-    } catch (error) {
-      console.error('Ошибка при поиске:', error);
-    }
-  };
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-  
-    const additionalPhonesData = getAdditionalPhonesDataForSubmit();
-    const driveData = getDriveDataForSubmit();
-    const professionsData = getProfessionsDataForSubmit();
-    const documentsData = getDocumentsDataForSubmit();
-    const languesData = getLanguesDataForSubmit();
-    const commentData = {
-      authorId: managerId,
-      author: managerId,
-      text: comment.text,
-      date: comment.date.toISOString(), 
-    };
-    const formData = new FormData(event.target);
-  
-    // Добавляем только те поля, которые отсутствуют в оригинальном formData
-    formData.append('managerId', managerId);
-    formData.append('drivePermis', JSON.stringify(driveData));
-    formData.append('professions', JSON.stringify(professionsData));
-    formData.append('documents', JSON.stringify(documentsData));
-    formData.append('langue', JSON.stringify(languesData));
-    formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
-    formData.append('comment', JSON.stringify(commentData));
-
-  
-    try {
-      const response = await fetch('/api/candidates', {
-        method: 'POST',
-        body: formData, // Используем formData, так как это содержит как текст, так и файлы
-      });
-  
-      const data = await response.json();
-      const message = data.message;
-  
-      if (data.success) {
-        addNotification({
-          title: 'Успешно',
-          content: message,
-          type: 'success',
-          id: uuidv4Original(),
-        });
-      }
-  
-      if (data.error) {
-        addNotification({
-          title: 'Ошибка',
-          content: message,
-          type: 'error',
-          id: uuidv4Original(),
-        });
-      }
-    } catch (error) {
-      console.error('Ошибка при добавлении кандидата:', error);
-    }
-  };
-  
   return (
-    <div className="lg:max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
-      <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
-      <form onSubmit={handleSubmit}
-        className="grid grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr_1fr] gap-4">
+    <><div className='container mx-auto'>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className=" p-4">
+          <Card>
+            <CardHeader className='pb-0'>
+              <CardTitle>Личные данные</CardTitle>
+            </CardHeader>
+            <CardContent className='mt-0 flex flex-col gap-2'>
+              <div>
+              <Label>ФИО</Label>
+              <Input placeholder="Имя" />
+              </div><div>
+              <Label>Телефон</Label>
+              <Input placeholder="+495651322654" />
+              </div><div>
+              <Label>Viber</Label>
+              <Input placeholder="+495651322654" />
+              </div><div>
+              <Label>Whatsapp</Label>
+              <Input placeholder="+495651322654" />
+              </div><div>
+              <Label>Telegram</Label>
+              <Input placeholder="+495651322654" />
+              </div><div>
+              <Label>Почта</Label>
+              <Input placeholder="mail@gmail.com" />
+              </div>
+              <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button>
 
-        {/* Личные данные */}
-        <div className=" text-white">
-          <h3 className="font-semibold text-lg mb-2 text-black-2 dark:text-white">Личные данные</h3>
-          <DefaultInput id="name" label="ФИО" placeholder="Иван Иванов" />
+            </CardContent>
 
-          <div className='relative'>
-            <DefaultInput id="phone" label="Телефон" type="text" placeholder="+373696855446"
-              onChange={handlePhoneChange}
-              onBlur={handlePhoneBlur} />
-            <button type="button" className="absolute top-[27px] right-[5px] text-green-400 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
-          </div>
+          </Card>
+        </div>
+        <div className=" p-4">
+          <Card>
+            <CardHeader className='pb-0'>
+              <CardTitle>Фирма</CardTitle>
+            </CardHeader>
+            <CardContent className='mt-0 flex flex-col gap-2'>
+            <div>
+              <Label>Название фирмы</Label>
+              <Input placeholder="GMBH gfgtg" />
+              </div><div>
+              <Label>Номер DE</Label>
+              <Input placeholder="DE495651322654" />
+              </div><div>
+              <Label>Местоположение</Label>
+              <Input placeholder="Дюсельдорф" />
+              </div><div>
+              <Label>Сайт</Label>
+              <Input placeholder="www.site.com" />
+              </div>
 
-          {additionalPhones.map((phone, index) => (
-            <div key={index} className="flex gap-2 relative">
-              <DefaultInput
-                label={`${index + 1} телефон`}
-                id={`additionalPhone${index}`}
-                name={`additionalPhone${index}`}
-                type="phone"
-                placeholder={phone}
-                value={phone}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAdditionalPhoneChange(index, e.target.value)}
-              />
+              <AutocompleteInput 
+              label="Тип контракта"
+              suggestions={suggestionsData.contractType} 
+              placeholder="Введите тип контракта"
+              onChange={(value) => handleInputChange('contractType', value)}/>
+              <AutocompleteInput 
+              label="Цена контракта"
+              suggestions={suggestionsData.contractPrice} 
+              placeholder="Введите цену контракта"
+              onChange={(value) => handleInputChange('contractPrice', value)}/>
+              <Button variant="outline" className='bg-green-900 text-white mt-8' onClick={handleButtonClick}>Добавить профессию</Button>
+            </CardContent>
+          </Card>
+        </div><div className=" p-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Статус</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form>
+                <div className="flex flex-col space-y-1.5">
+                  <Card><CardTitle className='flex justify-start m-2'>1. Не обработан</CardTitle></Card>
+                  <Card>
+                    <CardTitle className='flex justify-start m-2'>2. Первый диалог</CardTitle>
+                    <CardContent className='flex items-center justify-around'>
 
-              <button
-                type="button"
-                className="absolute top-[25px] right-[5px] btn-xs self-end pb-0.5 text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
-                onClick={() => removeAdditionalPhone(index)}
-              >
-                <X />
-              </button>
-            </div>
-          ))}
+                      <Button variant="outline" className='bg-red-500 text-white'>Не сложился</Button>
+                      <Button variant="outline" className='bg-green-900 text-white'>Сложился</Button>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardTitle className='flex justify-start m-2'>3. В процесе договорённости</CardTitle>
+                    <CardContent className='flex flex-col gap-2 items-start justify-around'>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Цена контракта согласована
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Цена жилья согласована
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Даты выплат согласованы
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Контракт подписан
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Точное место для прибытия кандидата согласовано
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Готов принимать людей
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Передан куратору
+                        </label>
+                      </div>
 
-          <DefaultInput id="ageNum" label="Возраст" type="text" placeholder="33" />
-          <Select label={'Статус первого диалога'} id="status" name="status" options={status} />
+                    </CardContent>
+                  </Card>
+
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+      </div>
+    </div><div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {professions.map((profession, index) => (
           
-        </div>
-
-        {/* Работа */}
-        <div className=" flex flex-col gap-1 ">
-          {/* <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3> */}
-          <label htmlFor="professions">
-            <div className="flex justify-between items-start m-2">
-              <h3 className="font-bold text-md text-black-2 dark:text-white">Профессии</h3>
-              <button
-                className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out"
-                type="button"
-                onClick={addProfessionEntry}
-              >
-                <CirclePlus />
-              </button>
-            </div>
-            {professionEntries.map((prof, index) => (
-              <div key={index} className='flex w-full  gap-1 pr-2'>
-                <label htmlFor="profession">
-                  <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" 
-                  value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
-                    <option>Нет профессии</option>
-                    {professions.map((profession: { _id: React.Key; name: string }) => (
-                      <option key={profession._id} value={profession.name}>{profession.name}</option>
-                    ))}
-                  </select>
-                </label>
-                <label htmlFor="level">
-                  <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.level || ''} onChange={e => handleProfessionChange(index, 'level', e.target.value || '')}>
-                    <option >Без опыта</option>
-                    <option >Меньше года</option>
-                    <option >Более года</option>
-                    <option >От 2-х лет</option>
-                    <option >Более 10-ти лет</option>
-                  </select>
-                </label>
-                <button
-                  className=" btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
-                  type="button" onClick={() => removeProfessionEntry(index)}><X /></button>
-              </div>
-            ))}
-          </label>
-
-          <div className='flex justify-between items-start m-2'>
-            <h3 className="my-3 text-md font-bold">Документы</h3>
-            <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addDocumentEntry}>
-              <CirclePlus />
-            </button>
-          </div>
-          <div className='flex flex-col gap-2 w-full'>
-
-            {documentEntries.map((doc, index) => (
-              <><div className="relative flex gap-3">
-                {/* Скрытый инпут */}
-                <input
-                  type="file"
-                  className="hidden" // Скрываем стандартный инпут
-                  id={`fileInput-${index}`}
-                  onChange={(e) => handleFileChange(index, e)} />
-
-                {/* Иконка, которая будет выполнять функцию инпута */}
-                <label
-                  htmlFor={`fileInput-${index}`}
-                  className="cursor-pointer"
-                  aria-label="Upload file"
+          <div key={profession.id} className=" p-4 mb-4 ">
+            <Card>
+              <CardHeader>
+                <CardTitle className='flex justify-start items-center gap-1 relative'>
+                  {index + 1}.
+                  <ProfessionSelect />
+                  <Button
+                  variant="outline"
+                  className="bg-red-600 text-white absolute right-0 top-0 p-2"
+                  onClick={() => handleRemoveProfession(profession.id)} 
                 >
-                  <FileUp className="text-2xl" />  {/* Вставьте вашу иконку */}
-                </label>
-
-                {/* Отображение имени файла, если он выбран */}
-                {doc.file && <p className="mt-2 text-sm text-gray-500">{doc.file.name}</p>}
+                  <X size={15} />
+                </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className='flex flex-col gap-2'>
+              <AutocompleteInput 
+              label="Навыки"
+              suggestions={suggestionsData.skils} 
+              placeholder="Укажите набор навыков"
+              onChange={(value) => handleInputChange('skils', value)}/>
+              <div>
+              <Label>Опыт работы</Label>
+              <ExpirienceSelect />
               </div>
-                <div key={index} className=" flex ">
-                  <p className="">{`${index + 1}.`}</p>&nbsp;
-                  <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
-                    <div className='flex  justify-center items-center'>
-                      <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
-                        value={doc.docType || ''} onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
-                        <option value="Не указано">Не указано</option>
-                        {documentsOptions.map(({value, label}) =>  <option key={value} value={value}>{label}</option>)}
-                      </select>
-                      <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" 
-                      value={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
-                    </div>
-                    <div className='flex justify-center items-center gap-3'>
-                      <DefaultInput id='dateOfIssue' label='Выдан' type="date" 
-                      value={doc.dateOfIssue} 
-                      onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
-                      <DefaultInput id='documDate' label='До' type="date" value={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
-                    </div>
-
-                    <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
-                      type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
-                  </label>
-                </div></>
-            ))}
-          </div>
-          <p>Комментарий</p>
-          <textarea               
-          value={comment.text || ''} 
-          onChange={(e) => handleCommentChange( 'text', e.target.value || '')}   
-          id="comment" name="comment"
-            rows={6}
-            placeholder="Оставьте свой комментарий"
-            className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-          ></textarea>
-
-        </div>
-
-        {/* Дополнительно */}
-        <div >
-          <h3 className="font-semibold text-lg mb-2">Дополнительно</h3>
-          <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
-          <DefaultInput id='leaving' label='Готов выехать' type="date" />
-          <DefaultInput label="Местоположение" id='locations' name='locations' />
-          <MultiSelect label='Водительское удостоверение' options={drivePermis} placeholder="Категории В/У" className="w-full my-1 text-sm" onChange={(selected: string[]) => setSelectedDrive(selected.map(value => ({ label: value, value })))} id='drivePermis' />
-          <DefaultInput id='cardNumber' label='Номер счёта' type="text" />
-          <div className='flex justify-between items-center m-2'>
-            <h3 className="my-3 text-md font-bold">Языки</h3>
-            <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addLangue}>
-              <CirclePlus />
-            </button>
-          </div>
-
-          {/* Отображение списка языков */}
-          <div className='flex flex-col gap-2 w-full'>
-            {languesEntries.map((lang, index) => (
-              <div key={index} className="flex flex-col gap-2">
-                <label htmlFor={`langue-${index}`} className="flex flex-col gap-1 items-start relative">
-                  {/* Язык */}
-                  <div className='flex flex-col justify-between items-start '>
-                    <div>Знание языка</div>
-                    <select
-                      id={`langue-${index}`}
-                      name={`langue-${index}`}
-                      className="text-sm w-[250px] h-[25px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      value={lang.name}
-                      onChange={(e) => handleLangueChange(index, 'name', e.target.value)}
-                    >
-                      <option value='Не знает языков'>Не знает языков</option>
-                      <option value='Немецкий'>Немецкий</option>
-                      <option value='Английский'>Английский</option>
-                      <option value='Польский'>Польский</option>
-                      <option value='Турецкий'>Турецкий</option>
-                      <option value='Французский'>Французский</option>
-                      <option value='Итальянский'>Итальянский</option>
-                    </select>
-                  </div>
-
-                  {/* Уровень */}
-                  <div className='flex flex-col justify-between items-start '>
-                    <div>Уровень</div>
-                    <select
-                      className="text-sm h-[25px] w-[250px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      value={lang.level}
-                      onChange={(e) => handleLangueChange(index, 'level', e.target.value)}
-                    >
-                      <option value=''>Выберите уровень</option>
-                      <option value='Самоучка'>Самоучка</option>
-                      <option value='Уровень А1'>Уровень А1</option>
-                      <option value='Уровень А2'>Уровень А2</option>
-                      <option value='Уровень B1'>Уровень B1</option>
-                      <option value='Уровень B2'>Уровень B2</option>
-                    </select>
-                  </div>
-                  {/* Кнопка для удаления языка */}
-                  <button
-                    className="absolute right-2 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
-                    type="button"
-                    onClick={() => removeLangue(index)}
-                  >
-                    <X />
-                  </button>
-                </label>
-
-
+               <div>
+                <Label>Свободные места</Label>
+                <Input type='number' placeholder="Введите количество свободных мест"/>
+                </div> 
+                <AutocompleteInput 
+              label="Зарплата"
+              suggestions={suggestionsData.sallary} 
+              placeholder="Зарплата работника"
+              onChange={(value) => handleInputChange('sallary', value)}/>
+                <AutocompleteInput 
+              label="Цена проживания"
+              suggestions={suggestionsData.homePrice} 
+              placeholder="Стоимость проживания"
+              onChange={(value) => handleInputChange('homePrice', value)}/>
+              <AutocompleteInput 
+              label="Авансы"
+              suggestions={suggestionsData.avance} 
+              placeholder="Отношение к авансу"
+              onChange={(value) => handleInputChange('avance', value)}/>
+              <AutocompleteInput 
+              label="Спецодежда"
+              suggestions={suggestionsData.workwear} 
+              placeholder="Спецодежда"
+              onChange={(value) => handleInputChange('workwear', value)}/>
+               <div>
+                <Label>Наличие В/У</Label>
+                <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} onChange={function (selected: string[]): void {
+                  throw new Error('Function not implemented.');
+                } } />
+                </div>
+                <div>
+                <Label>Знание языков</Label>
+                <CMultiSelect options={langues} placeholder={'Выберите языки'} onChange={function (selected: string[]): void {
+                  throw new Error('Function not implemented.');
+                } }/>
+                </div>
+                <AutocompleteInput 
+              label="Часы отработки"
+              suggestions={suggestionsData.wHours} 
+              placeholder="Количество часов отработки"
+              onChange={(value) => handleInputChange('wHours', value)}/>
+                <div>
+                <Label>Набор открыт с:</Label>
+                <Input type='date' placeholder="Введите дату открытия"/>
+                </div>
+                  <Drawer >
+      <DrawerTrigger asChild>
+        <Button variant="outline" className="bg-green-900 text-white">Добавить вакансию</Button>
+      </DrawerTrigger>
+      <DrawerContent >
+        <div className="mx-auto w-full max-w-sm">
+          <DrawerHeader>
+            <DrawerTitle></DrawerTitle>
+            <DrawerDescription></DrawerDescription>
+          </DrawerHeader>
+          <DrawerContent className='flex w-full'>
+           
+              <div>
+          <ProfessionSelect />
+              <AutocompleteInput 
+              label="Навыки"
+              suggestions={suggestionsData.skils} 
+              placeholder="Укажите набор навыков"
+              onChange={(value) => handleInputChange('skils', value)}/>
+              <div>
+              <Label>Опыт работы</Label>
+              <ExpirienceSelect />
               </div>
-            ))}
+               <div>
+                <Label>Свободные места</Label>
+                <Input type='number' placeholder="Введите количество свободных мест"/>
+                </div> 
+                <AutocompleteInput 
+              label="Зарплата"
+              suggestions={suggestionsData.sallary} 
+              placeholder="Зарплата работника"
+              onChange={(value) => handleInputChange('sallary', value)}/>
+                <AutocompleteInput 
+              label="Цена проживания"
+              suggestions={suggestionsData.homePrice} 
+              placeholder="Стоимость проживания"
+              onChange={(value) => handleInputChange('homePrice', value)}/>
+              <AutocompleteInput 
+              label="Авансы"
+              suggestions={suggestionsData.avance} 
+              placeholder="Отношение к авансу"
+              onChange={(value) => handleInputChange('avance', value)}/>
+              <AutocompleteInput 
+              label="Спецодежда"
+              suggestions={suggestionsData.workwear} 
+              placeholder="Спецодежда"
+              onChange={(value) => handleInputChange('workwear', value)}/>
+               <div>
+                <Label>Наличие В/У</Label>
+                <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} onChange={function (selected: string[]): void {
+                  throw new Error('Function not implemented.');
+                } } />
+                </div>
+                <div>
+                <Label>Знание языков</Label>
+                <CMultiSelect options={langues} placeholder={'Выберите языки'} onChange={function (selected: string[]): void {
+                  throw new Error('Function not implemented.');
+                } }/>
+                </div>
+                <AutocompleteInput 
+              label="Часы отработки"
+              suggestions={suggestionsData.wHours} 
+              placeholder="Количество часов отработки"
+              onChange={(value) => handleInputChange('wHours', value)}/>
+                <div>
+                <Label>Набор открыт с:</Label>
+                <Input type='date' placeholder="Введите дату открытия"/>
+                </div>
+              </div>
+          </DrawerContent>
+          <DrawerFooter>
+            <Button>Submit</Button>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </div>
+      </DrawerContent>
+    </Drawer>
+              </CardContent>
+            </Card>
+            
+
           </div>
-
-        </div>
-
-
-        {/* Кнопка отправки формы */}
-        <div className="col-span-full mt-6 text-center">
-          <button type="submit" className="px-6 py-2 bg-blue-500 text-white rounded-md">
-            Добавить
-          </button>
-        </div>
-      </form>
-    </div>
+        ))}
+      </div></>
   );
 };
 

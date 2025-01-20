@@ -1,9 +1,10 @@
 
-export type Profession = {
-  name: string;            
-  experience: string;      
-  category: string;        
-};
+export interface Profession {
+  name: string;
+  category: string;
+  experience: string;
+}
+
 
 
 

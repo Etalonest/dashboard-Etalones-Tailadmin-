@@ -16,7 +16,6 @@ interface Manager {
   tasks: any[];
 }
 
-// Контекст для менеджера
 interface ManagerContextType {
   manager: Manager | null;
   setManager: (manager: Manager | null) => void;
@@ -24,7 +23,6 @@ interface ManagerContextType {
 
 const ManagerContext = createContext<ManagerContextType | undefined>(undefined);
 
-// Провайдер контекста
 export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [manager, setManager] = useState<Manager | null>(null);
   const { data: session } = useSession();
@@ -32,7 +30,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const managerId = session?.managerId;
 
   useEffect(() => {
-    if (!managerId) return; // Если нет managerId, выходим
+    if (!managerId) return; 
 
     const fetchManager = async () => {
       try {

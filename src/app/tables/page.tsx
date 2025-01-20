@@ -5,6 +5,7 @@ import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
 import TableCandidate from "@/src/components/Tables/TableCandidaate";
+import { ProfessionProvider } from "@/src/context/ProfessionContext";
 
 
 const TablesPage = () => {
@@ -18,6 +19,7 @@ const TablesPage = () => {
  
   return (
     <DefaultLayout>
+      <ProfessionProvider>
       <Breadcrumb pageName="Tables" />
 
       <div className="mb-6">
@@ -51,6 +53,7 @@ const TablesPage = () => {
         {activeTable === "table3" && <TableThree />}
       </div>
     
+      </ProfessionProvider>
     </DefaultLayout>
   );
 };

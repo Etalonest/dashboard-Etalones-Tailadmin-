@@ -9,7 +9,6 @@ import AddPartnerForm from "@/src/components/forms/FormPartner/AddpartnerForm";
 import EditPartnerForm from "@/src/components/forms/FormPartner/EditPartnerForm";
 import ViewPartnerForm from "@/src/components/forms/FormPartner/ViewParnterForm";
 import { Candidate } from "@/src/types/candidate";
-import { Profession } from "@/src/types/profession";
 import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
 import { Partner } from "@/src/types/partner";
 
@@ -19,14 +18,12 @@ interface SidebarProps {
   selectedCandidate?: Candidate | null;
   selectedPartner?: Partner | null;
   formType?: "addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | "addPartner" | "viewPartner" | "editPartner" |null;
-  professions?: Profession[];
 }
 
 const SidebarRight = ({
   sidebarROpen,
   setSidebarROpen,
   formType,
-  professions,
   selectedCandidate,
   selectedPartner,
 }: SidebarProps) => {
@@ -44,7 +41,7 @@ const SidebarRight = ({
   useEffect(() => {
     if (!sidebarROpen) {
       if (formType !== "viewCandidate" && formType !== "viewPartner") {
-        setFormData(null); // Очистка формы при закрытии сайдбара (не для просмотра)
+        setFormData(null); 
       }
     }
   }, [sidebarROpen, formType]); // Зависимость от состояния сайдбара и типа формы
@@ -52,15 +49,15 @@ const SidebarRight = ({
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":
-        return <AddCandidateForm professions={professions} setSidebarROpen={setSidebarROpen} />;
+        return <AddCandidateForm  setSidebarROpen={setSidebarROpen} />;
       case "editCandidate":
-        return <EditCandidateForm candidate={formData} professions={professions} />;
+        return <EditCandidateForm candidate={formData}  />;
       case "viewCandidate":
         return <ViewCandidateForm candidate={formData} />;
       case "createManager":
         return <FormCreateManager />;
       case "addPartner":
-        return <AddPartnerForm partner={formData} />; 
+        return <AddPartnerForm  />;
       case "editPartner":
         return <EditPartnerForm partner={formData} />; 
       case "viewPartner":
@@ -82,7 +79,7 @@ const SidebarRight = ({
   return (
     <aside
       id="sidebar"
-      className={`fixed right-0 top-0 z-[9998] flex h-screen w-full flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark ${
+      className={`fixed right-0 top-0 z-[9990] flex h-screen w-full flex-col overflow-y-hidden bg-white duration-300 ease-linear dark:bg-boxdark ${
         sidebarROpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
