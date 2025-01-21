@@ -81,7 +81,6 @@ export const PUT = async (request: any, { params }: any) => {
         const id = params.id; 
         
         const data = await request.formData();
-        console.log("DataOnServer",data);
         const file = data.get('file');  // Новый файл изображения (если есть)
         const name = data.get('name');          // Обновленное имя
         const phone = data.get('phone');        // Обновленный телефон

@@ -12,7 +12,7 @@ interface MultiSelectProps {
     options: Option[];
     placeholder: string;
     className?: string; 
-    onChange: (selected: string[]) => void; 
+    onChange: any 
 
 }
 

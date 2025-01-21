@@ -9,21 +9,21 @@ import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
 import { useSession } from 'next-auth/react';
 import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
 import {DriveOption, DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
-import { Badge } from '@/components/ui/badge';
 import MyMultiSelect from '../../inputs/MyMultiselect/MyMultiselect';
 
 const AddCandidateForm = ({ professions }: any) => {
   const { data: session } = useSession();
   const [phone, setPhone] = useState('');
   const { addNotification } = useNotifications();
-  const [file, setFile] = useState<File | null>(null); // Состояние для выбранного файла
+  const [file, setFile] = useState<File | null>(null); 
   const [comment, setComment] = useState<CommentEntry>({
     authorId: '',
     author: '',
     text: '',
     date: new Date(),
-  });  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
-  const [selectedDrive, setSelectedDrive] = useState<string[]>([]); // Состояние для выбранных значений
+  });  
+  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
+  const [selectedDrive, setSelectedDrive] = useState<string[]>([]); 
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
   const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);

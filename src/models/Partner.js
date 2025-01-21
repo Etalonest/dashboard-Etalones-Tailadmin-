@@ -1,10 +1,17 @@
 import { Schema, model, models } from "mongoose";
+import {Document} from './Document';
 
 const PartnerSchema = new Schema({
  
     professions: [{
         name: {
           type: String,
+        },
+        location: {
+          type: String,
+        },
+        skills:{
+          type: String
         },
         experience: { 
           type: String 
@@ -15,24 +22,30 @@ const PartnerSchema = new Schema({
         salary:{
           type: String
         },
-        skills:{
+        rentPrice:{
           type: String
-        },
-        langue: {
-          name: String,
-          level: String,
         },
         avans: {
           type: String
         },
-        getStart:{
-          type: Boolean
-        },
-        rentPrice:{
+        // Рабочая одежда
+      workwear: {
           type: String
+      },
+      drivePermis: [{
+        type: String,
+      }],
+        langue: {
+          name: String,
+          level: String,
         },
         workHours:{
           type: Number
+        },
+        getStart:{
+          status: Boolean,
+          dateFrom: Date
+
         },
         candidates: [{
           type: Schema.Types.ObjectId,
@@ -50,6 +63,15 @@ const PartnerSchema = new Schema({
       phone: {
         type: String,
       },
+      viber: {
+        type: String,
+      },
+       telegram: {
+        type: String,
+       },
+       whatsapp: {
+        type: String,
+       },
       email: {
         type: String,
       },
@@ -58,15 +80,6 @@ const PartnerSchema = new Schema({
       },
       companyName: {
         type: String,
-      },
-    // Рабочая одежда
-      workwear: {
-        desc:{
-          type: String
-        },
-        stat:{
-          type: Boolean
-        }
       },
       numberDE: {
         type: String,
@@ -88,6 +101,10 @@ const PartnerSchema = new Schema({
         salaryWorker: String,
       },
       documents: [{
+        file: {
+          type: Schema.Types.ObjectId,
+          ref: 'Document'
+        },
         docType: String,
         dateOfIssue: String,
         dateExp: String,
@@ -109,10 +126,6 @@ const PartnerSchema = new Schema({
           default: Date.now
         }
       }],
-      documentsFile: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Document'
-      }]
     },
       { timestamps: true });
 

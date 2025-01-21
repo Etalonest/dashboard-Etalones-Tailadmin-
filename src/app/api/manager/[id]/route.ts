@@ -187,7 +187,6 @@ export async function GET(request: any, { params }: any) {
           return NextResponse.json({ error: "Manager not found" }, { status: 404 });
       }
 
-      console.log("Менеджер найден:", manager);
       return NextResponse.json({ manager }, { status: 200 });
 
   } catch (error) {

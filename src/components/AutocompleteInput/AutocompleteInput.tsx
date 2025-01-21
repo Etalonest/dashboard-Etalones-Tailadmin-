@@ -1,9 +1,10 @@
-// AutocompleteInput.tsx
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface AutocompleteInputProps {
+  value?: string;  // Используйте string, чтобы указать, что это строка
+  name?: string;
   label: string;
   suggestions: string[];
   placeholder: string;
@@ -11,19 +12,27 @@ interface AutocompleteInputProps {
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
+  value = '',  // Установите дефолтное значение
+  name,
   label,
   suggestions,
   placeholder,
   onChange
 }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState<string>(value);  // Инициализируйте локальное состояние из пропса
+
+  // Синхронизация локального состояния с пропсом value
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setInputValue(value);
-    onChange(value); 
+    onChange(value); // Передаем значение обратно родительскому компоненту
     setFilteredSuggestions(
       suggestions.filter((suggestion) =>
         suggestion.toLowerCase().includes(value.toLowerCase())
@@ -33,14 +42,15 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
 
   const handleSuggestionClick = (suggestion: string) => {
     setInputValue(suggestion);
-    setFilteredSuggestions([]);
+    setFilteredSuggestions([]); // Скрываем список после выбора
+    onChange(suggestion); // Передаем выбранное значение родительскому компоненту
   };
 
   return (
     <div className="relative">
       <Label>{label}</Label>
       <Input
-        value={inputValue}
+        value={inputValue}  // Отображаем текущее значение, синхронизированное с пропсом
         onChange={handleInputChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

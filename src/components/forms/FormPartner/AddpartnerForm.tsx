@@ -1,4 +1,6 @@
 'use client'
+import { useNotifications } from '@/src/context/NotificationContext';
+import { v4 as uuidv4Original } from 'uuid';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,21 +23,36 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { X } from 'lucide-react';
+import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { CommentEntry } from '../interfaces/FormCandidate.interface';
+import { ProfessionPartner } from '@/src/types/professionParnter';
+import { p } from 'framer-motion/client';
 
 type ProfessionElement = {
   id: number;
+  name: string;
+  level: string;
+  experience: string;
+  category: string;
 };
 const AddpartnerForm = () => {
-  const [professions, setProfessions] = useState<ProfessionElement[]>([]);
+    const { data: session } = useSession();
+    const managerId = session?.managerId || '';
+  const { addNotification } = useNotifications();
+ const [selectedDriveP, setSelectedDriveP] = useState<string[]>([]);
+   const [comment, setComment] = useState<CommentEntry>({
+      authorId: '',
+      author: '',
+      text: '',
+      date: new Date(),
+    });
+  const [professions, setProfessions] = useState<ProfessionPartner[]>([]);
   const [inputs, setInputs] = useState<{ [key: string]: string }>({
-    expirience: '',
     contractType: '',
     contractPrice: '',
-    sallary: '',
-    homePrice: '',
-    avance: '',
-    workwear: '',
   });
+
   const handleInputChange = (inputKey: string, value: string) => {
     setInputs((prevInputs) => ({
       ...prevInputs,
@@ -43,20 +60,157 @@ const AddpartnerForm = () => {
     }));
   };
   const handleButtonClick = () => {
-    const newProfession: ProfessionElement = {
-      id: professions.length + 1, 
+    const newProfession: ProfessionPartner = {
+      id: professions.length + 1,
+      name: '',
+      location: '',
+      skills: '',
+      experience: '',
+      place: 0,
+      salary: '',
+      rentPrice: '',
+      avans: '',
+      workwear: '',
+      drivePermis: [],
+      langue: [],
+      workHours: 0,
+      getStart: {
+        status: false,
+        dateFrom: undefined
+      },
+      candidates: [],
+      interview: []
     };
-    
+
     setProfessions((prevProfessions) => [...prevProfessions, newProfession]);
   };
+  const handleProfessionSelect = (selectedName: string, id: number) => {
+    console.log("Обновление профессии", { selectedName, id });
+    setProfessions((prevProfessions) =>
+      prevProfessions.map((prof) =>
+        prof.id === id ? { ...prof, name: selectedName } : prof
+      )
+    );
+  };
+  const handleExperienceSelect = (selectedExperience: string, id: number) => {
+    setProfessions((prevProfessions) =>
+      prevProfessions.map((prof) =>
+        prof.id === id ? { ...prof, experience: selectedExperience } : prof
+      )
+    );
+  };
+
+  const handleInputPChange = (id: number, field: string, value: string) => {
+    console.log("Обновление профессии", { id, field, value });
+    setProfessions(prevProfessions => {
+      return prevProfessions.map(prof => {
+        if (prof.id === id) {
+          // Убедитесь, что обновляется правильное поле (например, skills)
+          return { ...prof, [field]: value };
+        }
+        return prof;
+      });
+    });
+  };
+  
+  const handleDrivePChange = (selectedDriveP: string[],id: number) => {
+    setProfessions((prevProfessions) =>
+      prevProfessions.map((prof) =>
+        prof.id === id ? { ...prof, drivePermis: selectedDriveP } : prof
+      )
+    );};
+
+  const getProfessionsDataForSubmit = () => {
+    console.log("Профессии для отправки", professions);
+    return professions.map((prof) => ({
+      name: prof.name || '',
+      location: prof.location || '',
+      skills: prof.skills || '',
+      experience: prof.experience || '',
+      place: prof.place || 0,
+      salary: prof.salary || '',
+      rentPrice: prof.rentPrice || '',
+      avans: prof.avans || '',
+      workwear: prof.workwear || '',
+      drivePermis: prof.drivePermis || [],
+      langue: prof.langue || [],
+      workHours: prof.workHours || 0,
+      getStart: prof.getStart ? {
+        status: prof.getStart.status || false,
+        dateFrom: prof.getStart.dateFrom || new Date(),
+      } : {
+        status: false,
+        dateFrom: new Date(),
+      },
+      candidates: prof.candidates || [],
+      interview: prof.interview || [],
+    }));
+  };
+  
+
   const handleRemoveProfession = (id: number) => {
     // Удаляем элемент по id
     setProfessions((prevProfessions) =>
       prevProfessions.filter((profession) => profession.id !== id)
     );
   };
+
+
+
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    const professionsData = getProfessionsDataForSubmit();
+    const commentData = {
+      authorId: managerId,
+      author: managerId,
+      text: comment.text,
+      date: comment.date.toISOString(), 
+    };
+    const formData = new FormData(event.target);
+  
+    // Добавляем только те поля, которые отсутствуют в оригинальном formData
+    formData.append('managerId', managerId);
+    // formData.append('drivePermis', JSON.stringify(driveData));
+    formData.append('professions', JSON.stringify(professionsData));
+    // formData.append('documents', JSON.stringify(documentsData));
+    // formData.append('langue', JSON.stringify(languesData));
+    formData.append('comment', JSON.stringify(commentData));
+
+  
+    try {
+      const response = await fetch('/api/partner', {
+        method: 'POST',
+        body: formData, 
+      });
+  
+      const data = await response.json();
+      const message = data.message;
+  
+      if (data.success) {
+        addNotification({
+          title: 'Успешно',
+          content: message,
+          type: 'success',
+          id: uuidv4Original(),
+        });
+      }
+  
+      if (data.error) {
+        addNotification({
+          title: 'Ошибка',
+          content: message,
+          type: 'error',
+          id: uuidv4Original(),
+        });
+      }
+    } catch (error) {
+      console.error('Ошибка при добавлении кандидата:', error);
+    }
+  };
+
   return (
-    <><div className='container mx-auto'>
+    <form onSubmit={handleSubmit}>
+    <div className='container mx-auto'>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div className=" p-4">
           <Card>
@@ -66,22 +220,22 @@ const AddpartnerForm = () => {
             <CardContent className='mt-0 flex flex-col gap-2'>
               <div>
               <Label>ФИО</Label>
-              <Input placeholder="Имя" />
+              <Input placeholder="Имя" name='name'/>
               </div><div>
               <Label>Телефон</Label>
-              <Input placeholder="+495651322654" />
+              <Input placeholder="+495651322654" name='phone'/>
               </div><div>
               <Label>Viber</Label>
-              <Input placeholder="+495651322654" />
+              <Input placeholder="+495651322654" name='viber'/>
               </div><div>
               <Label>Whatsapp</Label>
-              <Input placeholder="+495651322654" />
+              <Input placeholder="+495651322654" name='whatsapp'/>
               </div><div>
               <Label>Telegram</Label>
-              <Input placeholder="+495651322654" />
+              <Input placeholder="+495651322654" name='telegram'/>
               </div><div>
               <Label>Почта</Label>
-              <Input placeholder="mail@gmail.com" />
+              <Input placeholder="mail@gmail.com" name='email'/>
               </div>
               <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button>
 
@@ -97,38 +251,42 @@ const AddpartnerForm = () => {
             <CardContent className='mt-0 flex flex-col gap-2'>
             <div>
               <Label>Название фирмы</Label>
-              <Input placeholder="GMBH gfgtg" />
+              <Input placeholder="GMBH gfgtg" name='companyName'/>
               </div><div>
               <Label>Номер DE</Label>
-              <Input placeholder="DE495651322654" />
+              <Input placeholder="DE495651322654" name='numberDE'/>
               </div><div>
               <Label>Местоположение</Label>
-              <Input placeholder="Дюсельдорф" />
+              <Input placeholder="Дюсельдорф" name='location'/>
               </div><div>
               <Label>Сайт</Label>
-              <Input placeholder="www.site.com" />
+              <Input placeholder="www.site.com" name='site'/>
               </div>
 
               <AutocompleteInput 
+              name='contractType'
               label="Тип контракта"
               suggestions={suggestionsData.contractType} 
               placeholder="Введите тип контракта"
               onChange={(value) => handleInputChange('contractType', value)}/>
               <AutocompleteInput 
+              name='contractPrice'
               label="Цена контракта"
               suggestions={suggestionsData.contractPrice} 
               placeholder="Введите цену контракта"
               onChange={(value) => handleInputChange('contractPrice', value)}/>
-              <Button variant="outline" className='bg-green-900 text-white mt-8' onClick={handleButtonClick}>Добавить профессию</Button>
+              <Button variant="outline" className='bg-green-900 text-white mt-8' 
+              onClick={handleButtonClick}>
+                Добавить профессию</Button>
             </CardContent>
           </Card>
-        </div><div className=" p-4">
+        </div>
+        <div className=" p-4">
           <Card>
             <CardHeader>
               <CardTitle>Статус</CardTitle>
             </CardHeader>
             <CardContent>
-              <form>
                 <div className="flex flex-col space-y-1.5">
                   <Card><CardTitle className='flex justify-start m-2'>1. Не обработан</CardTitle></Card>
                   <Card>
@@ -203,13 +361,12 @@ const AddpartnerForm = () => {
                   </Card>
 
                 </div>
-              </form>
             </CardContent>
           </Card>
         </div>
-
       </div>
-    </div><div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    </div>
+    <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {professions.map((profession, index) => (
           
           <div key={profession.id} className=" p-4 mb-4 ">
@@ -217,7 +374,9 @@ const AddpartnerForm = () => {
               <CardHeader>
                 <CardTitle className='flex justify-start items-center gap-1 relative'>
                   {index + 1}.
-                  <ProfessionSelect />
+                  <ProfessionSelect
+                  professionId={profession.id}
+                  onProfessionChange={handleProfessionSelect}/>
                   <Button
                   variant="outline"
                   className="bg-red-600 text-white absolute right-0 top-0 p-2"
@@ -228,44 +387,56 @@ const AddpartnerForm = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className='flex flex-col gap-2'>
+              <div>
+              <Label>Местоположение</Label>
+              <Input 
+              value={profession.location}
+              onChange={(e) => handleInputPChange(profession.id, 'location', e.target.value)}              />
+              </div>
               <AutocompleteInput 
+              value={profession.skills}  
               label="Навыки"
-              suggestions={suggestionsData.skils} 
+              suggestions={suggestionsData.skils}
               placeholder="Укажите набор навыков"
-              onChange={(value) => handleInputChange('skils', value)}/>
+              onChange={(value) => handleInputPChange(profession.id, 'skills', value)}/>          
               <div>
               <Label>Опыт работы</Label>
-              <ExpirienceSelect />
+              <ExpirienceSelect 
+              onProfessionChange={handleExperienceSelect}
+              professionId={profession.id}
+              />
               </div>
                <div>
                 <Label>Свободные места</Label>
-                <Input type='number' placeholder="Введите количество свободных мест"/>
+                <Input type='number' placeholder="Введите количество свободных мест"
+                value={profession.place}
+                onChange={(e) => handleInputPChange(profession.id, 'place', e.target.value)}
+                />
                 </div> 
                 <AutocompleteInput 
               label="Зарплата"
               suggestions={suggestionsData.sallary} 
               placeholder="Зарплата работника"
-              onChange={(value) => handleInputChange('sallary', value)}/>
+              onChange={(value) => handleInputPChange(profession.id, 'salary', value)}/>
                 <AutocompleteInput 
               label="Цена проживания"
               suggestions={suggestionsData.homePrice} 
               placeholder="Стоимость проживания"
-              onChange={(value) => handleInputChange('homePrice', value)}/>
+              onChange={(value) => handleInputPChange(profession.id, 'rentPrice', value)}/>
               <AutocompleteInput 
               label="Авансы"
               suggestions={suggestionsData.avance} 
               placeholder="Отношение к авансу"
-              onChange={(value) => handleInputChange('avance', value)}/>
+              onChange={(value) => handleInputPChange(profession.id, 'avans', value)}/>
               <AutocompleteInput 
               label="Спецодежда"
               suggestions={suggestionsData.workwear} 
               placeholder="Спецодежда"
-              onChange={(value) => handleInputChange('workwear', value)}/>
+              onChange={(value) => handleInputPChange(profession.id, 'workwear', value)}/>
                <div>
                 <Label>Наличие В/У</Label>
-                <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} onChange={function (selected: string[]): void {
-                  throw new Error('Function not implemented.');
-                } } />
+                <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} 
+                onChange={(selectedDriveP: string[]) => handleDrivePChange(selectedDriveP, profession.id)} />
                 </div>
                 <div>
                 <Label>Знание языков</Label>
@@ -294,7 +465,8 @@ const AddpartnerForm = () => {
           </DrawerHeader>
           <DrawerContent className='flex w-full'>
            
-              <div>
+              <div className=' flex'>
+          <Image src='/images/logo/logo-dark.svg' width={100} height={100} alt="image" className="w-20 h-20 rounded-full" />
           <ProfessionSelect />
               <AutocompleteInput 
               label="Навыки"
@@ -367,7 +539,12 @@ const AddpartnerForm = () => {
 
           </div>
         ))}
-      </div></>
+      </div>
+      <Button 
+      className='fixed top-4 right-4 bg-green-900 text-white hover:bg-green-700' 
+      type='submit'>Сохранить</Button>
+
+      </form>
   );
 };
 

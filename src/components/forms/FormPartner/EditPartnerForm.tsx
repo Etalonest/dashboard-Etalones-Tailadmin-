@@ -127,7 +127,6 @@ const EditPartnerForm = ({ id, candidate, professions, partners }: any) => {
     setProfessionEntries(newEntries);
   };
   const handleDriveChange = (selected: string[]) => {
-    console.log("Updated drive permissions:", selected);
     setSelectDrive(selected);
   };
 
@@ -489,7 +488,7 @@ const EditPartnerForm = ({ id, candidate, professions, partners }: any) => {
                     ))}
                   </select>
                 </label>
-                <label htmlFor="experience">
+                {/* <label htmlFor="experience">
                   <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.experience || ''} onChange={e => handleProfessionChange(index, 'experience', e.target.value || '')}>
                     <option >Без опыта</option>
                     <option >Меньше года</option>
@@ -497,7 +496,7 @@ const EditPartnerForm = ({ id, candidate, professions, partners }: any) => {
                     <option >От 2-х лет</option>
                     <option >Более 10-ти лет</option>
                   </select>
-                </label>
+                </label> */}
                 <button
                   className=" btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
                   type="button" onClick={() => removeProfessionEntry(index)}><X /></button>

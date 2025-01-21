@@ -4,11 +4,9 @@ import { Eye, UserCog, UserRoundPlus } from "lucide-react";
 import { Partner } from '@/src/types/partner';  
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
-import { Profession } from "@/src/types/profession"; 
 
 const TablePartner = () => {
   const { manager } = useManager();  
-  const [professions, setProfessions] = useState<Profession[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,19 +38,7 @@ const TablePartner = () => {
     }
   }, [manager, searchQuery]);
   
-  useEffect(() => {
-    const fetchProfessions = async () => {
-      try {
-        const response = await fetch("/api/profession");
-        const data = await response.json();
-        setProfessions(data);
-      } catch (error) {
-        console.error("Error fetching professions:", error);
-      }
-    };
 
-    fetchProfessions();
-  }, []); 
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -83,7 +69,7 @@ const TablePartner = () => {
         setSidebarROpen={setSidebarOpen} 
         formType={formType} 
         selectedPartner={selectedPartner} 
-        professions={professions}/>
+        />
         <input
           type="text"
           value={searchQuery}
@@ -122,10 +108,10 @@ const TablePartner = () => {
           </div>
         </div>
 
-        {manager && currentPartners.map((partner) => (
+        {manager && currentPartners.map((partner, index) => (
           <div
             className={`grid grid-cols-3 sm:grid-cols-5 ${'border-b border-stroke dark:border-strokedark'}`}
-            key={partner.id}
+            key={index}
           >
             <div className="flex items-center gap-3 p-2.5 xl:p-5">
               <div className="flex-shrink-0">
@@ -145,8 +131,8 @@ const TablePartner = () => {
 
             <div className="flex items-center justify-start p-2.5 xl:p-5">
               <p className="text-meta-3">
-                {partner.documents.map((document) => (
-                  <div key={document.id}>{document.docType}</div>
+                {partner.documents.map((document,index) => (
+                  <div key={index}>{document.docType}</div>
                 ))}
               </p>
             </div>

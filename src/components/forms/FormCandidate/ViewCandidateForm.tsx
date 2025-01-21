@@ -8,7 +8,6 @@ interface Candidate {
 }
 
 const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
-  console.log("CANDIDATE1", candidate);
 
   // Проверка на null
   if (!candidate) {
