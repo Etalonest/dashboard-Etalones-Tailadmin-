@@ -12,7 +12,7 @@ interface AutocompleteInputProps {
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
-  value = '',  // Установите дефолтное значение
+  value = '',  
   name,
   label,
   suggestions,

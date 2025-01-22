@@ -16,13 +16,56 @@ import { X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { CommentEntry } from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
+import { Contract } from '@/src/components/forms/interfaces/FormCandidate.interface';
 
 
 const AddpartnerForm = () => {
     const { data: session } = useSession();
     const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
- const [selectedDriveP, setSelectedDriveP] = useState<string[]>([]);
+  const [phone, setPhone] = useState<string>('');
+  const [numberDE, setNumberDE] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const handleUniqueFieldCheck = async (field: string, value: string) => {
+    if (value.trim() === '') return;  // Пропуск пустого значения
+
+    try {
+      const response = await fetch(`/api/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ field, value }), // Отправляем поле и его значение в теле запроса
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        addNotification({
+          title: "Ошибка",
+          content: `Партнёр с таким ${field} уже существует.`,
+          metadata: data.metadata,
+          type: "error",
+          id: uuidv4Original(),
+        });
+      } else {
+        addNotification({
+          title: `${field} свободен`,
+          content: `Этот ${field} ещё не зарегистрирован.`,
+          type: 'success',
+          id: uuidv4Original(),
+        });
+      }
+    } catch (error) {
+      console.error('Ошибка при проверке уникальности:', error);
+    }
+  };
+
+  // Обработчики для каждого поля
+  const handlePhoneBlur = () => handleUniqueFieldCheck('phone', phone);
+  const handleNumberDEBlur = () => handleUniqueFieldCheck('numberDE', numberDE);
+  const handleEmailBlur = () => handleUniqueFieldCheck('email', email);
+
    const [comment, setComment] = useState<CommentEntry>({
       authorId: '',
       author: '',
@@ -30,15 +73,16 @@ const AddpartnerForm = () => {
       date: new Date(),
     });
   const [professions, setProfessions] = useState<ProfessionPartner[]>([]);
-  const [inputs, setInputs] = useState<{ [key: string]: string }>({
-    contractType: '',
-    contractPrice: '',
+  const [contract, setContract] = useState<Contract>({
+    typeC: '',
+    sum: '',
+    salaryWorker: '',
   });
 
-  const handleInputChange = (inputKey: string, value: string) => {
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [inputKey]: value,
+  const handleInputChange = (field: string, value: string) => {
+    setContract((prevContract) => ({
+      ...prevContract,
+      [field]: value,
     }));
   };
   const handleButtonClick = () => {
@@ -80,11 +124,9 @@ const AddpartnerForm = () => {
   };
 
   const handleInputPChange = (id: number, field: string, value: string) => {
-    console.log("Обновление профессии", { id, field, value });
     setProfessions(prevProfessions => {
       return prevProfessions.map(prof => {
         if (prof.id === id) {
-          // Убедитесь, что обновляется правильное поле (например, skills)
           return { ...prof, [field]: value };
         }
         return prof;
@@ -146,14 +188,17 @@ const AddpartnerForm = () => {
       text: comment.text,
       date: comment.date.toISOString(), 
     };
+    const contractData = {
+      typeC: contract.typeC,
+      sum: contract.sum,
+    };
     const formData = new FormData(event.target);
   
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
     formData.append('professions', JSON.stringify(professionsData));
     formData.append('comment', JSON.stringify(commentData));
-
-  
+    formData.append('contract', JSON.stringify(contractData));  
     try {
       const response = await fetch('/api/partner', {
         method: 'POST',
@@ -176,6 +221,7 @@ const AddpartnerForm = () => {
         addNotification({
           title: 'Ошибка',
           content: message,
+          metadata: data.metadata,
           type: 'error',
           id: uuidv4Original(),
         });
@@ -201,7 +247,10 @@ const AddpartnerForm = () => {
               <Input placeholder="Имя" name='name'/>
               </div><div>
               <Label>Телефон</Label>
-              <Input placeholder="+495651322654" name='phone'/>
+              <Input placeholder="+495651322654" name='phone'
+              onBlur={handlePhoneBlur}
+              onChange={(e) => setPhone(e.target.value)}
+              />
               </div><div>
               <Label>Viber</Label>
               <Input placeholder="+495651322654" name='viber'/>
@@ -213,7 +262,10 @@ const AddpartnerForm = () => {
               <Input placeholder="+495651322654" name='telegram'/>
               </div><div>
               <Label>Почта</Label>
-              <Input placeholder="mail@gmail.com" name='email'/>
+              <Input placeholder="mail@gmail.com" name='email'
+              onBlur={handleEmailBlur}
+              onChange={(e) => setEmail(e.target.value)}
+              />
               </div>
               {/* <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button> */}
 
@@ -232,7 +284,10 @@ const AddpartnerForm = () => {
               <Input placeholder="GMBH gfgtg" name='companyName'/>
               </div><div>
               <Label>Номер DE</Label>
-              <Input placeholder="DE495651322654" name='numberDE'/>
+              <Input placeholder="DE495651322654" name='numberDE'
+              onBlur={handleNumberDEBlur}
+              onChange={(e) => setNumberDE(e.target.value)}
+              />
               </div><div>
               <Label>Местоположение</Label>
               <Input placeholder="Дюсельдорф" name='location'/>
@@ -245,13 +300,13 @@ const AddpartnerForm = () => {
               label="Тип контракта"
               suggestions={suggestionsData.contractType} 
               placeholder="Введите тип контракта"
-              onChange={(value) => handleInputChange('contractType', value)}/>
+              onChange={(value) => handleInputChange('typeC', value)}/>
               <AutocompleteInput 
               name='contractPrice'
               label="Цена контракта"
               suggestions={suggestionsData.contractPrice} 
               placeholder="Введите цену контракта"
-              onChange={(value) => handleInputChange('contractPrice', value)}/>
+              onChange={(value) => handleInputChange('sum', value)}/>
             </CardContent>
             <Button variant="outline" className='bg-green-900 text-white w-full' 
               onClick={handleButtonClick} type='button'> 

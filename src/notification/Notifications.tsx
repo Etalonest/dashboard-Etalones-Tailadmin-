@@ -1,14 +1,16 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { NotificationContext, Notification } from "@/src/context/NotificationContext";
 
 const Notifications = () => {
   const { notifications } = useContext(NotificationContext) || { notifications: [] };
   const [visibleNotifications, setVisibleNotifications] = useState<Notification[]>([]);
-  const [shownNotificationIds, setShownNotificationIds] = useState<Set<string>>(new Set()); // Множество для отслеживания уже показанных уведомлений
+  const [shownNotificationIds, setShownNotificationIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-
     notifications.forEach(notification => {
+      console.log('Обрабатываем уведомление:', notification); // Логируем всё уведомление, включая метаданные
+
       // Проверяем, было ли уже это уведомление показано
       if (!shownNotificationIds.has(notification.id)) {
         setVisibleNotifications(prevNotifications => [...prevNotifications, notification]);
@@ -17,10 +19,10 @@ const Notifications = () => {
         // Убираем уведомление через 3 секунды
         setTimeout(() => {
           setVisibleNotifications(prevNotifications => prevNotifications.filter(n => n.id !== notification.id));
-        }, 3000);
+        }, 5000);
       }
     });
-  }, [notifications, shownNotificationIds]); // добавляем `shownNotificationIds` как зависимость
+  }, [notifications, shownNotificationIds]);
 
   const handleClose = (id: string) => {
     setVisibleNotifications(prevNotifications => prevNotifications.filter(n => n.id !== id));
@@ -46,11 +48,24 @@ const Notifications = () => {
               borderRadius: "5px",
               opacity: 1,
               transition: "opacity 0.5s",
+              position: "relative",
             }}
           >
             <h4>{notification.title}</h4>
-            <p>{notification.content}</p>
-            {/* Кнопка для закрытия уведомления */}
+            <p>
+              {notification.content}
+              {notification.metadata?.partnerId && (
+                <a 
+                  href={`/partner/${notification.metadata.partnerId}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: "#FFD700", textDecoration: "underline", marginLeft: "10px" }}
+                >
+                  Перейти к партнёру
+                </a>
+              )}
+            </p>
+
             <button
               onClick={() => handleClose(notification.id)}
               style={{

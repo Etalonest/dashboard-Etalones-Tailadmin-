@@ -82,7 +82,7 @@ const TableCandidate = () => {
         setSidebarROpen={setSidebarOpen} 
         formType={formType} 
         selectedCandidate={selectedCandidate} 
-        professions={professions}/>
+        />
 
       <input
         type="text"

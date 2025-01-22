@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 
 import AddCandidateForm from "@/src/components/forms/FormCandidate/AddCandidateForm";
 import EditCandidateForm from "@/src/components/forms/FormCandidate/EditCandidateForm";
@@ -9,8 +9,8 @@ import AddPartnerForm from "@/src/components/forms/FormPartner/AddpartnerForm";
 import EditPartnerForm from "@/src/components/forms/FormPartner/EditPartnerForm";
 import ViewPartnerForm from "@/src/components/forms/FormPartner/ViewParnterForm";
 import { Candidate } from "@/src/types/candidate";
-import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
 import { Partner } from "@/src/types/partner";
+import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
 
 interface SidebarProps {
   sidebarROpen?: boolean;
@@ -28,7 +28,14 @@ const SidebarRight = ({
   selectedPartner,
 }: SidebarProps) => {
   const [formData, setFormData] = useState<Candidate | null>(null);
+  const [partnerData, setPartnerData] = useState<Partner | null>(null);
 
+  useEffect(() => {
+    if (selectedPartner) {
+      console.log("selectedPartner updated:", selectedPartner);
+      setPartnerData(selectedPartner);
+    }
+  }, [selectedPartner]);
 
   // Логируем selectedCandidate для отладки
   useEffect(() => {
@@ -59,7 +66,7 @@ const SidebarRight = ({
       case "addPartner":
         return <AddPartnerForm  />;
       case "editPartner":
-        return <EditPartnerForm partner={formData} />; 
+        return <EditPartnerForm partner={partnerData} />; 
       case "viewPartner":
         return <ViewPartnerForm partner={formData} />;  
       default:

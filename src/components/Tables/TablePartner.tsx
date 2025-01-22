@@ -116,7 +116,9 @@ const TablePartner = () => {
             <div className="flex items-center gap-3 p-2.5 xl:p-5">
               <div className="flex-shrink-0">
                 <Eye />
-                <UserCog />
+                <UserCog 
+                onClick={() => toggleSidebar("editPartner", partner)}
+                />
               </div>
               <p className="hidden text-black dark:text-white sm:block">{partner.name}</p>
             </div>

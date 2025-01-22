@@ -19,7 +19,7 @@ export type Profession = {
   export type Contract = {
     typeC: string;           // Тип контракта (например, "Почасовый")
     sum: string;             // Сумма контракта
-    salaryWorker: string;    // Зарплата работника
+    salaryWorker?: string;    // Зарплата работника
   };
   
   // Тип для языков (если партнёр предоставляет информацию о языке)

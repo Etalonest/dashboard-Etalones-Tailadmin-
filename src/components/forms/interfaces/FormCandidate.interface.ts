@@ -16,6 +16,11 @@ export interface DriveOption {
     text?: string;
     date: Date;
   }
+  export interface Contract {
+    typeC: string;
+    sum: string;
+    salaryWorker?: string;
+  }
   export interface Profession {
     level: string; name: string; experience: string; category: string; 
 }

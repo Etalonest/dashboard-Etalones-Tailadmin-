@@ -1,12 +1,13 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 // Тип уведомлений
-export interface Notification { // Делаем Notification доступным для импорта
+export interface Notification {
   id: string;
   title: string;
   content: string;
   type: 'success' | 'error' | 'warning' | 'info';
+  metadata?: any;  // Метаданные
+  link?: string;    // Ссылка для уведомления
 }
 
 // Тип контекста уведомлений
@@ -28,7 +29,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (notification: Notification) => {
-    setNotifications((prev) => [...prev, notification]);
+    setNotifications((prev) => {
+      return [...prev, notification];
+    });
   };
 
   return (
@@ -44,5 +47,6 @@ export const useNotifications = (): NotificationContextType => {
   if (!context) {
     throw new Error('useNotifications must be used within a NotificationProvider');
   }
+
   return context;
 };

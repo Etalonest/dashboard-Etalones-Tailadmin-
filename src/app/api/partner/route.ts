@@ -1,14 +1,11 @@
 import { connectDB } from "@/src/lib/db";
 import Manager from "@/src/models/Manager";
 import Partner from "@/src/models/Partner";
-import { error } from "console";
-import { b } from "framer-motion/client";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
     try {
       const formData = await request.formData();
-// недоделанный путь
       const name = formData.get("name");
       const phone = formData.get("phone");
       const viber = formData.get("viber");
@@ -23,22 +20,24 @@ export const POST = async (request: Request) => {
 
       const professionsRaw = formData.get("professions");
       const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
-      console.log("professions111", professions);
-      
-      
+
+      const contractRaw = formData.get("contract");
+      const contract = contractRaw ? JSON.parse(contractRaw as string) : {};
       await connectDB();
 
       const existingPartner = await Partner.findOne({ phone });
-if (existingPartner){
-  console.log('Партнёр с таким номером уже существует', existingPartner);
-  return new NextResponse(
-    JSON.stringify({
-      error: true,
-      message: 'Партнёр с таким номером уже существует',
-    }),
-    { status: 400 }
-  )
-}
+    if (existingPartner) {
+      return new NextResponse(
+        JSON.stringify({
+          error: true,
+          message: `Партнёр с таким номером уже существует ${existingPartner.name}`,
+          metadata: {
+            partnerId: existingPartner._id.toString(), 
+          },
+        }),
+        { status: 400 }
+      );
+    }
 
   const body = {
     name,
@@ -52,35 +51,31 @@ if (existingPartner){
     location,
     site,
     professions,
+    contract,
     manager: manager
   }
   
-      const newPartner = new Partner(
-        body
-      );
+      const newPartner = new Partner(body);
+    
       await newPartner.save();
   
-      // Логика для менеджера:
       if (newPartner.manager) {
-        // Проверяем, существует ли менеджер
         const manager = await Manager.findById(newPartner.manager);
         
         if (!manager) {
           return new NextResponse(
-            JSON.stringify({ message: "Manager not found" }),
+            JSON.stringify({ message: "Менеджер не найден" }),
             { status: 404 }
           );
         }
   
-        // Добавляем партнёра в массив partners нового менеджера
         await Manager.findByIdAndUpdate(
           body.manager,
-          { $addToSet: { partners: newPartner._id } }, // Добавляем уникально
+          { $addToSet: { partners: newPartner._id } }, 
           { new: true }
         );
       }
   
-      // Возвращаем успешный ответ с данными о новом партнёре
       return new NextResponse(
         JSON.stringify({ message: "Новый партнёр создан успешно", partner: newPartner }),
         { status: 201 }
