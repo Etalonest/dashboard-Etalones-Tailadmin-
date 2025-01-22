@@ -17,7 +17,6 @@ import { useSession } from 'next-auth/react';
 import { CommentEntry } from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 import usePartnerData from '@/src/utils/usePartnerData';
-import { p } from 'framer-motion/client';
 
 const EditpartnerForm = ({partner}: any) => {
     const { data: session } = useSession();

@@ -21,13 +21,14 @@ import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
 import Image from "next/image";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { p } from 'framer-motion/client';
 import DownloadButton from '../../DownloadButton/DownloadButton';
+import { useProfessionContext } from "@/src/context/ProfessionContext";
 
-const EditCandidateForm = ({ candidate, professions }: any) => {
+const EditCandidateForm = ({ candidate }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
-  
+  const { professions } = useProfessionContext();
+
       
   const [isOpen, setIsOpen] = useState(false)
   const [fileId, setFileId] = useState<string>('');
@@ -441,7 +442,7 @@ const EditCandidateForm = ({ candidate, professions }: any) => {
                     value={prof.name || ''}
                     onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
                     <option>Нет профессии</option>
-                    {professions.map((profession: { _id: React.Key; name: string }) => (
+                    {professions.map((profession: any) => (
                       <option key={profession._id} value={profession.name}>{profession.name}</option>
                     ))}
                   </select>

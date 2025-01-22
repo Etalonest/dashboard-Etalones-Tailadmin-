@@ -10,9 +10,12 @@ import { useSession } from 'next-auth/react';
 import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
 import {DriveOption, DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
 import MyMultiSelect from '../../inputs/MyMultiselect/MyMultiselect';
+import { useProfessionContext } from "@/src/context/ProfessionContext";
 
-const AddCandidateForm = ({ professions }: any) => {
+const AddCandidateForm = () => {
   const { data: session } = useSession();
+  const { professions } = useProfessionContext();
+
   const [phone, setPhone] = useState('');
   const { addNotification } = useNotifications();
   const [file, setFile] = useState<File | null>(null); 
@@ -338,7 +341,7 @@ const AddCandidateForm = ({ professions }: any) => {
                   <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" 
                   value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
                     <option>Нет профессии</option>
-                    {professions.map((profession: { _id: React.Key; name: string }) => (
+                    {professions.map((profession: any) => (
                       <option key={profession._id} value={profession.name}>{profession.name}</option>
                     ))}
                   </select>

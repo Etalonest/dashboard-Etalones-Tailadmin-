@@ -56,7 +56,7 @@ const SidebarRight = ({
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":
-        return <AddCandidateForm  setSidebarROpen={setSidebarROpen} />;
+        return <AddCandidateForm  />;
       case "editCandidate":
         return <EditCandidateForm candidate={formData}  />;
       case "viewCandidate":
