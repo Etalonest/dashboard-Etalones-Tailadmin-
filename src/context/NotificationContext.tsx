@@ -1,11 +1,4 @@
-// import React from 'react';
-// import { NotificationData } from "@/src/notification/NotificationManager";
 
-// const NotificationContext = React.createContext<(notif: NotificationData) => void>(() => {});
-
-// export default NotificationContext;
-// src/context/NotificationContext.tsx
-// NotificationContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 // Тип уведомлений

@@ -11,11 +11,8 @@ export type ProfessionPartner = {
     workwear: string;
     drivePermis: string[];
     langue: string[];
-    workHours: number;
-    getStart: {
-      status: boolean;
-      dateFrom?: Date;
-    };
+    workHours: string;
+    getStart: Date;
     candidates: string[]; // Здесь типы ObjectId, можно изменить на string для простоты
     interview: string[];
   };

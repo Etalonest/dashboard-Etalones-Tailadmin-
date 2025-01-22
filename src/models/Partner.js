@@ -1,5 +1,6 @@
 import { Schema, model, models } from "mongoose";
 import {Document} from './Document';
+import { type } from "os";
 
 const PartnerSchema = new Schema({
  
@@ -35,16 +36,15 @@ const PartnerSchema = new Schema({
       drivePermis: [{
         type: String,
       }],
-        langue: {
-          name: String,
-          level: String,
-        },
+        langue: [{
+          type: String,
+
+        }],
         workHours:{
-          type: Number
+          type: String
         },
         getStart:{
-          status: Boolean,
-          dateFrom: Date
+         type: Date
 
         },
         candidates: [{

@@ -37,57 +37,7 @@ export const GET = async (request: NextRequest) => {
     return new NextResponse("Error in fetching: " + error, { status: 500 });
   }
 };
-// export const POST = async (request: Request) => {
-//   try {
-//     const body = await request.json();
 
-//     await connectDB();
-
-//     // Проверяем, существует ли кандидат с таким номером телефона
-//     const existingCandidate = await Candidate.findOne({ phone: body.phone },{name: body.name});
-//     if (existingCandidate) {
-//       return new NextResponse(
-//         JSON.stringify({
-//           error: true,
-//           message: `Кандидат с таким номером телефона уже существует ${body.name} ${body.phone} `, 
-//         }),
-//         {
-//           status: 400,
-//         }
-//       );
-//     }
-
-//     // Создаем нового кандидата
-//     const newCandidate = new Candidate(body);
-//     await newCandidate.save();
-
-//     // Если у кандидата есть менеджер, добавляем его в массив кандидатов менеджера
-//     if (newCandidate.manager) {
-//       const manager = await Manager.findById(newCandidate.manager);
-//       if (manager) {
-//         await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: newCandidate._id } });
-//       }
-//     }
-
-//     return new NextResponse(
-//       JSON.stringify({
-//          success: true,
-//          message: `Кандидат ${body.name} успешно создан`, 
-//          candidate: newCandidate }),
-//       { status: 201 }
-//     );
-//   } catch (error) {
-//     return new NextResponse(
-//       JSON.stringify({
-//         message: "Серверная ошибка при создании кандидата",
-//         error,
-//       }),
-//       {
-//         status: 500,
-//       }
-//     );
-//   }
-// };
 
 
 export const POST = async (request: Request) => {
@@ -118,7 +68,7 @@ export const POST = async (request: Request) => {
     const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
 
     const commentRaw = formData.get('comment');
-    const managerId = formData.get('managerId'); // Извлекаем ID менеджера из formData
+    const managerId = formData.get('managerId'); 
     
     const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
       // Проверяем, является ли строка валидным JSON

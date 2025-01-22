@@ -12,30 +12,12 @@ import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
 import { drivePermis, langues } from '@/src/config/constants';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
 import { X } from 'lucide-react';
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { CommentEntry } from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
-import { p } from 'framer-motion/client';
 
-type ProfessionElement = {
-  id: number;
-  name: string;
-  level: string;
-  experience: string;
-  category: string;
-};
+
 const AddpartnerForm = () => {
     const { data: session } = useSession();
     const managerId = session?.managerId || '';
@@ -73,11 +55,8 @@ const AddpartnerForm = () => {
       workwear: '',
       drivePermis: [],
       langue: [],
-      workHours: 0,
-      getStart: {
-        status: false,
-        dateFrom: undefined
-      },
+      workHours: '',
+      getStart: new Date(),
       candidates: [],
       interview: []
     };
@@ -120,6 +99,13 @@ const AddpartnerForm = () => {
       )
     );};
 
+    const handleLangues = (selectedLangues: string[], id: number) => {
+    setProfessions((prevProfessions) =>
+      prevProfessions.map((prof) =>
+        prof.id === id ? { ...prof, langue: selectedLangues } : prof
+      )
+    );};
+
   const getProfessionsDataForSubmit = () => {
     console.log("Профессии для отправки", professions);
     return professions.map((prof) => ({
@@ -134,14 +120,8 @@ const AddpartnerForm = () => {
       workwear: prof.workwear || '',
       drivePermis: prof.drivePermis || [],
       langue: prof.langue || [],
-      workHours: prof.workHours || 0,
-      getStart: prof.getStart ? {
-        status: prof.getStart.status || false,
-        dateFrom: prof.getStart.dateFrom || new Date(),
-      } : {
-        status: false,
-        dateFrom: new Date(),
-      },
+      workHours: prof.workHours || '',
+      getStart: prof.getStart || new Date,
       candidates: prof.candidates || [],
       interview: prof.interview || [],
     }));
@@ -170,10 +150,7 @@ const AddpartnerForm = () => {
   
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
-    // formData.append('drivePermis', JSON.stringify(driveData));
     formData.append('professions', JSON.stringify(professionsData));
-    // formData.append('documents', JSON.stringify(documentsData));
-    // formData.append('langue', JSON.stringify(languesData));
     formData.append('comment', JSON.stringify(commentData));
 
   
@@ -211,13 +188,14 @@ const AddpartnerForm = () => {
   return (
     <form onSubmit={handleSubmit}>
     <div className='container mx-auto'>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <div className=" p-4">
+      <div className="flex flex-wrap gap-4">
+        <div className='w-full flex-1'>
+        <div className="flex-1  p-4">
           <Card>
             <CardHeader className='pb-0'>
               <CardTitle>Личные данные</CardTitle>
             </CardHeader>
-            <CardContent className='mt-0 flex flex-col gap-2'>
+            <CardContent className='mt-0 grid grid-cols-2 gap-2'>
               <div>
               <Label>ФИО</Label>
               <Input placeholder="Имя" name='name'/>
@@ -237,18 +215,18 @@ const AddpartnerForm = () => {
               <Label>Почта</Label>
               <Input placeholder="mail@gmail.com" name='email'/>
               </div>
-              <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button>
+              {/* <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button> */}
 
             </CardContent>
 
           </Card>
         </div>
-        <div className=" p-4">
+        <div className="flex-1  p-4">
           <Card>
             <CardHeader className='pb-0'>
               <CardTitle>Фирма</CardTitle>
             </CardHeader>
-            <CardContent className='mt-0 flex flex-col gap-2'>
+            <CardContent className='mt-0 grid grid-cols-2 gap-2'>
             <div>
               <Label>Название фирмы</Label>
               <Input placeholder="GMBH gfgtg" name='companyName'/>
@@ -262,8 +240,7 @@ const AddpartnerForm = () => {
               <Label>Сайт</Label>
               <Input placeholder="www.site.com" name='site'/>
               </div>
-
-              <AutocompleteInput 
+            <AutocompleteInput 
               name='contractType'
               label="Тип контракта"
               suggestions={suggestionsData.contractType} 
@@ -275,13 +252,15 @@ const AddpartnerForm = () => {
               suggestions={suggestionsData.contractPrice} 
               placeholder="Введите цену контракта"
               onChange={(value) => handleInputChange('contractPrice', value)}/>
-              <Button variant="outline" className='bg-green-900 text-white mt-8' 
-              onClick={handleButtonClick}>
-                Добавить профессию</Button>
             </CardContent>
+            <Button variant="outline" className='bg-green-900 text-white w-full' 
+              onClick={handleButtonClick} type='button'> 
+                Добавить профессию</Button>
           </Card>
         </div>
-        <div className=" p-4">
+        </div>
+        
+        <div className="flex-2  p-4">
           <Card>
             <CardHeader>
               <CardTitle>Статус</CardTitle>
@@ -370,30 +349,30 @@ const AddpartnerForm = () => {
         {professions.map((profession, index) => (
           
           <div key={profession.id} className=" p-4 mb-4 ">
-            <Card>
-              <CardHeader>
-                <CardTitle className='flex justify-start items-center gap-1 relative'>
-                  {index + 1}.
-                  <ProfessionSelect
-                  professionId={profession.id}
-                  onProfessionChange={handleProfessionSelect}/>
-                  <Button
+            <Card className='relative '>
+            <Button
                   variant="outline"
-                  className="bg-red-600 text-white absolute right-0 top-0 p-2"
+                  className="bg-red-600 text-white absolute right-2 top-2 p-2"
                   onClick={() => handleRemoveProfession(profession.id)} 
                 >
                   <X size={15} />
                 </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='flex flex-col gap-2'>
-              <div>
+                  <span className='m-1 font-bold'>{index + 1}.</span>
+                <CardTitle className='grid grid-cols-2 gap-1 relative pt-10 px-6'>
+                  <ProfessionSelect
+                  professionId={profession.id}
+                  onProfessionChange={handleProfessionSelect}/>
+                  <div>
               <Label>Местоположение</Label>
               <Input 
               value={profession.location}
               onChange={(e) => handleInputPChange(profession.id, 'location', e.target.value)}              />
               </div>
-              <AutocompleteInput 
+
+                </CardTitle>
+              <CardContent className='flex flex-col gap-2'>
+         <div className='grid grid-cols-2 gap-2 '>
+         <AutocompleteInput 
               value={profession.skills}  
               label="Навыки"
               suggestions={suggestionsData.skils}
@@ -406,13 +385,10 @@ const AddpartnerForm = () => {
               professionId={profession.id}
               />
               </div>
-               <div>
-                <Label>Свободные места</Label>
-                <Input type='number' placeholder="Введите количество свободных мест"
-                value={profession.place}
-                onChange={(e) => handleInputPChange(profession.id, 'place', e.target.value)}
-                />
-                </div> 
+         </div>
+              
+               
+                <div className='grid grid-cols-2 gap-2'>
                 <AutocompleteInput 
               label="Зарплата"
               suggestions={suggestionsData.sallary} 
@@ -423,6 +399,9 @@ const AddpartnerForm = () => {
               suggestions={suggestionsData.homePrice} 
               placeholder="Стоимость проживания"
               onChange={(value) => handleInputPChange(profession.id, 'rentPrice', value)}/>
+                  </div> 
+              <div className='grid grid-cols-2 gap-2'>
+                
               <AutocompleteInput 
               label="Авансы"
               suggestions={suggestionsData.avance} 
@@ -433,6 +412,8 @@ const AddpartnerForm = () => {
               suggestions={suggestionsData.workwear} 
               placeholder="Спецодежда"
               onChange={(value) => handleInputPChange(profession.id, 'workwear', value)}/>
+              </div>  
+               <div className='grid grid-cols-2 gap-2'>
                <div>
                 <Label>Наличие В/У</Label>
                 <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} 
@@ -440,99 +421,32 @@ const AddpartnerForm = () => {
                 </div>
                 <div>
                 <Label>Знание языков</Label>
-                <CMultiSelect options={langues} placeholder={'Выберите языки'} onChange={function (selected: string[]): void {
-                  throw new Error('Function not implemented.');
-                } }/>
+                <CMultiSelect options={langues} placeholder={'Выберите языки'} 
+                onChange={(selectedLangues: string[]) => handleLangues(selectedLangues, profession.id)} />
+                
                 </div>
+               </div>
+               <div className='grid grid-cols-2 gap-2'>
+
                 <AutocompleteInput 
               label="Часы отработки"
               suggestions={suggestionsData.wHours} 
               placeholder="Количество часов отработки"
-              onChange={(value) => handleInputChange('wHours', value)}/>
+              onChange={(value) => handleInputPChange(profession.id, 'workHours', value)}/>
                 <div>
-                <Label>Набор открыт с:</Label>
-                <Input type='date' placeholder="Введите дату открытия"/>
-                </div>
-                  <Drawer >
-      <DrawerTrigger asChild>
-        <Button variant="outline" className="bg-green-900 text-white">Добавить вакансию</Button>
-      </DrawerTrigger>
-      <DrawerContent >
-        <div className="mx-auto w-full max-w-sm">
-          <DrawerHeader>
-            <DrawerTitle></DrawerTitle>
-            <DrawerDescription></DrawerDescription>
-          </DrawerHeader>
-          <DrawerContent className='flex w-full'>
-           
-              <div className=' flex'>
-          <Image src='/images/logo/logo-dark.svg' width={100} height={100} alt="image" className="w-20 h-20 rounded-full" />
-          <ProfessionSelect />
-              <AutocompleteInput 
-              label="Навыки"
-              suggestions={suggestionsData.skils} 
-              placeholder="Укажите набор навыков"
-              onChange={(value) => handleInputChange('skils', value)}/>
-              <div>
-              <Label>Опыт работы</Label>
-              <ExpirienceSelect />
-              </div>
-               <div>
                 <Label>Свободные места</Label>
-                <Input type='number' placeholder="Введите количество свободных мест"/>
-                </div> 
-                <AutocompleteInput 
-              label="Зарплата"
-              suggestions={suggestionsData.sallary} 
-              placeholder="Зарплата работника"
-              onChange={(value) => handleInputChange('sallary', value)}/>
-                <AutocompleteInput 
-              label="Цена проживания"
-              suggestions={suggestionsData.homePrice} 
-              placeholder="Стоимость проживания"
-              onChange={(value) => handleInputChange('homePrice', value)}/>
-              <AutocompleteInput 
-              label="Авансы"
-              suggestions={suggestionsData.avance} 
-              placeholder="Отношение к авансу"
-              onChange={(value) => handleInputChange('avance', value)}/>
-              <AutocompleteInput 
-              label="Спецодежда"
-              suggestions={suggestionsData.workwear} 
-              placeholder="Спецодежда"
-              onChange={(value) => handleInputChange('workwear', value)}/>
-               <div>
-                <Label>Наличие В/У</Label>
-                <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} onChange={function (selected: string[]): void {
-                  throw new Error('Function not implemented.');
-                } } />
+                <Input type='number' placeholder="Введите количество свободных мест"
+                value={profession.place}
+                onChange={(e) => handleInputPChange(profession.id, 'place', e.target.value)}
+                />
                 </div>
-                <div>
-                <Label>Знание языков</Label>
-                <CMultiSelect options={langues} placeholder={'Выберите языки'} onChange={function (selected: string[]): void {
-                  throw new Error('Function not implemented.');
-                } }/>
                 </div>
-                <AutocompleteInput 
-              label="Часы отработки"
-              suggestions={suggestionsData.wHours} 
-              placeholder="Количество часов отработки"
-              onChange={(value) => handleInputChange('wHours', value)}/>
                 <div>
                 <Label>Набор открыт с:</Label>
-                <Input type='date' placeholder="Введите дату открытия"/>
+                <Input type='date' placeholder="Введите дату открытия"
+                onChange={(e) => handleInputPChange(profession.id, 'getStart', e.target.value)}
+                />
                 </div>
-              </div>
-          </DrawerContent>
-          <DrawerFooter>
-            <Button>Submit</Button>
-            <DrawerClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </div>
-      </DrawerContent>
-    </Drawer>
               </CardContent>
             </Card>
             
