@@ -2,7 +2,6 @@ import Breadcrumb from "@/src/components/Breadcrumbs/Breadcrumb";
 
 import { Metadata } from "next";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
-import SelectGroupOne from "@/src/components/SelectGroup/SelectGroupOne";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -73,7 +72,6 @@ const FormLayout = () => {
                   />
                 </div>
 
-                <SelectGroupOne />
 
                 <div className="mb-6">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">

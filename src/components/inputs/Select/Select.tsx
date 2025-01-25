@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 // Обновляем интерфейс, чтобы принимать список опций
 interface SelectProps {
   defaultValue?: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   type?: string;
   id: string;
@@ -36,14 +36,14 @@ const [selectedOption, setSelectedOption] = useState<string>(defaultValue);
         {label}
       </label>
 
-      <div className="relative  z-20 bg-transparent ">
+      <div className="bg-transparent ">
         <select
           value={selectedOption}
           onChange={(e) => {
             setSelectedOption(e.target.value);
             changeTextColor();
           }}
-          className={`w-[250px]  text-sm text-black-2 dark:text-white border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1  outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${
+          className={`flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 ${
             isOptionSelected ? "text-black-2 dark:text-white" : ""
           }`}
           {...rest}

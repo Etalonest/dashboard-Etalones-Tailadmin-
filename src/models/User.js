@@ -10,6 +10,9 @@ const UserSchema = new Schema({
     type: String, 
     required: [true, "Name is required"]
   },
+  nameRu: { 
+    type: String, 
+  },
   image:{type: String},
   password: { 
     type: String, 

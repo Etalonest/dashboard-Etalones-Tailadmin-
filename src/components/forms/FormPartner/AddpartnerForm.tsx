@@ -11,7 +11,7 @@ import { useState } from 'react';
 import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
-import { drivePermis, langues } from '@/src/config/constants';
+import { drivePermisData, languesData } from '@/src/config/constants';
 import { X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { CommentEntry } from '../interfaces/FormCandidate.interface';
@@ -471,12 +471,12 @@ const AddpartnerForm = () => {
                <div className='grid grid-cols-2 gap-2'>
                <div>
                 <Label>Наличие В/У</Label>
-                <CMultiSelect options={drivePermis} placeholder={'Выбериите категории'} 
+                <CMultiSelect options={drivePermisData} placeholder={'Выбериите категории'} 
                 onChange={(selectedDriveP: string[]) => handleDrivePChange(selectedDriveP, profession.id)} />
                 </div>
                 <div>
                 <Label>Знание языков</Label>
-                <CMultiSelect options={langues} placeholder={'Выберите языки'} 
+                <CMultiSelect options={languesData} placeholder={'Выберите языки'} 
                 onChange={(selectedLangues: string[]) => handleLangues(selectedLangues, profession.id)} />
                 
                 </div>

@@ -1,0 +1,23 @@
+/* TabsAdmin.module.css */
+
+/* Стиль для вкладок в обычном состоянии */
+.tabsTrigger {
+    background-color: #e2e8f0; /* Светлый серый фон для неактивных вкладок */
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Стиль для активной вкладки */
+  .tabsTriggerActive {
+    background-color: #3b82f6; /* Синий фон для активной вкладки */
+    color: white; /* Белый текст для активной вкладки */
+    border: 2px solid #2563eb; /* Синий бордер для активной вкладки */
+  }
+  
+  /* Опционально: стиль для вкладки при наведении */
+  .tabsTrigger:hover {
+    background-color: #cbd5e1; /* Светлый фон при наведении */
+  }
+  

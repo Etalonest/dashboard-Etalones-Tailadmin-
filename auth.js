@@ -3,7 +3,6 @@ import Google from "next-auth/providers/google";
 import { connectDB } from "./src/lib/db";
 import User from "./src/models/User";
 import Manager from "./src/models/Manager";
-import Role from "./src/models/Role";  // Импортируем модель Role
 
 const providers = [
   Google({
@@ -35,19 +34,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       try {
         await connectDB();
 
-        // Ищем пользователя по email в базе данных User
         const userExist = await User.findOne({ email: profile.email });
         if (!userExist) {
-          // Если пользователя нет, создаем нового
           await User.create({
             email: profile.email,
             name: profile.name,
             image: profile.picture,
-            role: 'user',  // Роль пользователя по умолчанию
+            role: 'user',
+            googleId: profile.id
           });
         }
 
-        // Ищем среди менеджеров, есть ли такой email
         const manager = await Manager.findOne({ email: profile.email });
 
         if (manager) {

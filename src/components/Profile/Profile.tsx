@@ -8,9 +8,10 @@ import { useState } from "react";
 import { Camera, Pencil } from "lucide-react";
 import { TableManagers } from "@/src/components//Tables/TableManagers";
 import { useManagers } from '@/src/context/ManagersContext';
+import { Tabs } from "@radix-ui/react-tabs";
+import { TabsAdmin } from "./tabs/TabsAdmin";
 
 const ProfileComponent = () => {
-  const { managers } = useManagers();
   const { manager } = useManager();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | null>(null);
@@ -184,7 +185,7 @@ const ProfileComponent = () => {
               {isEditingName ? (
         <input
           type="text"
-          value={formData.name} // Используем value, чтобы инпут был контролируемым
+          value={formData.name} 
           onChange={(e) => handleChange('name', e.target.value)}
           onBlur={() => handleBlur('name')}
           className="border border-gray-300 p-2 rounded-md text-xl"
@@ -217,8 +218,14 @@ const ProfileComponent = () => {
           <Pencil className="w-3 h-3" />
         </button>
       </div>
-
-              <div className="mx-auto mb-5.5 mt-4.5 grid max-w-94 grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
+<TabsAdmin/>
+              {/* <div className="mx-auto mb-5.5 mt-4.5 grid max-w-full grid-cols-4 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
+              <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
+                  <span className="font-semibold text-black dark:text-white">
+                    {manager?.candidates.length ?? 0}
+                  </span>
+                  <span className="text-sm">Кандидатов</span>
+                </div>
                 <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                   <span className="font-semibold text-black dark:text-white">
                     {manager?.candidates.length ?? 0}
@@ -237,8 +244,8 @@ const ProfileComponent = () => {
                   </span>
                   <span className="text-sm">Задач</span>
                 </div>
-              </div>
-<TableManagers managers={managers} onClick={toggleSidebar} />
+              </div> */}
+{/* <TableManagers managers={managers} onClick={toggleSidebar} /> */}
               <div className="mx-auto max-w-180">
                 <h4 className="font-semibold text-black dark:text-white">
                   About Me

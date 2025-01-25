@@ -74,7 +74,11 @@ const CandidateSchema = new Schema({
       },
       professions: [{
        name: String,
-       experience: String
+       expirience: String
+      }],
+      statusWork: [{
+        name: String,
+        date: Date
       }],
       documents: [{
         file: {

@@ -7,7 +7,7 @@ export interface DriveOption {
     dateExp: string;
     dateOfIssue: string;
     numberDoc: string;
-    file: any;
+    file?: any;
   }
 
   export interface CommentEntry {
@@ -22,7 +22,7 @@ export interface DriveOption {
     salaryWorker?: string;
   }
   export interface Profession {
-    level: string; name: string; experience: string; category: string; 
+     name: string; expirience: string; category: string; 
 }
   export interface Langue {
     name: string;

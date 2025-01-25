@@ -1,4 +1,4 @@
-export const drivePermis = [
+export const drivePermisData = [
     { label: "В", value: "B" },
     { label: "C", value: "C" },
     { label: "D", value: "D" },
@@ -6,7 +6,7 @@ export const drivePermis = [
     { label: "Код 95", value: "Код 95" },
     { label: "Есть своё авто", value: "Есть своё авто" },
   ];
-  export const status = [
+  export const statusData = [
     { value: 'Не обработан', label: 'Не обработан' },
     { value: 'Нет месседжеров', label: 'Нет месседжеров' },
     { value: 'Не подходят документы', label: 'Не подходят документы' },
@@ -55,9 +55,18 @@ export const experiences = [
     { value: 'Уверенный специалист', label: 'Уверенный специалист' },
   ];
 
-export const langues = [
+export const languesData = [
   { value: 'Русский', label: 'Русский' },
   { value: 'Английский', label: 'Английский' },
   { value: 'Немецкий', label: 'Немецкий' },
   { value: 'Украинский', label: 'Украинский' },
+]
+export const langueLevelData = [
+  { value: 'Самоучка', label: 'Самоучка' },
+  { value: 'Уровень А1', label: 'Уровень А1' },
+  { value: 'Уровень А2', label: 'Уровень А2' },
+  { value: 'Уровень B1', label: 'Уровень B1' },
+  { value: 'Уровень B2', label: 'Уровень B2' },
+  { value: 'Уровень C1', label: 'Уровень C1' },
+  { value: 'Уровень C2', label: 'Уровень C2' },
 ]

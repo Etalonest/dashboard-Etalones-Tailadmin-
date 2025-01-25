@@ -1,42 +1,64 @@
 'use client'
-import React, { useContext, useState } from 'react';
-import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
-import { CirclePlus, FileUp, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { CirclePlus, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
-import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
 import { useSession } from 'next-auth/react';
-import {drivePermis, status, documentsOptions, citizenshipOptions} from '@/src/config/constants'
-import {DriveOption, DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
-import MyMultiSelect from '../../inputs/MyMultiselect/MyMultiselect';
+import {drivePermisData, citizenshipOptions, languesData, langueLevelData} from '@/src/config/constants'
+import { DocumentEntry, CommentEntry, Profession, Langue} from "../interfaces/FormCandidate.interface"
 import { useProfessionContext } from "@/src/context/ProfessionContext";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import useCandidateData from '@/src/hooks/useCandidateData';
+import { Candidate } from '@/src/types/candidate';
+import { DocumentChoise } from './DocumentChoise/DocumentChoise';
+import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
+import CMultiSelect from '../../Multiselect/Multiselect';
+import { Textarea } from '@/components/ui/textarea';
 
-const AddCandidateForm = () => {
+
+const AddCandidateForm = (candidate: Candidate) => {
   const { data: session } = useSession();
   const { professions } = useProfessionContext();
-
-  const [phone, setPhone] = useState('');
+  const {
+    phone,
+    handleChangeName,
+    handleChangePhone,
+    handleChangeAge,
+    handleChangeLocations,
+  } = useCandidateData(candidate);
   const { addNotification } = useNotifications();
-  const [file, setFile] = useState<File | null>(null); 
+  const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>([]);
+
   const [comment, setComment] = useState<CommentEntry>({
     authorId: '',
     author: '',
     text: '',
     date: new Date(),
   });  
-  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
+  const [languesEntries, setLanguesEntries] = useState<Langue[]>([{
+    name: '',
+    level: ''
+  }]);
   const [selectedDrive, setSelectedDrive] = useState<string[]>([]); 
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
-  const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
+  const [professionEntries, setProfessionEntries] = useState<Profession[]>([{
+    name: '', 
+    expirience: '',
+    category: ''
+  }]);
 
   const managerId = session?.managerId || '';
-
+  const authorName = session?.user?.name || '';
 
 
   const handleDriveChange = (selected: string[]) => {
-    setSelectedDrive(selected); // Просто сохраняем массив строк
+    setSelectedDrive(selected);
   };
   const getDriveDataForSubmit = () => {
     return selectedDrive;
@@ -44,10 +66,11 @@ const AddCandidateForm = () => {
 
 
   
-  const handleCommentChange = (field: keyof CommentEntry, value: string) => {
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
     setComment((prevComment) => ({
       ...prevComment,
-      [field]: value, 
+      text: value,
     }));
   };
  
@@ -61,14 +84,12 @@ const AddCandidateForm = () => {
     setLanguesEntries(updatedLangues);
   };
 
-  // Функция для удаления языка
   const removeLangue = (index: number) => {
     const updatedLangues = languesEntries.filter((_, i) => i !== index);
     setLanguesEntries(updatedLangues);
   };
 
 
-  // Функция для подготовки данных для отправки
   const getLanguesDataForSubmit = () => {
     return languesEntries.map(lang => ({
       name: lang.name || '',
@@ -83,47 +104,47 @@ const AddCandidateForm = () => {
     ]);
   };
 
-  const handleFileChange = (index: number, e: any) => {
-    const updatedDocuments = [...documentEntries];
-    const file = e.target.files[0]; // Получаем файл
 
-    if (file) {
-      updatedDocuments[index] = {
-        ...updatedDocuments[index],
-        file: file, // Добавляем файл в объект документа
-      };
-      setDocumentEntries(updatedDocuments);
-    }
+  const handleStatusesChange = (selectWS: string[]) => {
+   const updatedWS = selectWS.map(name => ({
+      name: name,
+      date: new Date()
+    }));
+   
+    setWorkStatuses(updatedWS);
   };
+  const handleDocumentChange = (selectedDocuments: string[]) => {
+    const updatedDocuments = selectedDocuments.map(docType => ({
+      docType: docType,
+      dateExp: '',  
+      dateOfIssue: '', 
+      numberDoc: '',
+      file: null, 
+    }));
 
-  const handleDocumentChange = (index: number, field: string, value: string) => {
-    const updatedDocuments = [...documentEntries];
-    updatedDocuments[index] = {
-      ...updatedDocuments[index],
-      [field]: value
-    };
     setDocumentEntries(updatedDocuments);
   };
 
-  const removeDocumentEntry = (index: number) => {
-    const newEntries = documentEntries.filter((_, i) => i !== index);
-    setDocumentEntries(newEntries);
-  };
 
+const getSWforSubmit = () => {
+  return workStatuses.map(status => ({
+    name: status.name,
+    date: status.date
+  }));
+};
   const getDocumentsDataForSubmit = () => {
     return documentEntries.map(doc => ({
       docType: doc.docType || '', 
       dateExp: doc.dateExp || '', 
       dateOfIssue: doc.dateOfIssue || '', 
       numberDoc: doc.numberDoc || '', 
-      file: doc.file || null, 
     }));
   };
 
 
 
   const addProfessionEntry = () => {
-    setProfessionEntries([...professionEntries, { name: 'Нет профессии', level: '',experience: '', category: '' }]);
+    setProfessionEntries([...professionEntries, { name: 'Нет профессии',expirience: '', category: '' }]);
   };
 
   const handleProfessionChange = (index: number, field: string, value: string) => {
@@ -134,7 +155,7 @@ const AddCandidateForm = () => {
   const getProfessionsDataForSubmit = () => {
     return professionEntries.map(prof => ({
       name: prof.name || '',  
-      level: prof.level || ''  
+      expirience: prof.expirience || ''  
     }));
   };
 
@@ -145,33 +166,23 @@ const AddCandidateForm = () => {
     setProfessionEntries(newEntries);
   };
 
-  // const generateId = () => uuidv4();
-  // console.log(generateId)
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(event.target.value);
-  };
 
-  // Функция для добавления нового телефона
   const addAdditionalPhone = () => {
     setAdditionalPhones([...additionalPhones, '']);
   };
 
-  // Функция для изменения номера телефона
   const handleAdditionalPhoneChange = (index: number, value: string) => {
     const updatedPhones = [...additionalPhones];
-    updatedPhones[index] = value;  // Обновляем телефон по индексу
+    updatedPhones[index] = value;  
     setAdditionalPhones(updatedPhones);
   };
 
-  // Функция для удаления телефона
   const removeAdditionalPhone = (index: number) => {
     const updatedPhones = additionalPhones.filter((_, i) => i !== index);
     setAdditionalPhones(updatedPhones);
   };
 
-  // Функция для подготовки данных телефонов для отправки
   const getAdditionalPhonesDataForSubmit = () => {
-    // Возвращаем массив строк, не включающий пустые значения
     return additionalPhones.filter(phone => phone.trim() !== '');
   };
 
@@ -182,13 +193,12 @@ const AddCandidateForm = () => {
     }
 
     try {
-      // Отправка запроса на сервер для поиска по номеру телефона
       const response = await fetch('/api/checkPhone', {
-        method: 'POST',  // Используем POST
+        method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone }), // Отправляем номер телефона в теле запроса
+        body: JSON.stringify({ phone }), 
       });
 
       const data = await response.json();
@@ -197,8 +207,8 @@ const AddCandidateForm = () => {
         addNotification({
           title: "Обновлено",
           content: `Кандидат с таким номером уже существует. Имя: ${data.candidate.name} Номер: ${data.candidate.phone}`,
-          type: "error", // Пример успешного уведомления
-          id: uuidv4Original(), // Генерация уникального id
+          type: "error", 
+          id: uuidv4Original(), 
         });
       } else if (data.message === 'Номер свободен') {
         addNotification({
@@ -227,11 +237,12 @@ const AddCandidateForm = () => {
     const professionsData = getProfessionsDataForSubmit();
     const documentsData = getDocumentsDataForSubmit();
     const languesData = getLanguesDataForSubmit();
+    const workStatusesData = getSWforSubmit();
     const commentData = {
-      authorId: managerId,
-      author: managerId,
+      authorId: managerId,  
+      author: authorName,     
       text: comment.text,
-      date: comment.date.toISOString(), 
+      date: comment.date.toISOString(),
     };
     const formData = new FormData(event.target);
   
@@ -242,6 +253,7 @@ const AddCandidateForm = () => {
     formData.append('documents', JSON.stringify(documentsData));
     formData.append('langue', JSON.stringify(languesData));
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
+    formData.append('statusWork', JSON.stringify(workStatusesData));
     formData.append('comment', JSON.stringify(commentData));
 
   
@@ -277,68 +289,83 @@ const AddCandidateForm = () => {
   };
   
   return (
-    <div className="lg:max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
-      <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
+    <div >
+      <h2 className="text-center text-black text-2xl font-semibold mb-2">Добавить нового кандидата</h2>
       <form onSubmit={handleSubmit}
-        className="grid grid-cols-[1fr_1fr] lg:grid-cols-[1fr_2fr_1fr] gap-4">
+        >
+ <div className='container mx-auto'>
+      <div className="flex flex-wrap gap-4">
+        <div className='w-full flex-1'>
+        <div className="flex-1  p-4">
+          <Card>
 
-        {/* Личные данные */}
-        <div className=" text-white">
-          <h3 className="font-semibold text-lg mb-2 text-black-2 dark:text-white">Личные данные</h3>
-          <DefaultInput id="name" label="ФИО" placeholder="Иван Иванов" />
-
-          <div className='relative'>
-            <DefaultInput id="phone" label="Телефон" type="text" placeholder="+373696855446"
-              onChange={handlePhoneChange}
-              onBlur={handlePhoneBlur} />
-            <button type="button" className="absolute top-[27px] right-[5px] text-green-400 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
-          </div>
-
-          {additionalPhones.map((phone, index) => (
-            <div key={index} className="flex gap-2 relative">
-              <DefaultInput
-                label={`${index + 1} телефон`}
-                id={`additionalPhone${index}`}
-                name={`additionalPhone${index}`}
-                type="phone"
-                placeholder={phone}
-                value={phone}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAdditionalPhoneChange(index, e.target.value)}
+            <CardHeader className='grid grid-cols-3 gap-2'>
+            <CardTitle className="col-span-1">Документ</CardTitle>
+            <div className="col-span-2">
+            <DocumentChoise onDocumentsChange={handleDocumentChange} />
+            <div className='w-full h-[2px] bg-gray-300 my-2 mr-5 rounded-md'></div>
+            </div>
+            
+            <CardTitle className="col-span-1">Готовность к работе</CardTitle>
+            <div className="col-span-2">
+            <WorkUpChoise  onStatusesChange={handleStatusesChange}/>
+            </div>
+            </CardHeader>
+            <CardContent className='mt-0 grid grid-cols-2 gap-2'>
+              <div>
+              <Label>ФИО</Label>
+              <Input placeholder="Имя" name='name' id='name'
+              onChange={handleChangeName} />
+              </div>
+              <div>
+              <Label>Возраст</Label>
+              <Input placeholder="33" name='ageNum'
+              onChange={handleChangeAge}
               />
+              </div><div className='relative'>
+              <Label>Телефон</Label>
+              <Input placeholder="+495651322654" name='phone'
+              id='phone'
+              onBlur={handlePhoneBlur}
+              onChange={handleChangePhone}
+              />            <button type="button" className="absolute top-8 right-1 text-green-800 hover:text-green-500 transition duration-300 ease-in-out" 
+              onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
 
+              {additionalPhones.map((phone, index) => (
+                <div key={index} className="flex gap-2 justify-center items-center mt-1 relative">
+                  <Label>{index + 2}.</Label>
+              <Input placeholder="+495651322654" 
+            id={`additionalPhone${index}`}
+            name={`additionalPhone${index}`}
+            type="phone"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAdditionalPhoneChange(index, e.target.value)}
+              />
               <button
                 type="button"
-                className="absolute top-[25px] right-[5px] btn-xs self-end pb-0.5 text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
+                className="absolute top-1.5 right-1 btn-xs self-end pb-0.5 text-red-800 hover:text-red-500 transition duration-300 ease-in-out"
                 onClick={() => removeAdditionalPhone(index)}
               >
                 <X />
               </button>
-            </div>
-          ))}
-
-          <DefaultInput id="ageNum" label="Возраст" type="text" placeholder="33" />
-          <Select label={'Статус первого диалога'} id="status" name="status" options={status} />
-          
-        </div>
-
-        {/* Работа */}
-        <div className=" flex flex-col gap-1 ">
-          {/* <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3> */}
-          <label htmlFor="professions">
-            <div className="flex justify-between items-start m-2">
-              <h3 className="font-bold text-md text-black-2 dark:text-white">Профессии</h3>
-              <button
-                className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out"
+                  </div>
+              ))}
+              </div>
+              
+              <div >
+                <div className='relative'>  
+                <Label >Профессии</Label>
+                <button
+                className="absolute top-0 right-0 btn-xs text-green-800 hover:text-green-500 transition duration-300 ease-in-out"
                 type="button"
                 onClick={addProfessionEntry}
               >
-                <CirclePlus />
+                <CirclePlus size={20}/>
               </button>
-            </div>
-            {professionEntries.map((prof, index) => (
-              <div key={index} className='flex w-full  gap-1 pr-2'>
+                </div>
+              {professionEntries.map((prof, index) => (
+              <div key={index} className='grid grid-cols-2 mt-1 gap-4 w-full relative'>
                 <label htmlFor="profession">
-                  <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" 
+                  <select className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300" 
                   value={prof.name || ''} onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
                     <option>Нет профессии</option>
                     {professions.map((profession: any) => (
@@ -346,174 +373,233 @@ const AddCandidateForm = () => {
                     ))}
                   </select>
                 </label>
-                <label htmlFor="level">
-                  <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.level || ''} onChange={e => handleProfessionChange(index, 'level', e.target.value || '')}>
-                    <option >Без опыта</option>
-                    <option >Меньше года</option>
-                    <option >Более года</option>
-                    <option >От 2-х лет</option>
-                    <option >Более 10-ти лет</option>
+                <label htmlFor="expirience">
+                  <select className="flex h-9 w-[85%] rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300" 
+                  value={prof.expirience || ''} onChange={e => handleProfessionChange(index, 'expirience', e.target.value || '')}>
+                    <option value={'Без опыта'}>Без опыта</option>
+                    <option value={'Меньше года'}>Меньше года</option>
+                    <option value={'Более года'}>Более года</option>
+                    <option value={'От 2-х лет'}>От 2-х лет</option>
+                    <option value={'Более 10-ти лет'}>Более 10-ти лет</option>
                   </select>
                 </label>
                 <button
-                  className=" btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
+                  className="absolute right-0 top-1.5 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
                   type="button" onClick={() => removeProfessionEntry(index)}><X /></button>
               </div>
             ))}
-          </label>
-
-          <div className='flex justify-between items-start m-2'>
-            <h3 className="my-3 text-md font-bold">Документы</h3>
-            <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addDocumentEntry}>
-              <CirclePlus />
-            </button>
-          </div>
-          <div className='flex flex-col gap-2 w-full'>
-
-            {documentEntries.map((doc, index) => (
-              <><div key={index} className="relative flex gap-3">
-                {/* Скрытый инпут */}
-                <input
-                  type="file"
-                  className="hidden" // Скрываем стандартный инпут
-                  id={`fileInput-${index}`}
-                  onChange={(e) => handleFileChange(index, e)} />
-
-                {/* Иконка, которая будет выполнять функцию инпута */}
-                <label
-                  htmlFor={`fileInput-${index}`}
-                  className="cursor-pointer"
-                  aria-label="Upload file"
-                >
-                  <FileUp className="text-2xl" />  
-                </label>
-
-                {doc.file && <p className="mt-2 text-sm text-gray-500">{doc.file.name}</p>}
               </div>
-                <div key={index} className=" flex ">
-                  <p className="">{`${index + 1}.`}</p>&nbsp;
-                  <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
-                    <div className='flex  justify-center items-center'>
-                      <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
-                        value={doc.docType || ''} onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
-                        <option value="Не указано">Не указано</option>
-                        {documentsOptions.map(({value, label}) =>  <option key={value} value={value}>{label}</option>)}
-                      </select>
-                      <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text" 
-                      value={doc.numberDoc} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
-                    </div>
-                    <div className='flex justify-center items-center gap-3'>
-                      <DefaultInput id='dateOfIssue' label='Выдан' type="date" 
-                      value={doc.dateOfIssue} 
-                      onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
-                      <DefaultInput id='documDate' label='До' type="date" value={doc.dateExp} onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
-                    </div>
+              <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
+              <div>
+              <Label>Местоположение</Label>
+              <Input placeholder="Минск, Беларусь" name='locations'
+              onChange={handleChangeLocations}
+              />
+              </div><div>
+              <Label>Водительское удостоверение</Label>
+              <CMultiSelect options={drivePermisData} 
+              placeholder={'Выбериите категории'}
+              onChange={handleDriveChange} />
+              </div> 
 
-                    <button className="absolute right-2 top-8 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
-                      type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
-                  </label>
-                </div></>
-            ))}
-          </div>
-          <p>Комментарий</p>
-          <textarea               
-          value={comment.text || ''} 
-          onChange={(e) => handleCommentChange( 'text', e.target.value || '')}   
-          id="comment" name="comment"
-            rows={6}
-            placeholder="Оставьте свой комментарий"
-            className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-          ></textarea>
 
-        </div>
 
-        {/* Дополнительно */}
-        <div >
-          <h3 className="font-semibold text-lg mb-2">Дополнительно</h3>
-          <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' options={citizenshipOptions} />
-          <DefaultInput id='leaving' label='Готов выехать' type="date" />
-          <DefaultInput label="Местоположение" id='locations' name='locations' />
-          <MyMultiSelect
-  label="Водительское удостоверение"
-  options={drivePermis}
-  placeholder="Категории В/У"
-  className="w-full my-1 text-sm"
-  value={selectedDrive} // Передаем массив строк в value
-  onChange={handleDriveChange} // Обработчик изменений
-  id="drivePermis"
-/>
-          <DefaultInput id='cardNumber' label='Номер счёта' type="text" />
-          <div className='flex justify-between items-center m-2'>
-            <h3 className="my-3 text-md font-bold">Языки</h3>
-            <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addLangue}>
-              <CirclePlus />
-            </button>
-          </div>
-
-          {/* Отображение списка языков */}
-          <div className='flex flex-col gap-2 w-full'>
+              <div >
+              <div className='relative'>
+              <button className="absolute top-0 right-0 btn-xs text-green-800 hover:text-green-500 transition duration-300 ease-in-out" 
+              type="button" onClick={addLangue}>
+              <CirclePlus size={20}/>
+              </button>
+              </div>
+              <div>
+              <div className='relative'>  
+                <Label >Языки</Label>
+                <button
+                className="absolute top-0 right-0 btn-xs text-green-800 hover:text-green-500 transition duration-300 ease-in-out"
+                type="button"
+                onClick={addLangue}
+              >
+                <CirclePlus size={20}/>
+              </button>
+                </div>
             {languesEntries.map((lang, index) => (
-              <div key={index} className="flex flex-col gap-2">
-                <label htmlFor={`langue-${index}`} className="flex flex-col gap-1 items-start relative">
-                  {/* Язык */}
-                  <div className='flex flex-col justify-between items-start '>
-                    <div>Знание языка</div>
-                    <select
-                      id={`langue-${index}`}
-                      name={`langue-${index}`}
-                      className="text-sm w-[250px] h-[25px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              <div key={index} className='relative grid grid-cols-2 gap-2'>
+                    <Select  id={''} options={languesData} 
+                      placeholder='Выберите язык'
                       value={lang.name}
-                      onChange={(e) => handleLangueChange(index, 'name', e.target.value)}
-                    >
-                      <option value='Не знает языков'>Не знает языков</option>
-                      <option value='Немецкий'>Немецкий</option>
-                      <option value='Английский'>Английский</option>
-                      <option value='Польский'>Польский</option>
-                      <option value='Турецкий'>Турецкий</option>
-                      <option value='Французский'>Французский</option>
-                      <option value='Итальянский'>Итальянский</option>
-                    </select>
+                      onChange={(e:any) => handleLangueChange(index, 'name', e.target.value)}
+                      name={`langue-${index}`} />
+                  <div className='w-[85%]'>
+                    <Select  id={''} options={langueLevelData}
+                    placeholder='Выберите уровень'
+                     value={lang.level}
+                     onChange={(e: any) => handleLangueChange(index, 'level', e.target.value)}
+                    />
+                    
                   </div>
-
-                  {/* Уровень */}
-                  <div className='flex flex-col justify-between items-start '>
-                    <div>Уровень</div>
-                    <select
-                      className="text-sm h-[25px] w-[250px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      value={lang.level}
-                      onChange={(e) => handleLangueChange(index, 'level', e.target.value)}
-                    >
-                      <option value=''>Выберите уровень</option>
-                      <option value='Самоучка'>Самоучка</option>
-                      <option value='Уровень А1'>Уровень А1</option>
-                      <option value='Уровень А2'>Уровень А2</option>
-                      <option value='Уровень B1'>Уровень B1</option>
-                      <option value='Уровень B2'>Уровень B2</option>
-                    </select>
-                  </div>
-                  {/* Кнопка для удаления языка */}
                   <button
-                    className="absolute right-2 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
+                    className="absolute z-25 right-0 top-1.5 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
                     type="button"
                     onClick={() => removeLangue(index)}
                   >
                     <X />
                   </button>
-                </label>
-
-
               </div>
             ))}
-          </div>
+            </div>
+              </div>
 
+              {/* <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button> */}
+
+            </CardContent>
+
+          </Card>
         </div>
+        
+        </div>
+        
+        <div className="flex-2  p-4">
+          <Card>
+            
+            <CardContent>
+                <div className="flex flex-col space-y-1.5">
+                  <Card>
+                    <CardTitle className='flex justify-start m-2'>1. Первый диалог</CardTitle>
+                    <CardContent className='flex  flex-col gap-4'>
+<div className='flex  items-center justify-around'>
+                      <Button variant="outline" className='bg-red-800 hover:bg-red-500 text-white'>Не сложился</Button>
+                      <Button variant="outline" className='bg-green-800 hover:bg-green-500 text-white'>Сложился</Button>
+</div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Общаемся Viber
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Общаемся Whatsapp
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Общаемся Telegram
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Хорошее впечатление
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Плохое впечатление
+                        </label>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardTitle className='flex justify-start m-2'>2. В процесе договорённости</CardTitle>
+                    <CardContent className='flex flex-col gap-2 items-start justify-around'>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Не пугает платное проживание
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Готов работать более 200 часов
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Есть большой опыт работы в Европе
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Есть потенциальный напарник
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Есть готовая Еврокарта
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Песель на руках
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox id="terms" />
+                        <label
+                          htmlFor="terms"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >  Делится контентом
+                        </label>
+                      </div>
 
+                    </CardContent>
+                  </Card>
+
+                </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+    <div className="flex-1  p-4">  
+    <Card>
+  <CardContent>
+    <CardTitle>Комментарий</CardTitle>
+    <Textarea
+      placeholder="Оставьте свой комментарий"
+      className="mt-5"
+      value={comment.text} 
+      onChange={handleCommentChange}    />
+  </CardContent>
+</Card>
+    </div>
+  
 
         {/* Кнопка отправки формы */}
         <div className="col-span-full mt-6 text-center">
-          <button type="submit" className="px-6 py-2 bg-blue-500 text-white rounded-md">
+        <Button type="submit" className="fixed top-4 right-5 bg-green-900 text-white hover:bg-green-700">
             Добавить
-          </button>
+          </Button>
         </div>
       </form>
     </div>

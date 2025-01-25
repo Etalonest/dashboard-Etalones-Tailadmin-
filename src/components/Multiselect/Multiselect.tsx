@@ -13,21 +13,17 @@ interface MultiSelectProps {
     placeholder: string;
     className?: string; 
     onChange: any 
-
+    value?: string[];
 }
 
-const CMultiSelect: React.FC<MultiSelectProps> = ({ options, placeholder, className, onChange}) => {
-    const [selected, setSelected] = useState<string[]>([]);
+const CMultiSelect: React.FC<MultiSelectProps> = ({ options, placeholder, className, onChange, value}) => {
+    const [selected, setSelected] = useState<string[]>(value ?? []);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const toggleDropdown = () => setIsOpen(!isOpen);
     
-    // const handleSelect = (option: string) => {
-    //     setSelected(prev =>
-    //         prev.includes(option) ? prev.filter(o => o !== option) : [...prev, option]
-    //     );
-    // };
+
     const handleSelect = (option: string) => {
         const newSelected = selected.includes(option)
             ? selected.filter(o => o !== option)
@@ -48,7 +44,9 @@ const CMultiSelect: React.FC<MultiSelectProps> = ({ options, placeholder, classN
             document.removeEventListener('mousedown', closeDropdown);
         };
     }, []);
-
+    useEffect(() => {
+        setSelected(value ?? []);
+    }, [value]);
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>
             <div 

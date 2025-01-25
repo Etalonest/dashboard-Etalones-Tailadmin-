@@ -5,14 +5,8 @@ import CheckboxFour from "@/src/components/Checkboxes/CheckboxFour";
 import CheckboxOne from "@/src/components/Checkboxes/CheckboxOne";
 import CheckboxThree from "@/src/components/Checkboxes/CheckboxThree";
 import CheckboxTwo from "@/src/components/Checkboxes/CheckboxTwo";
-import SwitcherFour from "@/src/components/Switchers/SwitcherFour";
-import SwitcherOne from "@/src/components/Switchers/SwitcherOne";
-import SwitcherThree from "@/src/components/Switchers/SwitcherThree";
-import SwitcherTwo from "@/src/components/Switchers/SwitcherTwo";
 import DatePickerTwo from "@/src/components/FormElements/DatePicker/DatePickerTwo";
 import DatePickerOne from "@/src/components/FormElements/DatePicker/DatePickerOne";
-import MultiSelect from "@/src/components/FormElements/MultiSelect";
-import SelectGroupTwo from "@/src/components/SelectGroup/SelectGroupTwo";
 
 const FormElements = () => {
   return (
@@ -65,20 +59,7 @@ const FormElements = () => {
             </div>
           </div>
 
-          {/* <!-- Toggle switch input --> */}
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Toggle switch input
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <SwitcherOne />
-              <SwitcherTwo />
-              <SwitcherThree />
-              <SwitcherFour />
-            </div>
-          </div>
+          
 
           {/* <!-- Time and date --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -185,18 +166,7 @@ const FormElements = () => {
             </div>
           </div>
 
-          {/* <!-- Select input --> */}
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Select input
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <SelectGroupTwo />
-              {/* <MultiSelect id="multiSelect" /> */}
-            </div>
-          </div>
+          
         </div>
       </div>
     </>
