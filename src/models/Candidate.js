@@ -2,11 +2,35 @@ import { Schema, model, models } from "mongoose";
 import {Document} from './Document';
 import {Partner} from './Partner';
 import {Task} from './Task';
-
+import {Dialog} from './Dialog';
+import {Stage} from './Stage';
 const CandidateSchema = new Schema({
   private: { 
     type: Boolean, 
     default: true 
+  },
+  stages: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Stage'
+  }],
+  dialogs: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Dialog'
+  }],
+  funnel:{
+    viber: Boolean,
+    telegram: Boolean,
+    whatsapp: Boolean,
+    positive: Boolean,
+    paidHouse: Boolean,
+    more200: Boolean,
+    expEU: Boolean,
+    partner: Boolean,
+    bankCard: Boolean,
+    pesel: Boolean,
+    visa: Boolean,
+    content: Boolean,
+    ready: Boolean,
   },
     avatar: {
         name: String,

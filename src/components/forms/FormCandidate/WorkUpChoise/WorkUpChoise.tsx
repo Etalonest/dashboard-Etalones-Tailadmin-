@@ -1,84 +1,83 @@
-import { useState } from 'react';
+'use client'
+import { useEffect, useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 
 interface WorkUpChoiseProps {
   onStatusesChange: (statuses: string[]) => void;
+  initialSelectedStatuses?: any[]; 
 }
 
-export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange }) => {
+export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, initialSelectedStatuses = [] }) => {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
-  const handleButtonClick = (statusName: string) => {
+  // Хранение предыдущего значения initialSelectedStatuses для предотвращения бесконечных обновлений
+  const prevInitialSelectedStatuses = useRef<{ name: string; _id: string }[]>([]);
+
+  // Маппинг ключей статусов на их отображаемые названия
+  const statusesNamesMap: { [key: string]: string } = {
+    Home: 'Находится дома',
+    UrgentWork: 'Срочно нужна работа',
+    WantsToChangeJob: 'Хочет поменять работу',
+    SearchingBeforeLeaving: 'Ищет перед выездом',
+    InPoland: 'В Польше',
+    InGermany: 'В Германии',
+    OnlyInOwnCity: 'Только в своём городе',
+  };
+  const statusColorText: { [key: string]: string } = {
+    Home: 'text-black',
+    UrgentWork: 'text-white',
+    WantsToChangeJob: 'text-black',
+    SearchingBeforeLeaving: 'text-black',
+    InPoland: 'text-black',
+    InGermany: 'text-black',
+    OnlyInOwnCity: 'text-black',
+  };
+  const statusColorMap: { [key: string]: string } = {
+    Home: 'bg-yellow-100',
+    UrgentWork: 'bg-red-800',
+    WantsToChangeJob: 'bg-yellow-100',
+    SearchingBeforeLeaving: 'bg-yellow-100',
+    InPoland: 'bg-green-200',
+    InGermany: 'bg-green-200',
+    OnlyInOwnCity: 'bg-yellow-100',
+  };
+  // Эффект для синхронизации с initialSelectedStatuses
+  useEffect(() => {
+    // Сравниваем начальные значения с предыдущими
+    if (initialSelectedStatuses.length !== prevInitialSelectedStatuses.current.length || 
+        initialSelectedStatuses.some((status, idx) => status.name !== prevInitialSelectedStatuses.current[idx].name)) {
+      setSelectedStatuses(initialSelectedStatuses.map(status => status.name)); // Сохраняем только имена статусов
+      prevInitialSelectedStatuses.current = initialSelectedStatuses;
+    }
+  }, [initialSelectedStatuses]);
+
+  // Хэндлер для обработки кликов по кнопкам
+  const handleButtonClick = (statusKey: string) => {
     let updatedStatuses: string[];
 
-    if (selectedStatuses.includes(statusName)) {
-      updatedStatuses = selectedStatuses.filter(status => status !== statusName);
+    // Если статус уже выбран, убираем его, иначе добавляем
+    if (selectedStatuses.includes(statusKey)) {
+      updatedStatuses = selectedStatuses.filter(status => status !== statusKey);
     } else {
-      updatedStatuses = [...selectedStatuses, statusName];
+      updatedStatuses = [...selectedStatuses, statusKey];
     }
 
     setSelectedStatuses(updatedStatuses);
-    onStatusesChange(updatedStatuses);  // Передаем массив строк в родительский компонент
+    onStatusesChange(updatedStatuses); 
   };
 
   return (
     <div className="flex flex-wrap gap-1">
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-yellow-100 text-black ${selectedStatuses.includes("Находится дома") ? "bg-yellow-200 text-black" : ""}`}
-        onClick={() => handleButtonClick("Находится дома")}
-      >
-        Находится дома
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-red-300 text-black ${selectedStatuses.includes("Срочно нужна работа") ? "bg-red-800 text-white" : ""}`}
-        onClick={() => handleButtonClick("Срочно нужна работа")}
-      >
-        Срочно нужна работа
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-gray-300 text-black ${selectedStatuses.includes("Хочет поменять работу") ? "bg-green-800 text-white" : ""}`}
-        onClick={() => handleButtonClick("Хочет поменять работу")}
-      >
-        Хочет поменять работу
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-gray-300 text-black ${selectedStatuses.includes("Ищет перед выездом") ? "bg-green-800 text-white" : ""}`}
-        onClick={() => handleButtonClick("Ищет перед выездом")}
-      >
-        Ищет перед выездом
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-gray-300 text-black ${selectedStatuses.includes("В Польше") ? "bg-green-800 text-white" : ""}`}
-        onClick={() => handleButtonClick("В Польше")}
-      >
-        В Польше
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-gray-300 text-black ${selectedStatuses.includes("В Германии") ? "bg-green-800 text-white" : ""}`}
-        onClick={() => handleButtonClick("В Германии")}
-      >
-        В Германии
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        className={`hover:bg-gray-300 text-black ${selectedStatuses.includes("Только в своём городе") ? "bg-green-800 text-white" : ""}`}
-        onClick={() => handleButtonClick("Только в своём городе")}
-      >
-        Только в своём городе
-      </Button>
+      {Object.entries(statusesNamesMap).map(([statusKey, statusName]) => (
+        <Button
+          key={statusKey}
+          type="button"
+          variant="outline"
+          className={`hover:bg-gray-300 text-black ${selectedStatuses.includes(statusName) ? `${statusColorMap[statusKey]} ${statusColorText[statusKey]} ` : ""}`}          onClick={() => handleButtonClick(statusName)} 
+        >
+          {statusName}
+        </Button>
+      ))}
     </div>
   );
 };

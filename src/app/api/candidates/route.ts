@@ -44,7 +44,7 @@ export const POST = async (request: Request) => {
   try {
 
     const formData = await request.formData();
-
+console.log("formData", formData);
     // Чтение полей формы
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
@@ -56,11 +56,12 @@ export const POST = async (request: Request) => {
     const cardNumber = formData.get('cardNumber') as string;
     
 
-    
-    // Чтение массива документов
+    const statusWorkRaw = formData.get('statusWork');
+    const statusWork = statusWorkRaw ? JSON.parse(statusWorkRaw as string) : [];
+console.log("statuswork", statusWork);
     const documentsRaw = formData.get('documents');
     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
-
+console.log("documents", documents);
     // Преобразуем строки в массивы для дополнительных данных
     const additionalPhones = JSON.parse(formData.get('additionalPhones') as string);
 
@@ -138,6 +139,7 @@ export const POST = async (request: Request) => {
       locations,
       cardNumber,
       comment,
+      statusWork,
       manager: managerId,
     });
 

@@ -1,14 +1,17 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 
 interface DocumentChoiseProps {
-  onDocumentsChange: (documents: string[]) => void; 
-  initialSelectedDocuments?: any[];  // Типизируем как массив объектов с полями docType и другими данными
+  onDocumentsChange: (documents: string[]) => void;
+  initialSelectedDocuments?: any[];
 }
 
-export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChange, initialSelectedDocuments = []  }) => {
+export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChange, initialSelectedDocuments = [] }) => {
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+
+  // Хранение предыдущего значения initialSelectedDocuments
+  const prevInitialSelectedDocuments = useRef<any[]>([]);
 
   // Маппинг названий документов на их ключи
   const documentNamesMap: { [key: string]: string } = {
@@ -32,14 +35,17 @@ export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChang
     }
 
     setSelectedDocuments(updatedDocuments);
-    onDocumentsChange(updatedDocuments); // Передаем обновленный массив в родительский компонент
+    onDocumentsChange(updatedDocuments); 
   };
 
   // Эффект для синхронизации с initialSelectedDocuments
   useEffect(() => {
-    // Извлекаем только docType из initialSelectedDocuments и устанавливаем их в selectedDocuments
-    const initialDocs = initialSelectedDocuments.map(doc => doc.docType);
-    setSelectedDocuments(initialDocs);
+    // Только обновляем состояние, если initialSelectedDocuments изменился
+    if (JSON.stringify(prevInitialSelectedDocuments.current) !== JSON.stringify(initialSelectedDocuments)) {
+      const initialDocs = initialSelectedDocuments.map(doc => doc.docType);
+      setSelectedDocuments(initialDocs);
+      prevInitialSelectedDocuments.current = initialSelectedDocuments;
+    }
   }, [initialSelectedDocuments]);
 
   return (

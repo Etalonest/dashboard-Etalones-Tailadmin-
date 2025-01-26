@@ -1,5 +1,5 @@
 'use client'
-import React, {  useEffect, useState } from 'react';
+import React, {  use, useEffect, useState } from 'react';
 import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
 import { CirclePlus, ImageDown, Save, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
@@ -52,7 +52,8 @@ const EditCandidateForm = ({ candidate }: any) => {
   const [selectDrive, setSelectDrive] = useState(candidate?.drivePermis || []);
   const [selectCardNumber, setSelectCardNumber] = useState(candidate?.cardNumber || '')
   const [selectLangues, setSelectLangues] = useState<Langue[]>(candidate?.langue || []);
-  const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>([]);
+  const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>(candidate?.statusWork || []);
+  console.log("workStatuses", workStatuses);
   const {
     name,
     phone,
@@ -61,14 +62,17 @@ const EditCandidateForm = ({ candidate }: any) => {
     drivePermis,
     documents,
     citizenship,
-    langue,
     handleChangeName,
     handleChangePhone,
     handleChangeAge,
     handleChangeLocations,
-    handleChangeCitizenship
   } = useCandidateData(candidate);
   const managerId = session?.managerId ?? 'defaultManagerId'; 
+  useEffect(() => {
+    if (candidate?.statusWork) {
+      setWorkStatuses(candidate.statusWork);
+    }
+  },  [candidate?.statusWork]);
   useEffect(() => {
     if (candidate?.name) { setSelectName(candidate.name); }
   }, [candidate?.name]);
@@ -79,7 +83,7 @@ const EditCandidateForm = ({ candidate }: any) => {
     if (candidate?.additionalPhones) { setAdditionalPhones(candidate.additionalPhones); }
   }, [candidate?.additionalPhones]);
   useEffect(() => {
-    if (candidate?.status) {
+    if (candidate?.statusWork) {
       setSelectStatus(candidate.status);
     }
   }, [candidate?.status]);
@@ -236,8 +240,6 @@ const EditCandidateForm = ({ candidate }: any) => {
     setProfessionEntries(newEntries);
   };
 
-  const generateId = () => uuidv4();
-  // console.log(generateId)
   const getSWforSubmit = () => {
     return workStatuses.map(status => ({
       name: status.name,
@@ -321,7 +323,7 @@ const EditCandidateForm = ({ candidate }: any) => {
     const driveData = getDriveDataForSubmit();
     const professionsData = getProfessionsDataForSubmit();
     const languesData = getLanguesDataForSubmit();
-  
+    const workStatusesData = getSWforSubmit();
     // Добавляем комментарии
     const commentData = formData.get('comment') ? [{
       authorId: managerId,
@@ -336,7 +338,7 @@ const EditCandidateForm = ({ candidate }: any) => {
     formData.append('langue', JSON.stringify(languesData)); 
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('comment', JSON.stringify(commentData));
-  
+    formData.append('workStatuses', JSON.stringify(workStatusesData));
     // Сформируем массив данных документов с мета-информацией
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
@@ -424,7 +426,10 @@ const EditCandidateForm = ({ candidate }: any) => {
           
           <CardTitle className="col-span-1">Готовность к работе</CardTitle>
           <div className="col-span-2">
-          <WorkUpChoise  onStatusesChange={handleStatusesChange}/>
+          <WorkUpChoise  
+          initialSelectedStatuses={workStatuses}
+          onStatusesChange={handleStatusesChange}
+          />
           </div>
           </CardHeader>
           <CardContent className='mt-0 grid grid-cols-2 gap-2'>
@@ -708,6 +713,25 @@ const EditCandidateForm = ({ candidate }: any) => {
   <Card>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
+  {commentEntries.map((comment, index) => (
+    <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
+      <Badge>{new Date(commentEntries[commentEntries.length - 1].date)
+        .toLocaleString()
+        .slice(0, 5)} {/* Берем только день и месяц */}
+        .{new Date(commentEntries[commentEntries.length - 1].date)
+          .getFullYear()
+          .toString()
+          .slice(-2)} {/* Последние 2 цифры года */}</Badge>
+          <Badge className='text-green-700'>{new Date(commentEntries[commentEntries.length - 1].date)
+        .toLocaleString()
+        .slice(12, 17)} 
+        </Badge>
+      <p className="text-sm">{comment.text}</p>
+      <span className='absolute right-2'>Автор: 
+      {comment.author}
+        </span>
+    </div>
+  ))}
   {/* <Textarea
     placeholder="Оставьте свой комментарий"
     className="mt-5"
@@ -721,7 +745,7 @@ const EditCandidateForm = ({ candidate }: any) => {
       {/* Кнопка отправки формы */}
       <div className="col-span-full mt-6 text-center">
       <Button type="submit" className="fixed top-4 right-5 bg-green-900 text-white hover:bg-green-700">
-          Добавить
+          Сохранить
         </Button>
       </div>
     </form>
@@ -1096,7 +1120,4 @@ const EditCandidateForm = ({ candidate }: any) => {
 };
 
 export default EditCandidateForm;
-function uuidv4(): string {
-  throw new Error('Function not implemented.');
-}
 
