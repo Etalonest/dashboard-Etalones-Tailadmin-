@@ -6,9 +6,11 @@ import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
 import TableCandidate from "@/src/components/Tables/TableCandidaate";
 import { ProfessionProvider } from "@/src/context/ProfessionContext";
-
+import { useSession } from "next-auth/react";
 
 const TablesPage = () => {
+  const { data: session } = useSession();
+  
   // Состояние для выбранной таблицы
   const [activeTable, setActiveTable] = useState("table1");
 

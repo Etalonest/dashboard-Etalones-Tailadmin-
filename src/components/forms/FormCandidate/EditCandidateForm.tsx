@@ -1,41 +1,29 @@
 'use client'
-import React, {  use, useEffect, useState } from 'react';
-import DefaultInput from '../../inputs/DefaultInput/DefaultInput';
+import React, { useEffect, useState } from 'react';
 import { CirclePlus, ImageDown, Save, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
-import DefaultInputH from '../../inputs/DefaultInputH/DefaultInputH';
-import MyMultiSelect from '@/src/components/inputs/MyMultiselect/MyMultiselect';
 import { useSession } from 'next-auth/react';
 import { drivePermisData, statusData, citizenshipOptions, langueLevelData, languesData } from '@/src/config/constants'
 import { DocumentEntry, Langue, CommentEntry } from "../interfaces/FormCandidate.interface"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import { ChevronsUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
-import Image from "next/image";
-import DownloadButton from '../../DownloadButton/DownloadButton';
 import { useProfessionContext } from "@/src/context/ProfessionContext";
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';import CMultiSelect from '../../Multiselect/Multiselect';
+import CMultiSelect from '../../Multiselect/Multiselect';
 import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 import useCandidateData from '@/src/hooks/useCandidateData';
+import { FunnelCandidate } from '../Funnel/FunnelCandidate/FunnelCandidate';
 
 const EditCandidateForm = ({ candidate }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
   const { professions } = useProfessionContext();
-
-      
   const [isOpen, setIsOpen] = useState(false)
   const [fileId, setFileId] = useState<string>('');
   const [selectesName, setSelectName] = useState(candidate?.name);
@@ -53,7 +41,6 @@ const EditCandidateForm = ({ candidate }: any) => {
   const [selectCardNumber, setSelectCardNumber] = useState(candidate?.cardNumber || '')
   const [selectLangues, setSelectLangues] = useState<Langue[]>(candidate?.langue || []);
   const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>(candidate?.statusWork || []);
-  console.log("workStatuses", workStatuses);
   const {
     name,
     phone,
@@ -67,7 +54,8 @@ const EditCandidateForm = ({ candidate }: any) => {
     handleChangeAge,
     handleChangeLocations,
   } = useCandidateData(candidate);
-  const managerId = session?.managerId ?? 'defaultManagerId'; 
+  const managerId = session?.managerId ?? 'defaultManagerId';
+  const userName = session?.user?.name ?? 'defaultManagerName';
   useEffect(() => {
     if (candidate?.statusWork) {
       setWorkStatuses(candidate.statusWork);
@@ -82,11 +70,7 @@ const EditCandidateForm = ({ candidate }: any) => {
   useEffect(() => {
     if (candidate?.additionalPhones) { setAdditionalPhones(candidate.additionalPhones); }
   }, [candidate?.additionalPhones]);
-  useEffect(() => {
-    if (candidate?.statusWork) {
-      setSelectStatus(candidate.status);
-    }
-  }, [candidate?.status]);
+ 
   useEffect(() => {
     if (candidate?.ageNum) { setSelectAgeNum(candidate.ageNum); }
   }, [candidate?.ageNum]);
@@ -129,6 +113,7 @@ const EditCandidateForm = ({ candidate }: any) => {
   const handleClick = (index: number) => {
     document.getElementById(`fileInput-${index}`)?.click();
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -157,9 +142,7 @@ const EditCandidateForm = ({ candidate }: any) => {
   const handleChangeAgeNum = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectAgeNum(e.target.value);
   };
-  const handleChange = (selectOption: { value: any; }) => {
-    setSelectStatus(selectOption.value);
-  };
+
   const handleAdditionalPhoneChange = (index: number, value: string) => {
     const phones = [...additionalPhones];
     phones[index] = value;
@@ -402,16 +385,11 @@ const EditCandidateForm = ({ candidate }: any) => {
       });
     }
   };
-  
-
   return (
-    <div >
+    <div>
     <h2 className="text-center text-black text-2xl font-semibold mb-2">Редактировать {name}</h2>
-    <form onSubmit={handleSubmit}
-      >
-<div className='container mx-auto'>
-    <div className="flex flex-wrap gap-4">
-      <div className='w-full flex-1'>
+    <div className='container mx-auto flex'>
+    <form onSubmit={handleSubmit} className='flex-1'>
       <div className="flex-1  p-4">
         <Card>
 
@@ -582,135 +560,7 @@ const EditCandidateForm = ({ candidate }: any) => {
           </CardContent>
 
         </Card>
-      </div>
-      
-      </div>
-      
-      <div className="flex-2  p-4">
         <Card>
-          
-          <CardContent>
-              <div className="flex flex-col space-y-1.5">
-                <Card>
-                  <CardTitle className='flex justify-start m-2'>1. Первый диалог</CardTitle>
-                  <CardContent className='flex  flex-col gap-4'>
-<div className='flex  items-center justify-around'>
-                    <Button variant="outline" className='bg-red-800 hover:bg-red-500 text-white'>Не сложился</Button>
-                    <Button variant="outline" className='bg-green-800 hover:bg-green-500 text-white'>Сложился</Button>
-</div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Общаемся Viber
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Общаемся Whatsapp
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Общаемся Telegram
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Хорошее впечатление
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Плохое впечатление
-                      </label>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardTitle className='flex justify-start m-2'>2. В процесе договорённости</CardTitle>
-                  <CardContent className='flex flex-col gap-2 items-start justify-around'>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Не пугает платное проживание
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Готов работать более 200 часов
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Есть большой опыт работы в Европе
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Есть потенциальный напарник
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Есть готовая Еврокарта
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Песель на руках
-                      </label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="terms" />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >  Делится контентом
-                      </label>
-                    </div>
-
-                  </CardContent>
-                </Card>
-
-              </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  </div>
-  <div className="flex-1  p-4">  
-  <Card>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
   {commentEntries.map((comment, index) => (
@@ -739,17 +589,20 @@ const EditCandidateForm = ({ candidate }: any) => {
     onChange={handleCommentChange}    /> */}
 </CardContent>
 </Card>
-  </div>
-
-
-      {/* Кнопка отправки формы */}
+      </div>
+  
       <div className="col-span-full mt-6 text-center">
       <Button type="submit" className="fixed top-4 right-5 bg-green-900 text-white hover:bg-green-700">
           Сохранить
         </Button>
       </div>
     </form>
-  </div>
+    <div className='flex-2  p-4'>
+                  <FunnelCandidate onDataChange={candidate?._id} author={userName} candidate={candidate}/>
+      
+    </div>
+    </div>
+    </div>
 //     <div className="max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
 //       <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
 

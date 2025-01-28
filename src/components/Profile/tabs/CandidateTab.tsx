@@ -11,14 +11,15 @@ import {
  import {Button} from "@/components/ui/button";
  import { useSession } from "next-auth/react";
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
-import { useManagers } from "@/src/context/ManagersContext";
-
+import { useManager } from "@/src/context/ManagerContext";
+import Candidate from "@/src/models/Candidate";
+import { i } from "framer-motion/client";
 
   export function CandidateTab() {
 const { data: session } = useSession();
-if (session?.managerRole === 'admin') {
+const { manager } = useManager();
+if (session?.managerRole && ['recruiter', 'manager', 'admin'].includes(session.managerRole)) {
 
-  const { managers } = useManagers();
     return (
       <Table>
         <TableCaption className="font-bold text-center ">
@@ -27,7 +28,7 @@ if (session?.managerRole === 'admin') {
           </TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Имя менеджера</TableHead>
+            <TableHead>Имя кандидата</TableHead>
             <TableHead className="text-center">Партнёры</TableHead>
             <TableHead className="text-center">Кандидаты</TableHead>
             <TableHead className="text-right">Статус</TableHead>
@@ -35,10 +36,10 @@ if (session?.managerRole === 'admin') {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {managers.map((manager: any) => (
-            <TableRow key={manager.name}>
-              <TableCell className="text-start">{manager.name}</TableCell>
-              <TableCell className="text-center">Партнёр</TableCell>
+          {manager?.candidates.map((candidates, index) => (
+            <TableRow key={index}>
+              <TableCell className="text-start">{candidates.name}</TableCell>
+              <TableCell className="text-center">{candidates.phone}</TableCell>
               <TableCell className="text-center">Кандидаты</TableCell>
               <TableCell className="text-center">Статус</TableCell>
               <TableCell className="text-right">

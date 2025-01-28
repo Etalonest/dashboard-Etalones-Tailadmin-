@@ -28,27 +28,45 @@ export const GET = async (request: any, { params }: any) => {
     }
   };
 
+
   export async function PUT(request: Request, { params }: { params: { id: string } }) {
     const { id } = params;
   
     try {
-      // Получаем форму данных
+      // Получаем данные из formData
       const formData = await request.formData();
-      
+      const role = formData.get('role');  // Извлекаем роль из данных
+  
+      // Если роль не была передана, возвращаем ошибку
+      if (!role) {
+        return NextResponse.json({ message: "Role is required" }, { status: 400 });
+      }
+  
       await connectDB();
   
-    
+      // Находим пользователя по id
       const oldUser = await User.findById(id).lean();
   
       if (!oldUser) {
         return NextResponse.json({ message: "User not found" }, { status: 404 });
       }
   
-      console.log(`Old oldUser Retrieved: ${JSON.stringify(oldUser)}`);
+      // Обновляем роль пользователя
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { $set: { role: role } },  // Обновляем роль
+        { new: true }  // Возвращаем обновленный объект
+      ).lean();
   
-      return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
+      if (!updatedUser) {
+        return NextResponse.json({ message: "Error updating user" }, { status: 500 });
+      }
+  
+      // Возвращаем успешный ответ
+      return NextResponse.json({ message: "User role updated successfully", updatedUser }, { status: 200 });
     } catch (error: any) {
       console.error('Error processing the request:', error);
       return NextResponse.json({ message: 'Error processing request', error: error.message }, { status: 500 });
     }
   }
+  

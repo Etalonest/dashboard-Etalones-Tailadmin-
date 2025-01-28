@@ -1,5 +1,6 @@
 'use client'
 
+import { useSession } from 'next-auth/react';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Тип данных менеджера
@@ -25,9 +26,13 @@ const ManagersContext = createContext<ManagersContextType | undefined>(undefined
 // Провайдер контекста
 export const ManagersProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [managers, setManagers] = useState<Manager[]>([]);
-
+  const { data: session } = useSession();
   // Получение всех менеджеров
   useEffect(() => {
+    if (session?.managerRole !== 'admin') {
+      console.log('You are not an admin, managers cannot be fetched.');
+      return; // Не делаем запрос
+    }
     const fetchManagers = async () => {
       try {
         const response = await fetch('/api/manager');

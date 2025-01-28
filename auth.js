@@ -64,7 +64,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user && user.email) {
         // Ищем менеджера по email пользователя
-        const manager = await Manager.findOne({ email: user.email }).populate('role');  // Используем populate для роли
+        const manager = await Manager.findOne({ email: user.email }).populate('role');  
         if (manager) {
           // Проверяем, существует ли роль у менеджера
           if (manager.role && manager.role.name) {
@@ -73,7 +73,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.log("Manager role not found or incorrect structure");
           }
 
-          token.managerId = manager._id.toString();  // Сохраняем ID менеджера
+          token.managerId = manager._id.toString();  
+          token.managerRole = manager.role.name.toString();  
         }
 
         // Добавляем роль пользователя в токен

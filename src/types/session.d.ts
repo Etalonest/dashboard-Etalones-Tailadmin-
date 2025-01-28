@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 
 declare module "next-auth" {
   interface User {
-    picture?: string | null; 
+    picture?: string | null;
+    managerName?: string
   }
 }

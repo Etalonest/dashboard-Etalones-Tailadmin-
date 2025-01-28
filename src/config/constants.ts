@@ -1,4 +1,5 @@
 export const drivePermisData = [
+    { label: "no", value: "Нет удостоверения" },
     { label: "В", value: "B" },
     { label: "C", value: "C" },
     { label: "D", value: "D" },

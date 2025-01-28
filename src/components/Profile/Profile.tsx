@@ -129,7 +129,6 @@ const ProfileComponent = () => {
                 width: "auto",
                 height: "auto",
               }} />
-              <div onClick={() => toggleSidebar("createManager")}>Создать менеджера</div>
             <div className="absolute bottom-1 right-1 z-10 xsm:bottom-4 xsm:right-4">
             <form >
       <label

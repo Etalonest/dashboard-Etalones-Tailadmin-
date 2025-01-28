@@ -6,7 +6,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const phone = body.phone;
-    console.log("PHONE", phone);
 
     if (!phone || typeof phone !== 'string' || phone.trim() === "") {
       return NextResponse.json(

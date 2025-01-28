@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
+import {Manager} from './Manager';
 import {User} from './User';
 
 const DialogSchema = new Schema({
@@ -8,8 +9,7 @@ const DialogSchema = new Schema({
     type: String,
   },
   author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String
   },
   date: {
     type: Date,

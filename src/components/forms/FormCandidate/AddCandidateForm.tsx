@@ -25,8 +25,8 @@ import { FunnelCandidate } from '../Funnel/FunnelCandidate/FunnelCandidate';
 const AddCandidateForm = () => {
   const { data: session } = useSession();
   const { professions } = useProfessionContext();
-
   const { addNotification } = useNotifications();
+  const [candidateData, setCandidateData] = useState<any>(null);
   const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>([]);
   const [phone, setPhone] = useState<string>('');
   const [comment, setComment] = useState<CommentEntry>({
@@ -49,8 +49,12 @@ const AddCandidateForm = () => {
   }]);
 
   const managerId = session?.managerId || '';
-  const authorName = session?.user?.name || '';
 
+  const authorName = session?.user?.name || '';
+ 
+  const handleCandidateData = (data: any) => {
+    setCandidateData(data);  
+  };
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(e.target.value);
   };
@@ -469,7 +473,8 @@ const AddCandidateForm = () => {
         </div>
             </form>
             <div className="flex-2  p-4">
-         <FunnelCandidate/>
+            <FunnelCandidate onDataChange={handleCandidateData} author={managerId}/>
+         <FunnelCandidate onDataChange={handleCandidateData}/>
         </div>
         </div>
                

@@ -89,6 +89,7 @@
 // }
 
 import { connectDB } from '@/src/lib/db';
+import Candidate from '@/src/models/Candidate';
 import Manager from '@/src/models/Manager';
 import { NextResponse } from "next/server";
 
@@ -168,26 +169,34 @@ export async function GET(request: any, { params }: any) {
       console.log("Подключение к базе данных успешно выполнено.");
 
       const manager = await Manager.findById(id)
-          .populate({
-              path: 'candidates',
-              options: { sort: { updatedAt: -1 } },
-              populate: {
-                  path: 'documents',
-                  populate: {
-                      path: 'file',
-                      select: 'name data contentType',
-                  }
-              }
-          })
-          .populate('role')
-          .populate('partners');
-
+      .populate({
+        path: 'candidates',
+        options: { sort: { updatedAt: -1 } },
+        populate: [
+          {
+            path: 'documents',
+            populate: {
+              path: 'file',
+              select: 'name data contentType',
+            },
+          },
+          {
+            path: 'dialogs',
+            select: 'text date author',
+          }
+        ]
+      })
+      .populate('role')
+      .populate('partners');
+    
       if (!manager) {
+
           console.log("Менеджер с ID", id, "не найден.");
           return NextResponse.json({ error: "Manager not found" }, { status: 404 });
       }
 
       return NextResponse.json({ manager }, { status: 200 });
+
 
   } catch (error) {
       console.error("Ошибка при получении данных менеджера:", error);

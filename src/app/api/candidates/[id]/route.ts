@@ -128,7 +128,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   await connectDB();
 
   const candidate = await Candidate.findById(id)
-    .populate(['comment', 'manager', 'professions', 'langue', 'partners', 'tasks', 'documents']) 
+    .populate(['comment', 'manager', 'professions', 'langue', 'partners', 'tasks', 'documents','dialogs']) 
     .lean() as CandidateDoc | null;
   if (!candidate) {
     return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
