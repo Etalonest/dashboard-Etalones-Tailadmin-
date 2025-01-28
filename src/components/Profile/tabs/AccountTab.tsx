@@ -32,7 +32,7 @@ export function AccountTab() {
       <CardHeader>
         <CardTitle>Account</CardTitle>
         <CardDescription>
-          Make changes to your account here. Click save when you're done.
+          Make changes to your account here. Click save when re done.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">

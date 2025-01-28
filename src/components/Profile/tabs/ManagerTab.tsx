@@ -29,7 +29,7 @@ interface Manager {
     managers: Manager[]; // Типизация для массива менеджеров
   }
 
-  export function ManagersTab({ managers, onClick }: TableManagersProps) { 
+  export function ManagersTab({ onClick }: TableManagersProps) { 
 const { data: session } = useSession();
 if (session?.managerRole === 'admin') {
 

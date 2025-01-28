@@ -1,5 +1,5 @@
 import { ApexOptions } from "apexcharts";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useSession } from 'next-auth/react';
 
@@ -112,9 +112,31 @@ const ChartCandAdded: React.FC = () => {
   const userId = session?.managerId; 
   const userRole = session?.managerRole; 
 
-  const fetchCandidatesData = async (month: string) => {
+  // const fetchCandidatesData = async (month: string) => {
+  //   try {
+  //     const response = await fetch(`/api/apex/candidates?month=${month}&userId=${userId}&role=${userRole}`); // Запрос с информацией о пользователе
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch candidates data');
+  //     }
+  //     const data = await response.json();
+  //     setSeries([{ name: "Candidates Added", data: data.candidateCounts }]);
+  //   } catch (error) {
+  //     console.error("Error fetching candidates data:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (userId && userRole) {
+  //     fetchCandidatesData(selectedMonth);
+  //   }
+  // }, [selectedMonth, userId, userRole]);
+
+  // const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSelectedMonth(event.target.value);
+  // };
+  const fetchCandidatesData = useCallback(async (month: string) => {
     try {
-      const response = await fetch(`/api/apex/candidates?month=${month}&userId=${userId}&role=${userRole}`); // Запрос с информацией о пользователе
+      const response = await fetch(`/api/apex/candidates?month=${month}&userId=${userId}&role=${userRole}`);
       if (!response.ok) {
         throw new Error('Failed to fetch candidates data');
       }
@@ -123,20 +145,19 @@ const ChartCandAdded: React.FC = () => {
     } catch (error) {
       console.error("Error fetching candidates data:", error);
     }
-  };
-
-  // Получаем данные при монтировании компонента и при изменении месяца
+  }, [userId, userRole]); // Зависимости: userId и userRole
+  
+  // useEffect с правильными зависимостями
   useEffect(() => {
     if (userId && userRole) {
       fetchCandidatesData(selectedMonth);
     }
-  }, [selectedMonth, userId, userRole]);
-
-  // Обработчик изменения месяца
+  }, [selectedMonth, userId, userRole, fetchCandidatesData]); // Зависимости: selectedMonth, userId, userRole, fetchCandidatesData
+  
+  // Обработчик смены месяца
   const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(event.target.value);
   };
-
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pb-5 pt-7.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">

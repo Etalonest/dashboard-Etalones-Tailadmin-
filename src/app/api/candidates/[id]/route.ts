@@ -14,6 +14,8 @@ interface CandidateUpdate {
 }
 
 interface CandidateDoc {
+  phone: string;
+  name: string;
   _id: string;
   partners?: string;
   manager?: string;
@@ -25,17 +27,107 @@ interface CandidateDoc {
     numberDoc: any; file: string 
 }[];
 }
+// както работадло имено для файла
+// export async function PUT(request: Request, { params }: { params: { id: string } }) {
+//   const { id } = params;
+//   await connectDB();
 
+//   try {
+//     // Получаем форму данных
+//     const formData = await request.formData();
+//   console.log("FORMDATA", formData)
+
+//     // Получаем старого кандидата
+//     const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
+
+//     if (!oldCandidate) {
+//       return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
+//     }
+
+//     console.log(`Old Candidate Retrieved: ${JSON.stringify(oldCandidate)}`);
+
+//     const documentEntries = JSON.parse(formData.get('documents') as string);
+//     const documentsData = [];
+
+//     for (let i = 0; i < documentEntries.length; i++) {
+//       const doc = documentEntries[i];
+//       const file = formData.get(`documents[${i}][file]`);
+
+//       if (file && file instanceof Blob) {
+//         console.log(`File received: ${file.name} (${file.type})`);
+
+//         // Преобразуем файл в буфер
+//         const bufferData = await file.arrayBuffer();
+//         const buffer = Buffer.from(bufferData);
+
+//         // Сохраняем файл в коллекции документов
+//         const document = new Document({
+//           name: file.name, // Имя файла
+//           data: buffer,    // Данные файла
+//           contentType: file.type,  // Тип контента файла
+//         });
+
+//         const savedDocument = await document.save();
+
+//         console.log(`Document saved with ID: ${savedDocument._id}`);
+
+//         // Добавляем ID файла в массив документов
+//         documentsData.push({
+//           docType: doc.docType || '',
+//           dateExp: doc.dateExp || '',
+//           dateOfIssue: doc.dateOfIssue || '',
+//           numberDoc: doc.numberDoc || '',
+//           file: savedDocument._id,  // Сохраняем ID сохраненного файла
+//         });
+//       } else {
+//         // Если нет файла, оставляем старые документы без изменений
+//         const existingDoc = oldCandidate.documents?.[i];
+
+//         if (existingDoc) {
+//           documentsData.push({
+//             docType: doc.docType || existingDoc.docType,
+//             dateExp: doc.dateExp || existingDoc.dateExp,
+//             dateOfIssue: doc.dateOfIssue || existingDoc.dateOfIssue,
+//             numberDoc: doc.numberDoc || existingDoc.numberDoc,
+//             file: existingDoc.file,  // Оставляем старое значение file
+//           });
+//         } else {
+//           // Если это новый документ без файла, то добавляем его как новый
+//           documentsData.push({
+//             docType: doc.docType || '',
+//             dateExp: doc.dateExp || '',
+//             dateOfIssue: doc.dateOfIssue || '',
+//             numberDoc: doc.numberDoc || '',
+//             file: null,  // Если файл не передан, сохраняем null
+//           });
+//         }
+//       }
+//     }
+
+//     // Обновляем кандидата в базе данных, добавляем новые документы
+//     await Candidate.findByIdAndUpdate(id, {
+//       $set: {
+//         documents: documentsData, // Обновляем документы с правильными ID
+//       },
+//     }, { new: true });
+
+//     console.log('Candidate document list updated in database');
+
+//     return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
+//   } catch (error: any) {
+//     console.error('Error processing the request:', error);
+//     return NextResponse.json({ message: 'Error processing request', error: error.message }, { status: 500 });
+//   }
+// }
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
+  await connectDB();
 
   try {
     // Получаем форму данных
     const formData = await request.formData();
-    
-    await connectDB();
+    console.log("FORMDATA", formData);
 
-    // Получаем старого кандидата
     const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
 
     if (!oldCandidate) {
@@ -44,7 +136,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     console.log(`Old Candidate Retrieved: ${JSON.stringify(oldCandidate)}`);
 
-    // Обрабатываем документы
+    // Получаем новое имя (если оно передано в форме)
+    const newName = formData.get('name') as string;
+    const newPhone = formData.get('phone') as string
+    
+    // Преобразуем список документов
     const documentEntries = JSON.parse(formData.get('documents') as string);
     const documentsData = [];
 
@@ -103,14 +199,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       }
     }
 
-    // Обновляем кандидата в базе данных, добавляем новые документы
-    await Candidate.findByIdAndUpdate(id, {
+    // Обновляем кандидата в базе данных, добавляем новое имя и документы
+    const updatedCandidate = await Candidate.findByIdAndUpdate(id, {
       $set: {
-        documents: documentsData, // Обновляем документы с правильными ID
+        name: newName || oldCandidate.name, 
+        phone: newPhone || oldCandidate.phone,
+        documents: documentsData,            // Обновляем документы с правильными ID
       },
     }, { new: true });
 
-    console.log('Candidate document list updated in database');
+    console.log('Candidate updated:', updatedCandidate);
 
     return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
   } catch (error: any) {

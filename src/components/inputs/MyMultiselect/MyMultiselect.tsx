@@ -68,7 +68,7 @@ const MyMultiSelect: React.FC<MultiSelectProps> = ({
     if (value !== selectedOptions) {
       setSelectedOptions(value);
     }
-  }, [value]);
+  }, [selectedOptions,value]);
 
   return (
     <div className="flex flex-col space-y-1">

@@ -314,7 +314,7 @@ const EditCandidateForm = ({ candidate }: any) => {
       text: formData.get('comment'),
       date: new Date().toISOString()
     }] : [];
-  
+    formData.append('name', name)
     formData.append('managerId', managerId);
     formData.append('drivePermis', JSON.stringify(driveData)); 
     formData.append('professions', JSON.stringify(professionsData)); 

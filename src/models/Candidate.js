@@ -23,6 +23,7 @@ const CandidateSchema = new Schema({
     whatsapp: Boolean,
     positive: Boolean,
     paidHouse: Boolean,
+    presentation: Boolean,
     more200: Boolean,
     expEU: Boolean,
     partner: Boolean,
