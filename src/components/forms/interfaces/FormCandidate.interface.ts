@@ -3,12 +3,18 @@ export interface DriveOption {
     label: string;
   }
   export interface DocumentEntry {
-    docType: string;
-    dateExp: string;
-    dateOfIssue: string;
-    numberDoc: string;
-    file?: any;
+  docType: string;
+  dateExp: string;
+  dateOfIssue: string;
+  numberDoc: string;
+  file?: File;
   }
+  export interface File{
+    _id?:any;
+    name?: string;
+    data?:any;
+    contentType?: string;
+  } 
 
   export interface CommentEntry {
     authorId: any;

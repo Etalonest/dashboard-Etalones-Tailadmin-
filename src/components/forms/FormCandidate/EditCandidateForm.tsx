@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { CirclePlus, ImageDown, Save, X } from 'lucide-react';
+import { CirclePlus, Download, ImageDown, Save, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import { drivePermisData, statusData, citizenshipOptions, langueLevelData, languesData } from '@/src/config/constants'
 import { DocumentEntry, Langue, CommentEntry } from "../interfaces/FormCandidate.interface"
 
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
 import { useProfessionContext } from "@/src/context/ProfessionContext";
@@ -19,13 +19,23 @@ import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 import useCandidateData from '@/src/hooks/useCandidateData';
 import { FunnelCandidate } from '../Funnel/FunnelCandidate/FunnelCandidate';
-
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+import { Textarea } from '@/components/ui/textarea';
 const EditCandidateForm = ({ candidate }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
   const { professions } = useProfessionContext();
+  const [funnelData, setFunnelData] = useState({});
   const [isOpen, setIsOpen] = useState(false)
-  const [fileId, setFileId] = useState<string>('');
   const [selectesName, setSelectName] = useState(candidate?.name);
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
   const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
@@ -56,6 +66,8 @@ const EditCandidateForm = ({ candidate }: any) => {
   } = useCandidateData(candidate);
   const managerId = session?.managerId ?? 'defaultManagerId';
   const userName = session?.user?.name ?? 'defaultManagerName';
+  
+  
   useEffect(() => {
     if (candidate?.statusWork) {
       setWorkStatuses(candidate.statusWork);
@@ -110,22 +122,25 @@ const EditCandidateForm = ({ candidate }: any) => {
       setSelectLangues(candidate.langue);
     }
   }, [candidate?.langue]);
+
   const handleClick = (index: number) => {
     document.getElementById(`fileInput-${index}`)?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const selectedFile = e.target.files?.[0];
+
+  const handleDataChange = (updatedFunnelData: any) => {
+    setFunnelData(updatedFunnelData); 
+  };
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      const updatedDocuments = [...documentEntries];
-      updatedDocuments[index] = { ...updatedDocuments[index], file: selectedFile };
-      setDocumentEntries(updatedDocuments);
+      setDocumentEntries(prevEntries => {
+        const updatedDocuments = [...prevEntries];
+        updatedDocuments[index].file = selectedFile;
+        return updatedDocuments;
+      });
     }
   };
-  const handleSetFileId = (id: string) => {
-    setFileId(id); 
-  };
-
   const handleStatusesChange = (selectWS: string[]) => {
     const updatedWS = selectWS.map(name => ({
        name: name,
@@ -153,18 +168,14 @@ const EditCandidateForm = ({ candidate }: any) => {
     updatedLangues[index] = { ...updatedLangues[index], [field]: value };
     setSelectLangues(updatedLangues);
   };
-  // const handleDocumentChange = (index: number, field: string, value: string) => {
-  //   const updatedDocuments = [...documentEntries];
-  //   updatedDocuments[index] = { ...updatedDocuments[index], [field]: value };
-  //   setDocumentEntries(updatedDocuments);
-  // };
-  const handleDocumentChange = (selectedDocuments: string[]) => {
-    const updatedDocuments = selectedDocuments.map(docType => ({
+
+  const handleDocumentChange = (selectedDocuments: any[]) => {
+    const updatedDocuments = selectedDocuments.map((docType, index) => ({
       docType: docType,
       dateExp: '',  
       dateOfIssue: '', 
       numberDoc: '',
-      file: null, 
+      file: documentEntries[index]?.file || undefined, 
     }));
 
     setDocumentEntries(updatedDocuments);
@@ -192,7 +203,7 @@ const EditCandidateForm = ({ candidate }: any) => {
   };
 
   const addProfessionEntry = () => {
-    setProfessionEntries([...professionEntries, { name: 'Нет профессии', experience: '' }]);
+    setProfessionEntries([...professionEntries, { name: 'Нет профессии', expirience: '' }]);
   };
 
 
@@ -237,11 +248,29 @@ const EditCandidateForm = ({ candidate }: any) => {
   const getDriveDataForSubmit = () => {
     return selectDrive;
   };
-
+  const getCommentData = (formData: FormData, userName: string) => {
+    const commentText = formData.get('comment');
+    console.log('Полученный комментарий из формы:', commentText); // Логируем комментарий до обработки
+  
+    if (commentText) {
+      const commentData = {
+        author: userName,       // Имя автора
+        text: commentText,      // Текст комментария
+        date: new Date().toISOString(),  // Дата добавления комментария
+      };
+      console.log('Созданный объект комментария:', commentData); // Логируем объект комментария
+      return commentData; // Возвращаем объект комментария
+    }
+  
+    return null; // Если комментарий не передан, возвращаем null
+  };
+  
+  
+  
   const getProfessionsDataForSubmit = () => {
-    return professionEntries.map((prof: { name: any; experience: any; }) => ({
+    return professionEntries.map((prof: { name: any; expirience: any; }) => ({
       name: prof.name || '',
-      experience: prof.experience || ''
+      expirience: prof.expirience || ''
     }));
   };
 
@@ -286,6 +315,39 @@ const EditCandidateForm = ({ candidate }: any) => {
       console.error('Ошибка при поиске:', error);
     }
   };
+  const downloadFile = async (fileId: string, fileName: string) => {
+    try {
+      const response = await fetch(`/api/documents/${fileId}`, {
+        method: 'GET', 
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } else {
+        console.error("Error downloading file");
+        addNotification({
+          title: "Ошибка",
+          content: "Не удалось скачать файл",
+          type: "error",
+          id: "",
+        });
+      }
+    } catch (error: any) {
+      console.error("Network error during download:", error);
+      addNotification({
+        title: "Ошибка",
+        content: `Сетевая ошибка: ${error.message}`,
+        type: "error",
+        id: "",
+      });
+    }
+  };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
   
@@ -307,13 +369,9 @@ const EditCandidateForm = ({ candidate }: any) => {
     const professionsData = getProfessionsDataForSubmit();
     const languesData = getLanguesDataForSubmit();
     const workStatusesData = getSWforSubmit();
-    // Добавляем комментарии
-    const commentData = formData.get('comment') ? [{
-      authorId: managerId,
-      author: managerId,
-      text: formData.get('comment'),
-      date: new Date().toISOString()
-    }] : [];
+    const commentData = getCommentData(formData, userName);
+    console.log('Комментарий перед добавлением в formData:', commentData);
+    formData.append('funnel', JSON.stringify(funnelData));
     formData.append('name', name)
     formData.append('managerId', managerId);
     formData.append('drivePermis', JSON.stringify(driveData)); 
@@ -322,13 +380,13 @@ const EditCandidateForm = ({ candidate }: any) => {
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('comment', JSON.stringify(commentData));
     formData.append('workStatuses', JSON.stringify(workStatusesData));
-    // Сформируем массив данных документов с мета-информацией
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
         docType: doc.docType || '',
         dateExp: doc.dateExp || '',
         dateOfIssue: doc.dateOfIssue || '',
         numberDoc: doc.numberDoc || '',
+        file: doc.file || null,
       };
   
       if (doc.file) {
@@ -338,13 +396,11 @@ const EditCandidateForm = ({ candidate }: any) => {
       return documentObj;
     });
   
-    // Преобразуем массив в строку JSON и добавляем в FormData
     formData.append('documents', JSON.stringify(documentsData));
   
-    // Для каждого файла добавляем его в отдельные поля FormData
     documentEntries.forEach((doc, index) => {
       if (doc.file) {
-        formData.append(`documents[${index}][file]`, doc.file); // Добавляем файл
+        formData.append(`documents[${index}][file]`, doc.file  as Blob); 
       }
     });
   
@@ -560,6 +616,75 @@ const EditCandidateForm = ({ candidate }: any) => {
           </CardContent>
 
         </Card>
+
+<div className='flex justify-center items-center p-5 wlex-wrap gap-2'>
+  {documentEntries.map((doc: any, index: any) => (
+    <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>
+      <Drawer>
+        <DrawerTrigger>
+          <Card className='p-3'>
+            <CardTitle>
+              {doc?.docType}
+            </CardTitle>
+            <CardDescription className='p-1 text-gray-400 flex gap-1 items-center'>
+              {doc?.file?.name}
+             <Download size={18} />
+            </CardDescription>
+          </Card>
+        </DrawerTrigger>
+        <DrawerContent className='text-black'>
+          <DrawerHeader>
+            <DrawerTitle>{doc?.docType}</DrawerTitle>
+            <div className='flex justify-center items-center gap-2'>
+            <DrawerDescription className='text-gray-400'>{doc?.file?.name || "Нет загруженого документа"}</DrawerDescription>
+            <div className="flex gap-2 items-center">
+                  <button onClick={() => downloadFile(doc?.file?._id, doc.file.name)} >
+                  <Download />
+                  </button>
+                </div>
+            </div>
+          </DrawerHeader>
+          <DrawerFooter >
+            <div className='flex gap-2 items-center justify-center'>
+            <div className="grid w-full max-w-sm  gap-1.5">
+      <Input id="picture" type="file" 
+      placeholder={doc?.file?.name}
+      onChange={(e) => handleFileChange(e, index)} />
+    </div>           
+            </div>
+            <DrawerClose className='absolute top-2 right-2'>
+              <Button variant="outline"><X size={18} color="red"/></Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </div>
+  ))}
+  <Drawer>
+    <DrawerTrigger>
+  <CirclePlus color='green' />
+    </DrawerTrigger>
+    <DrawerContent>
+      <DrawerHeader>
+        <DrawerTitle>
+      Добавить документ
+        </DrawerTitle>
+        <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
+      </DrawerHeader>
+      <DrawerFooter >
+            <div className='flex gap-2 items-center justify-center'>
+            <Button>Загрузить</Button>
+            <Button>Скачать</Button>
+            </div>
+            <DrawerClose className='absolute top-2 right-2'>
+              <Button variant="outline"><X size={18} color="red"/></Button>
+            </DrawerClose>
+          </DrawerFooter>
+    </DrawerContent>
+  </Drawer>
+</div>
+
+        
         <Card>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
@@ -582,13 +707,14 @@ const EditCandidateForm = ({ candidate }: any) => {
         </span>
     </div>
   ))}
-  {/* <Textarea
+  <Textarea
     placeholder="Оставьте свой комментарий"
     className="mt-5"
-    value={comment.text} 
-    onChange={handleCommentChange}    /> */}
+ id="comment" name="comment"
+        />
 </CardContent>
 </Card>
+
       </div>
   
       <div className="col-span-full mt-6 text-center">
@@ -598,377 +724,12 @@ const EditCandidateForm = ({ candidate }: any) => {
       </div>
     </form>
     <div className='flex-2  p-4'>
-                  <FunnelCandidate onDataChange={candidate?._id} author={userName} candidate={candidate}/>
+                  <FunnelCandidate onDataChange={handleDataChange} author={userName}
+                   candidate={candidate} />
       
     </div>
     </div>
     </div>
-//     <div className="max-w-4xl mx-auto p-6 text-black-2 dark:text-white">
-//       <h2 className="text-center text-white text-2xl font-semibold mb-6">Добавить нового кандидата</h2>
-
-//       <form onSubmit={handleSubmit}
-//         className="grid grid-cols-[1fr_2fr_1fr] gap-4">
-
-//         {/* Личные данные */}
-//         <div className=" text-white">
-//           <h3 className="font-semibold text-lg mb-2 text-black-2 dark:text-white">Личные данные</h3>
-//           <DefaultInput id="name" label="ФИО"
-//             placeholder="Иван Иванов"
-//             value={selectesName}
-//             onChange={handleChangeName} />
-
-//           <div className='relative'>
-//             <DefaultInput id="phone" label="Телефон" type="text" placeholder="+373696855446"
-//               value={selectPhone}
-//               onChange={handlePhoneChange}
-//               onBlur={handlePhoneBlur} />
-//             <button type="button" className="absolute top-0 right-0 text-green-400 hover:text-green-700 transition duration-300 ease-in-out" onClick={addAdditionalPhone}><CirclePlus width={20} height={20} /></button>
-//           </div>
-
-//           {additionalPhones.map((phone: string | undefined, index: any) => (
-//             <div key={index} className="flex gap-2">
-//               <DefaultInput
-//                 label={`${index + 1} телефон`}
-//                 id={`additionalPhone${index}`} 
-//                 name={`additionalPhone${index}`}
-//                 type="phone"
-//                 placeholder={phone}
-//                 value={phone || ''}
-//                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAdditionalPhoneChange(index, e.target.value)}
-//               />
-
-//               <button
-//                 type="button"
-//                 className="btn-xs self-end pb-0.5 text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
-//                 onClick={() => removeAdditionalPhone(index)}
-//               >
-//                 <X />
-//               </button>
-//             </div>
-//           ))}
-
-//           <DefaultInput id="ageNum" label="Возраст" type="text"
-//             placeholder="33"
-//             value={selectAgeNum}
-//             onChange={handleChangeAgeNum} />
-//           <Select label={'Статус первого диалога'} id="status" name="status"
-//             options={statusData}
-//             value={selectStatus}
-//             onChange={handleChange} />
-
-//         </div>
-
-//         {/* Работа */}
-//         <div className=" flex flex-col gap-1">
-//           {/* <h3 className="font-semibold text-white text-lg mb-2">Профессии / Документы</h3> */}
-//           <label htmlFor="professions">
-//             <div className="flex justify-between items-start m-2">
-//               <h3 className="font-bold text-md text-black-2 dark:text-white">Профессии</h3>
-//               <button
-//                 className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out"
-//                 type="button"
-//                 onClick={addProfessionEntry}
-//               >
-//                 <CirclePlus />
-//               </button>
-//             </div>
-//             {professionEntries.map((prof: { name: any; experience: any; }, index: any ) => (
-//               <div key={index} className='flex w-full  gap-1 pr-2'>
-//                 <label htmlFor="profession">
-//                   <select className="text-sm  border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
-//                     value={prof.name || ''}
-//                     onChange={e => handleProfessionChange(index, 'name', e.target.value || '')}>
-//                     <option>Нет профессии</option>
-//                     {professions.map((profession: any) => (
-//                       <option key={profession._id} value={profession.name}>{profession.name}</option>
-//                     ))}
-//                   </select>
-//                 </label>
-//                 <label htmlFor="experience">
-//                   <select className="text-sm   border-stroke rounded-lg border-[1.5px]  bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary" value={prof.experience || ''} onChange={e => handleProfessionChange(index, 'experience', e.target.value || '')}>
-//                     <option >Без опыта</option>
-//                     <option >Меньше года</option>
-//                     <option >Более года</option>
-//                     <option >От 2-х лет</option>
-//                     <option >Более 10-ти лет</option>
-//                   </select>
-//                 </label>
-//                 <button
-//                   className=" btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out"
-//                   type="button" onClick={() => removeProfessionEntry(index)}><X /></button>
-//               </div>
-//             ))}
-//           </label>
-
-//           <div className='flex justify-between items-start m-2'>
-//             <h3 className="my-3 text-md font-bold">Документы </h3>
-//             <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addDocumentEntry}>
-//               <CirclePlus />
-//             </button>
-//           </div>
-//           <div className='flex flex-col gap-1 w-full'>
-//             {documentEntries.map((doc, index) => (
-              
-//               <Card key={index} className=' rounded-md'>
-//               <div  className=" flex m-3 mr-1">
-//                 <p className="">{`${index + 1}.`}</p>
-//                 <ImageDown onClick={() => handleClick(index)} style={{ cursor: 'pointer' }} />
-//           <input
-//             type="file"
-//             id={`fileInput-${index}`}  
-//             onChange={(e) => handleFileChange(e, index)}
-//             style={{ display: 'none' }}
-//           />
-//                 <label htmlFor="nameDocument" className="flex flex-col items-center gap-2 relative">
-//                   <div className='flex  justify-center items-center'>
-//                     <select className="text-sm  h-[25px] border-stroke rounded-lg border-[1.5px]  bg-transparent p-0 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input  dark:focus:border-primary"
-//                       value={doc.docType || ''}
-//                       onChange={e => handleDocumentChange(index, 'docType', e.target.value || '')}>
-//                       <option value="Не указано">Не указано</option>
-//                       <option value="Виза">Виза</option>
-//                       <option value="Песель">Песель</option>
-//                       <option value="Паспорт">Паспорт</option>
-//                       <option value="Паспорт ЕС">Паспорт ЕС</option>
-//                       <option value="Паспорт Биометрия Украины">Паспорт Биометрия Украины</option>
-//                       <option value="Параграф 24">Параграф 24</option>
-//                       <option value="Карта побыту">Карта побыту</option>
-//                       <option value="Геверба">Геверба</option>
-//                       <option value="Карта сталого побыта">Карта сталого побыта</option>
-//                       <option value="Приглашение">Приглашение</option>
-//                     </select>
-//                     <DefaultInputH placeholder='Номер документа' id='nunberDoc' label='#:' type="text"
-//                       value={doc.numberDoc}
-//                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'numberDoc', e.target.value)} />
-//                   </div>
-//                   <div className='flex justify-center items-center gap-3'>
-//                     <DefaultInput id='dateOfIssue' label='Выдан' type="date"
-//                       value={doc.dateOfIssue}
-//                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateOfIssue', e.target.value)} />
-//                     <DefaultInput id='documDate' label='До' type="date"
-//                       value={doc.dateExp}
-//                       onChange={(e: { target: { value: any; }; }) => handleDocumentChange(index, 'dateExp', e.target.value)} />
-//                   </div>
-//                   <div className='max-w-[50px]'>
-//   {/* Проверяем, что имя файла заканчивается на .jpg, .jpeg, или .png */}
-//   <DownloadButton data={doc.file} />
-//   {doc.file?.name && (doc.file.name.endsWith('.jpg') || doc.file.name.endsWith('.jpeg') || doc.file.name.endsWith('.png')) ? (
-  
-//     <Dialog>
-//       <div className='flex items-center justify-center'>
-//       <DialogTrigger>
-//         <div className="text-sm text-gray-500 mt-2">
-//           <span>{doc.file?.name}</span>
-//         </div>
-//       </DialogTrigger>
-//       </div>
-//       <DialogContent className="w-full max-w-[600px] fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-//         <DialogHeader>
-//           <DialogTitle>
-//             <span className="text-sm text-gray-500 mt-2">{doc.file?.name}</span>
-//           </DialogTitle>
-//           <DialogDescription>
-//             {/* Здесь можно добавить описание */}
-//           </DialogDescription>
-//         </DialogHeader>
-//         <Image
-//           src={
-//             doc.file?.data && doc.file?.contentType
-//               ? `data:${doc.file.contentType};base64,${Buffer.from(doc.file.data).toString('base64')}`
-//               : '/images/logo/logo-dark.svg' // Путь к изображению по умолчанию, если данных нет
-//           }
-//           width={60}
-//           height={60}
-//           style={{
-//             width: '100%',
-//             height: '100%',
-//           }}
-//           alt={doc.file?.name ?? 'Документ'} // Подставляем имя файла или дефолтный текст
-//         />
-//       </DialogContent>
-//     </Dialog>
-//   ) : (
-//     // Если файл не подходит, просто показываем название
-//     <div className="text-sm text-gray-500 mt-2">
-//       <span>{doc.file?.name}</span>
-//     </div>
-//   )}
-// </div>
-
-// {/* {doc.file ? (
-//   <div className="text-sm text-gray-500 mt-2">
-//     <span>Выбран файл: {doc.file.name}</span>
-//   </div>
-// ) : (
-//   <div className="text-sm text-gray-500 mt-2">
-//     <span>Файл не выбран</span>
-//   </div>
-// )}    */}
-//                   <button className="absolute right-0 top-0 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
-//                     type="button" onClick={() => removeDocumentEntry(index)}><X /></button>
-//                 </label>
-//               </div>
-//               </Card>
-//             ))}
-//           </div>
-//           <Collapsible
-//             open={isOpen}
-//             onOpenChange={setIsOpen}
-//             className="w-full space-y-2">
-//             <div className="flex items-center justify-between space-x-4 px-4">
-//               <h4 className="text-sm font-semibold">
-//                 Посмотреть все комментарии
-//               </h4>
-//               <CollapsibleTrigger asChild>
-//                 <Button variant="ghost" size="sm">
-//                   <ChevronsUpDown className="h-4 w-4" />
-//                   <span className="sr-only">Toggle</span>
-//                 </Button>
-//               </CollapsibleTrigger>
-//             </div>
-//             <div className="rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
-//               {commentEntries.length > 0 && (
-//                 <div key={commentEntries.length - 1} className="flex gap-2 items-center">
-
-//                   <Badge>{new Date(commentEntries[commentEntries.length - 1].date)
-//                     .toLocaleString()
-//                     .slice(0, 5)} {/* Берем только день и месяц */}
-//                     .{new Date(commentEntries[commentEntries.length - 1].date)
-//                       .getFullYear()
-//                       .toString()
-//                       .slice(-2)} {/* Последние 2 цифры года */}</Badge>
-//                   <p className="text-sm">{commentEntries[commentEntries.length - 1].text}</p>
-//                 </div>
-//               )}      </div>
-//             <CollapsibleContent>
-//               {commentEntries.map((comment, index: any) => (
-//                 <div key={index} className="flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
-//                   <Badge>{new Date(commentEntries[commentEntries.length - 1].date)
-//                     .toLocaleString()
-//                     .slice(0, 5)} 
-//                     .{new Date(commentEntries[commentEntries.length - 1].date)
-//                       .getFullYear()
-//                       .toString()
-//                       .slice(-2)} </Badge>
-//                   <p className="text-sm">{comment.text}</p>
-//                 </div>
-//               ))}
-//             </CollapsibleContent>
-//           </Collapsible>
-
-
-
-//           <textarea
-//             id="comment" name="comment"
-//             rows={6}
-//             placeholder="Оставьте свой комментарий"
-//             className="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-//           ></textarea>
-
-//         </div>
-
-//         {/* Дополнительно */}
-//         <div >
-//           <h3 className="font-semibold text-lg mb-2">Дополнительно</h3>
-//           <Select label={'Гражданство'} id="citizenship" name="citizenship"
-//             value={selectCitizenship}
-//             placeholder='Выберите гражданство' options={citizenshipOptions}
-//             onChange={(e: any) => setSelectCititzenship(e.target.value)} />
-//           <DefaultInput id='leaving' label='Готов выехать' type="date"
-//             value={leavingDate}
-//             onChange={(e: any) => setLeavingDate(e.target.value)}
-//           />
-//           <DefaultInput label="Местоположение" id='locations' name='locations'
-//             value={selectLocations}
-//             onChange={(e: any) => setSelectLocations(e.target.value)}
-//           />
-//           <MyMultiSelect
-//             label="Водительское удостоверение"
-//             options={drivePermisData}
-//             placeholder="Категории В/У"
-//             className="w-full my-1 text-sm"
-//             value={candidate?.drivePermis || []} 
-//             onChange={handleDriveChange}
-//             id="drivePermis"
-//           />
-
-//           <DefaultInput id='cardNumber' label='Номер счёта' type="text"
-//             value={selectCardNumber}
-//             onChange={(e: any) => setSelectCardNumber(e.target.value)} />
-//           <div className='flex justify-between items-center m-2'>
-//             <h3 className="my-3 text-md font-bold">Языки</h3>
-//             <button className="btn-xs text-green-500 hover:text-green-700 transition duration-300 ease-in-out" type="button" onClick={addLangue}>
-//               <CirclePlus />
-//             </button>
-//           </div>
-
-//           {/* Отображение списка языков */}
-//           <div className='flex flex-col gap-2 w-full'>
-//             {selectLangues.map((lang, index) => (
-              
-//               <div key={index} className="flex flex-col gap-2">
-//                 <label htmlFor={`langue-${index}`} className="flex flex-col gap-1 items-start relative">
-//                   {/* Язык */}
-//                   <div className='flex flex-col justify-between items-start '>
-//                     <div>Знание языка</div>
-//                     <select
-//                       id={`langue-${index}`}
-//                       name={`langue-${index}`}
-//                       className="text-sm w-[250px] h-[25px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-//                       value={lang.name}
-//                       onChange={(e) => handleLangueChange(index, 'name', e.target.value)}
-//                     >
-//                       <option value='Не знает языков'>Не знает языков</option>
-//                       <option value='Немецкий'>Немецкий</option>
-//                       <option value='Английский'>Английский</option>
-//                       <option value='Польский'>Польский</option>
-//                       <option value='Турецкий'>Турецкий</option>
-//                       <option value='Французский'>Французский</option>
-//                       <option value='Итальянский'>Итальянский</option>
-//                     </select>
-//                   </div>
-
-//                   {/* Уровень */}
-//                   <div className='flex flex-col justify-between items-start '>
-//                     <div>Уровень</div>
-//                     <select
-//                       className="text-sm h-[25px] w-[250px] border-stroke rounded-lg border-[1.5px] bg-transparent px-5 py-1 text-black-2 dark:text-white outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-//                       value={lang.level}
-//                       onChange={(e) => handleLangueChange(index, 'level', e.target.value)}
-//                     >
-//                       <option value=''>Выберите уровень</option>
-//                       <option value='Самоучка'>Самоучка</option>
-//                       <option value='Уровень А1'>Уровень А1</option>
-//                       <option value='Уровень А2'>Уровень А2</option>
-//                       <option value='Уровень B1'>Уровень B1</option>
-//                       <option value='Уровень B2'>Уровень B2</option>
-//                     </select>
-//                   </div>
-//                   {/* Кнопка для удаления языка */}
-//                   <button
-//                     className="absolute right-2 btn-xs text-red-500 hover:text-red-700 transition duration-300 ease-in-out self-end flex"
-//                     type="button"
-//                     onClick={() => removeLangue(index)}
-//                   >
-//                     <X />
-//                   </button>
-//                 </label>
-
-
-//               </div>
-//             ))}
-//           </div>
-
-//         </div>
-
-
-//         {/* Кнопка отправки формы */}
-//         <div className="col-span-full mt-6 text-center">
-//           <Button type="submit" className="fixed top-4 right-4 bg-green-900 text-white hover:bg-green-700">
-//             Сохранить
-//           </Button>
-//         </div>
-//       </form>
-//     </div>
   );
 };
 

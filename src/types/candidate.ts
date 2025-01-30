@@ -5,7 +5,7 @@ import { Partner } from "./partner";
 export type Profession = {
     id: string;
     name: string;
-    experience: string;
+    expirience: string;
     _id: string; 
   };
   

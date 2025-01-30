@@ -46,7 +46,7 @@ export const drivePermisData = [
     { value: 'Другое', label: 'Другое' }
   ];
 
-export const experiences = [
+export const expiriences = [
     { value: 'Новичок', label: 'Новичок' },
     { value: 'Около 6 месяцев', label: 'Около 6 месяцев' },
     { value: '6 - 12 месяцев', label: '6 - 12 месяцев' },

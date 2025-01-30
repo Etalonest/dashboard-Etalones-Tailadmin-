@@ -14,17 +14,21 @@ interface CandidateUpdate {
 }
 
 interface CandidateDoc {
-  phone: string;
-  name: string;
-  _id: string;
+  manager?: any;
+  ageNum?: string;
+  citizenship?: string;
+  locations?: string;
+  phone?: string;
+  name?: string;
+  _id?: string;
   partners?: string;
-  manager?: string;
   comment?: CommentEntry[];
-  documents: {
-    docType: any;
-    dateExp: any;
-    dateOfIssue: any;
-    numberDoc: any; file: string 
+  documents?: {
+    docType?: any;
+    dateExp?: any;
+    dateOfIssue?: any;
+    numberDoc?: any; 
+    file?: string 
 }[];
 }
 // както работадло имено для файла
@@ -139,8 +143,41 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // Получаем новое имя (если оно передано в форме)
     const newName = formData.get('name') as string;
     const newPhone = formData.get('phone') as string
+    const additionalPhones = formData.getAll('additionalPhones') as string[];
+    const newAge = formData.get('ageNum') as string;
+    const newCitizenship = formData.get('citizenship') as string;
+    const newLocations = formData.get('locations') as string;
+    const newManager = formData.get('manager') as any;
+    const professionsData = JSON.parse(formData.get('professions') as string);
+    const langueData = JSON.parse(formData.get('langue') as string)
+    const drivePermisData = JSON.parse(formData.get('drivePermis') as string);
+    let commentData: any[] = [];
+const rawComment = formData.get('comment');
+console.log('Полученные данные comment на сервере:', rawComment);
+
+if (rawComment) {
+  // Просто передаем rawComment как есть, если он существует
+  if (Array.isArray(rawComment)) {
+    commentData = rawComment;
+  } else {
+    commentData = [rawComment];
+  }
+  console.log('Комментарии переданы на сервер:', commentData);
+}
+
+  
+    const newAdditionalPhones = additionalPhones
+      .map(phone => {
+        try {
+          return JSON.parse(phone);
+        } catch (error) {
+          return phone;
+        }
+      })
+      .flat()  
+      .filter(phone => phone.trim() !== ''); 
+
     
-    // Преобразуем список документов
     const documentEntries = JSON.parse(formData.get('documents') as string);
     const documentsData = [];
 
@@ -203,9 +240,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const updatedCandidate = await Candidate.findByIdAndUpdate(id, {
       $set: {
         name: newName || oldCandidate.name, 
+        ageNum: newAge || oldCandidate.ageNum,
+        citizenship: newCitizenship || oldCandidate.citizenship,
+        locations: newLocations || oldCandidate.locations,
+        manager: newManager || oldCandidate.manager,
         phone: newPhone || oldCandidate.phone,
-        documents: documentsData,            // Обновляем документы с правильными ID
+        additionalPhones: newAdditionalPhones,
+        documents: documentsData,
+        professions: professionsData,
+        langue: langueData,
+        drivePermis: drivePermisData,
       },
+      $push: { comments: { $each: commentData } }, 
     }, { new: true });
 
     console.log('Candidate updated:', updatedCandidate);

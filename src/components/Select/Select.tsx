@@ -1,5 +1,5 @@
 import { useProfessionContext } from "@/src/context/ProfessionContext";
-import { experiences } from "@/src/config/constants";
+import { expiriences } from "@/src/config/constants";
 import { Label } from "@/components/ui/label";
 
 export const ProfessionSelect = ({ onProfessionChange, professionId }: any) => {
@@ -54,9 +54,9 @@ export const ExpirienceSelect = ({ onProfessionChange, professionId }: any) => {
                onChange={handleSelectChange}
              >
                <option  value={''}>Без опыта</option>
-               {experiences.map((experiences: any) => (
-       <option key={experiences.value} value={experiences.value}>
-         {experiences.value}
+               {expiriences.map((expiriences: any) => (
+       <option key={expiriences.value} value={expiriences.value}>
+         {expiriences.value}
        </option>
      ))}                    
              </select>

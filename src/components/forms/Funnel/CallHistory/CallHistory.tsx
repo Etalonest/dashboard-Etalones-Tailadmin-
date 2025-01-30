@@ -70,7 +70,7 @@ export function CallHistory({ candidate }: CallHistoryProps) {
     <div>
       <CardTitle className="flex justify-between m-2">
         <span>1. Диалог</span> 
-        <Badge className="text-green-800">Дозвоны - {answeredPercentage.toFixed(2)}%</Badge>
+        <Badge className="text-green-800">{totalCalls}-Звонк - {answeredPercentage.toFixed(2)}%</Badge>
       </CardTitle>
       
       <CardContent className="flex flex-col gap-4">
