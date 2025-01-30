@@ -259,7 +259,7 @@ const EditCandidateForm = ({ candidate }: any) => {
         date: new Date().toISOString(),  // Дата добавления комментария
       };
       console.log('Созданный объект комментария:', commentData); // Логируем объект комментария
-      return commentData; // Возвращаем объект комментария
+      return commentData; 
     }
   
     return null; // Если комментарий не передан, возвращаем null
@@ -370,7 +370,6 @@ const EditCandidateForm = ({ candidate }: any) => {
     const languesData = getLanguesDataForSubmit();
     const workStatusesData = getSWforSubmit();
     const commentData = getCommentData(formData, userName);
-    console.log('Комментарий перед добавлением в formData:', commentData);
     formData.append('funnel', JSON.stringify(funnelData));
     formData.append('name', name)
     formData.append('managerId', managerId);
