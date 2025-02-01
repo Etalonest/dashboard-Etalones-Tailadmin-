@@ -3,8 +3,8 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 // Тип уведомлений
 export interface Notification {
   id: string;
-  title: string;
-  content: string;
+  title?: string;
+  content?: string;
   type: 'success' | 'error' | 'warning' | 'info';
   metadata?: any;  // Метаданные
   link?: string;    // Ссылка для уведомления

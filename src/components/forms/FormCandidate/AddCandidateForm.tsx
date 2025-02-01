@@ -12,9 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import useCandidateData from '@/src/hooks/useCandidateData';
-import { Candidate } from '@/src/types/candidate';
 import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 import CMultiSelect from '../../Multiselect/Multiselect';
@@ -98,12 +95,7 @@ const AddCandidateForm = () => {
     }));
   };
 
-  const addDocumentEntry = () => {
-    setDocumentEntries([
-      ...documentEntries,
-      { docType: 'Нет документов', dateExp: '', dateOfIssue: '', numberDoc: '', file: null }
-    ]);
-  };
+
 
 
   const handleStatusesChange = (selectWS: string[]) => {
@@ -114,13 +106,13 @@ const AddCandidateForm = () => {
 
     setWorkStatuses(updatedWS);
   };
-  const handleDocumentChange = (selectedDocuments: string[]) => {
+  const handleDocumentChange = (selectedDocuments: any[]) => {
     const updatedDocuments = selectedDocuments.map(docType => ({
       docType: docType,
       dateExp: '',
       dateOfIssue: '',
       numberDoc: '',
-      file: null,
+      file: undefined,
     }));
 
     setDocumentEntries(updatedDocuments);

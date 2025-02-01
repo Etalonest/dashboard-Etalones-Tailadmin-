@@ -30,7 +30,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Textarea } from '@/components/ui/textarea';
-const EditCandidateForm = ({ candidate }: any) => {
+import Funnel from '../Funnel/Funnel';
+const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
   const { professions } = useProfessionContext();
@@ -351,7 +352,6 @@ const EditCandidateForm = ({ candidate }: any) => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
   
-    // Проверка на наличие кандидата
     if (!candidate || !candidate._id) {
       addNotification({
         title: 'Ошибка',
@@ -370,6 +370,9 @@ const EditCandidateForm = ({ candidate }: any) => {
     const languesData = getLanguesDataForSubmit();
     const workStatusesData = getSWforSubmit();
     const commentData = getCommentData(formData, userName);
+    if (commentData) {
+      formData.set('comment', JSON.stringify(commentData)); 
+    }    
     formData.append('funnel', JSON.stringify(funnelData));
     formData.append('name', name)
     formData.append('managerId', managerId);
@@ -377,7 +380,6 @@ const EditCandidateForm = ({ candidate }: any) => {
     formData.append('professions', JSON.stringify(professionsData)); 
     formData.append('langue', JSON.stringify(languesData)); 
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
-    formData.append('comment', JSON.stringify(commentData));
     formData.append('workStatuses', JSON.stringify(workStatusesData));
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
@@ -412,6 +414,7 @@ const EditCandidateForm = ({ candidate }: any) => {
   
       const data = await res.json();
       const message = data.message;
+      console.log("DATA", data)
   
       if (data.success) {
         addNotification({
@@ -420,6 +423,7 @@ const EditCandidateForm = ({ candidate }: any) => {
           type: 'success',
           id: uuidv4Original(),
         });
+        onSubmitSuccess();
       }
   
       if (data.error) {
@@ -444,9 +448,9 @@ const EditCandidateForm = ({ candidate }: any) => {
     <div>
     <h2 className="text-center text-black text-2xl font-semibold mb-2">Редактировать {name}</h2>
     <div className='container mx-auto flex'>
-    <form onSubmit={handleSubmit} className='flex-1'>
-      <div className="flex-1  p-4">
-        <Card>
+    <form onSubmit={handleSubmit} className='flex-1 '>
+      <div className="p-2">
+        <Card className='p-5'>
 
           <CardHeader className='grid grid-cols-3 gap-2'>
           <CardTitle className="col-span-1">Документ</CardTitle>
@@ -456,13 +460,81 @@ const EditCandidateForm = ({ candidate }: any) => {
           onDocumentsChange={handleDocumentChange} />
           <div className='w-full h-[2px] bg-gray-300 my-2 mr-5 rounded-md'></div>
           </div>
-          
+          <div className='w-full flex'>
+            <CardTitle>Загруженые документы</CardTitle>
+  {documentEntries.map((doc: any, index: any) => (
+    <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>
+      <Drawer>
+        <DrawerTrigger >
+          <Card className='p-1'>
+            <CardTitle>
+              {doc?.docType}
+            </CardTitle>
+            <CardDescription className='p-1 text-gray-400 flex gap-1 items-center  w-max'>
+              {doc?.file?.name || "Нет загруженого файла"} 
+             <Download size={18} />
+            </CardDescription>
+          </Card>
+        </DrawerTrigger>
+        <DrawerContent className='text-black'>
+          <DrawerHeader >
+            <DrawerTitle>{doc?.docType}</DrawerTitle>
+            <div className='flex justify-center items-center gap-2 '>
+            <DrawerDescription className='text-gray-400'>{doc?.file?.name || "Нет загруженого документа"}</DrawerDescription>
+            <div className="flex gap-2 items-center">
+                  <button onClick={() => downloadFile(doc?.file?._id, doc.file.name)} >
+                  <Download />
+                  </button>
+                </div>
+            </div>
+          </DrawerHeader>
+          <DrawerFooter >
+            <div className='flex gap-2 items-center justify-center'>
+            <div className="grid w-full max-w-sm  gap-1.5">
+      <Input id="picture" type="file" 
+      placeholder={doc?.file?.name}
+      onChange={(e) => handleFileChange(e, index)} />
+    </div>           
+            </div>
+            <DrawerClose className='absolute top-2 right-2'>
+              <Button variant="outline"><X size={18} color="red"/></Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </div>
+  ))}
+  <Drawer>
+    <DrawerTrigger>
+  <CirclePlus color='green' />
+    </DrawerTrigger>
+    <DrawerContent>
+      <DrawerHeader>
+        <DrawerTitle>
+      Добавить документ
+        </DrawerTitle>
+        <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
+      </DrawerHeader>
+      <DrawerFooter >
+            <div className='flex gap-2 items-center justify-center'>
+            <Button>Загрузить</Button>
+            <Button>Скачать</Button>
+            </div>
+            <DrawerClose className='absolute top-2 right-2'>
+              <Button variant="outline"><X size={18} color="red"/></Button>
+            </DrawerClose>
+          </DrawerFooter>
+    </DrawerContent>
+  </Drawer>
+</div>
+<div className='col-span-3'>
           <CardTitle className="col-span-1">Готовность к работе</CardTitle>
           <div className="col-span-2">
           <WorkUpChoise  
           initialSelectedStatuses={workStatuses}
           onStatusesChange={handleStatusesChange}
           />
+          </div>
           </div>
           </CardHeader>
           <CardContent className='mt-0 grid grid-cols-2 gap-2'>
@@ -615,76 +687,8 @@ const EditCandidateForm = ({ candidate }: any) => {
           </CardContent>
 
         </Card>
-
-<div className='flex justify-center items-center p-5 wlex-wrap gap-2'>
-  {documentEntries.map((doc: any, index: any) => (
-    <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>
-      <Drawer>
-        <DrawerTrigger>
-          <Card className='p-3'>
-            <CardTitle>
-              {doc?.docType}
-            </CardTitle>
-            <CardDescription className='p-1 text-gray-400 flex gap-1 items-center'>
-              {doc?.file?.name}
-             <Download size={18} />
-            </CardDescription>
-          </Card>
-        </DrawerTrigger>
-        <DrawerContent className='text-black'>
-          <DrawerHeader>
-            <DrawerTitle>{doc?.docType}</DrawerTitle>
-            <div className='flex justify-center items-center gap-2'>
-            <DrawerDescription className='text-gray-400'>{doc?.file?.name || "Нет загруженого документа"}</DrawerDescription>
-            <div className="flex gap-2 items-center">
-                  <button onClick={() => downloadFile(doc?.file?._id, doc.file.name)} >
-                  <Download />
-                  </button>
-                </div>
-            </div>
-          </DrawerHeader>
-          <DrawerFooter >
-            <div className='flex gap-2 items-center justify-center'>
-            <div className="grid w-full max-w-sm  gap-1.5">
-      <Input id="picture" type="file" 
-      placeholder={doc?.file?.name}
-      onChange={(e) => handleFileChange(e, index)} />
-    </div>           
-            </div>
-            <DrawerClose className='absolute top-2 right-2'>
-              <Button variant="outline"><X size={18} color="red"/></Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    </div>
-  ))}
-  <Drawer>
-    <DrawerTrigger>
-  <CirclePlus color='green' />
-    </DrawerTrigger>
-    <DrawerContent>
-      <DrawerHeader>
-        <DrawerTitle>
-      Добавить документ
-        </DrawerTitle>
-        <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
-      </DrawerHeader>
-      <DrawerFooter >
-            <div className='flex gap-2 items-center justify-center'>
-            <Button>Загрузить</Button>
-            <Button>Скачать</Button>
-            </div>
-            <DrawerClose className='absolute top-2 right-2'>
-              <Button variant="outline"><X size={18} color="red"/></Button>
-            </DrawerClose>
-          </DrawerFooter>
-    </DrawerContent>
-  </Drawer>
-</div>
-
-        
-        <Card>
+      
+        <Card className='p-4'>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
   {commentEntries.map((comment, index) => (
@@ -722,10 +726,9 @@ const EditCandidateForm = ({ candidate }: any) => {
         </Button>
       </div>
     </form>
-    <div className='flex-2  p-4'>
-                  <FunnelCandidate onDataChange={handleDataChange} author={userName}
-                   candidate={candidate} />
-      
+    <div className='flex-2 p-2'>
+    <Funnel
+    candidate={candidate} />
     </div>
     </div>
     </div>

@@ -17,22 +17,6 @@ const CandidateSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Dialog'
   }],
-  funnel:{
-    viber: Boolean,
-    telegram: Boolean,
-    whatsapp: Boolean,
-    positive: Boolean,
-    paidHouse: Boolean,
-    presentation: Boolean,
-    more200: Boolean,
-    expEU: Boolean,
-    partner: Boolean,
-    bankCard: Boolean,
-    pesel: Boolean,
-    visa: Boolean,
-    content: Boolean,
-    ready: Boolean,
-  },
     avatar: {
         name: String,
         data: Buffer,

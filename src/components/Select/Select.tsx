@@ -2,7 +2,8 @@ import { useProfessionContext } from "@/src/context/ProfessionContext";
 import { expiriences } from "@/src/config/constants";
 import { Label } from "@/components/ui/label";
 
-export const ProfessionSelect = ({ onProfessionChange, professionId }: any) => {
+export const ProfessionSelect = ({ onProfessionChange, professionId, professionsVal }: any) => {
+  console.log("PV", professionsVal.name)
   const { professions } = useProfessionContext();
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedName = e.target.value;  // Получаем выбранное имя профессии

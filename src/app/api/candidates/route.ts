@@ -54,11 +54,9 @@ console.log("formData", formData);
     const leaving = formData.get('leaving') as string;
     const locations = formData.get('locations') as string;
     const cardNumber = formData.get('cardNumber') as string;
-    
-
     const statusWorkRaw = formData.get('statusWork');
     const statusWork = statusWorkRaw ? JSON.parse(statusWorkRaw as string) : [];
-console.log("statuswork", statusWork);
+    const funnel = formData.get('funnel') as any;
     const documentsRaw = formData.get('documents');
     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
 console.log("documents", documents);
@@ -140,6 +138,7 @@ console.log("documents", documents);
       cardNumber,
       comment,
       statusWork,
+      funnel,
       manager: managerId,
     });
 

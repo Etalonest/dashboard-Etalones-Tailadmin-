@@ -1,4 +1,3 @@
-import { IncomingForm } from 'formidable';
 import { connectDB } from '@/src/lib/db';
 import  Candidate  from '@/src/models/Candidate';
 import Partner from '@/src/models/Partner';
@@ -31,98 +30,7 @@ interface CandidateDoc {
     file?: string 
 }[];
 }
-// както работадло имено для файла
-// export async function PUT(request: Request, { params }: { params: { id: string } }) {
-//   const { id } = params;
-//   await connectDB();
 
-//   try {
-//     // Получаем форму данных
-//     const formData = await request.formData();
-//   console.log("FORMDATA", formData)
-
-//     // Получаем старого кандидата
-//     const oldCandidate = await Candidate.findById(id).lean() as CandidateDoc | null;
-
-//     if (!oldCandidate) {
-//       return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
-//     }
-
-//     console.log(`Old Candidate Retrieved: ${JSON.stringify(oldCandidate)}`);
-
-//     const documentEntries = JSON.parse(formData.get('documents') as string);
-//     const documentsData = [];
-
-//     for (let i = 0; i < documentEntries.length; i++) {
-//       const doc = documentEntries[i];
-//       const file = formData.get(`documents[${i}][file]`);
-
-//       if (file && file instanceof Blob) {
-//         console.log(`File received: ${file.name} (${file.type})`);
-
-//         // Преобразуем файл в буфер
-//         const bufferData = await file.arrayBuffer();
-//         const buffer = Buffer.from(bufferData);
-
-//         // Сохраняем файл в коллекции документов
-//         const document = new Document({
-//           name: file.name, // Имя файла
-//           data: buffer,    // Данные файла
-//           contentType: file.type,  // Тип контента файла
-//         });
-
-//         const savedDocument = await document.save();
-
-//         console.log(`Document saved with ID: ${savedDocument._id}`);
-
-//         // Добавляем ID файла в массив документов
-//         documentsData.push({
-//           docType: doc.docType || '',
-//           dateExp: doc.dateExp || '',
-//           dateOfIssue: doc.dateOfIssue || '',
-//           numberDoc: doc.numberDoc || '',
-//           file: savedDocument._id,  // Сохраняем ID сохраненного файла
-//         });
-//       } else {
-//         // Если нет файла, оставляем старые документы без изменений
-//         const existingDoc = oldCandidate.documents?.[i];
-
-//         if (existingDoc) {
-//           documentsData.push({
-//             docType: doc.docType || existingDoc.docType,
-//             dateExp: doc.dateExp || existingDoc.dateExp,
-//             dateOfIssue: doc.dateOfIssue || existingDoc.dateOfIssue,
-//             numberDoc: doc.numberDoc || existingDoc.numberDoc,
-//             file: existingDoc.file,  // Оставляем старое значение file
-//           });
-//         } else {
-//           // Если это новый документ без файла, то добавляем его как новый
-//           documentsData.push({
-//             docType: doc.docType || '',
-//             dateExp: doc.dateExp || '',
-//             dateOfIssue: doc.dateOfIssue || '',
-//             numberDoc: doc.numberDoc || '',
-//             file: null,  // Если файл не передан, сохраняем null
-//           });
-//         }
-//       }
-//     }
-
-//     // Обновляем кандидата в базе данных, добавляем новые документы
-//     await Candidate.findByIdAndUpdate(id, {
-//       $set: {
-//         documents: documentsData, // Обновляем документы с правильными ID
-//       },
-//     }, { new: true });
-
-//     console.log('Candidate document list updated in database');
-
-//     return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
-//   } catch (error: any) {
-//     console.error('Error processing the request:', error);
-//     return NextResponse.json({ message: 'Error processing request', error: error.message }, { status: 500 });
-//   }
-// }
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
   await connectDB();
@@ -151,21 +59,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const professionsData = JSON.parse(formData.get('professions') as string);
     const langueData = JSON.parse(formData.get('langue') as string)
     const drivePermisData = JSON.parse(formData.get('drivePermis') as string);
-    let commentData: any[] = [];
-const rawComment = formData.get('comment');
-console.log('Полученные данные comment на сервере:', rawComment);
+    // const newComment = JSON.parse(formData.get('comment') as any);
+    const commentData = formData.get('comment');
+let newComment = [];
 
-if (rawComment) {
-  // Просто передаем rawComment как есть, если он существует
-  if (Array.isArray(rawComment)) {
-    commentData = rawComment;
-  } else {
-    commentData = [rawComment];
+if (commentData) {
+  try {
+    newComment = JSON.parse(commentData as string);
+  } catch (error) {
+    console.error("Invalid JSON in comment field", error);
+    // Обработка ошибки, например, установка пустого массива или сообщение об ошибке
   }
-  console.log('Комментарии переданы на сервер:', commentData);
 }
 
-  
     const newAdditionalPhones = additionalPhones
       .map(phone => {
         try {
@@ -180,7 +86,7 @@ if (rawComment) {
     
     const documentEntries = JSON.parse(formData.get('documents') as string);
     const documentsData = [];
-
+    const documentsFileData = [];
     for (let i = 0; i < documentEntries.length; i++) {
       const doc = documentEntries[i];
       const file = formData.get(`documents[${i}][file]`);
@@ -209,8 +115,9 @@ if (rawComment) {
           dateExp: doc.dateExp || '',
           dateOfIssue: doc.dateOfIssue || '',
           numberDoc: doc.numberDoc || '',
-          file: savedDocument._id,  // Сохраняем ID сохраненного файла
+          file: savedDocument._id,  
         });
+        documentsFileData.push(savedDocument._id);
       } else {
         // Если нет файла, оставляем старые документы без изменений
         const existingDoc = oldCandidate.documents?.[i];
@@ -250,13 +157,19 @@ if (rawComment) {
         professions: professionsData,
         langue: langueData,
         drivePermis: drivePermisData,
+        
       },
-      $push: { comments: { $each: commentData } }, 
+      $push: {
+        comment: newComment, 
+      },
+      $addToSet: {
+        documentsFile: { $each: documentsFileData }, 
+      },
     }, { new: true });
 
     console.log('Candidate updated:', updatedCandidate);
 
-    return NextResponse.json({ message: "Candidate updated" }, { status: 200 });
+    return NextResponse.json({ message: "Candidate обновлён", content:"",success: true, }, { status: 200 });
   } catch (error: any) {
     console.error('Error processing the request:', error);
     return NextResponse.json({ message: 'Error processing request', error: error.message }, { status: 500 });

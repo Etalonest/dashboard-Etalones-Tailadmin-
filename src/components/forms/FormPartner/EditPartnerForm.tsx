@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ProfessionSelect, ExpirienceSelect } from '@/src/components/Select/Select';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
@@ -17,8 +17,13 @@ import { useSession } from 'next-auth/react';
 import { CommentEntry } from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 import usePartnerData from '@/src/utils/usePartnerData';
+import { useProfessionContext } from "@/src/context/ProfessionContext";
+
 
 const EditpartnerForm = ({partner}: any) => {
+  const { professions } = useProfessionContext();
+
+  console.log("PARTNER", partner)
     const { data: session } = useSession();
     const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
@@ -51,13 +56,16 @@ const EditpartnerForm = ({partner}: any) => {
 
   
   
-  const [professions, setProfessions] = useState<ProfessionPartner[]>(
+  const [professionsPartner, setProfessionsPartner] = useState<ProfessionPartner[]>(
     partner?.professions || []  
   );  
   const [inputs, setInputs] = useState<{ [key: string]: string }>({
     contractType: partner?.contract?.typeC || '',
     contractPrice: partner?.contract?.sum || '',
   });
+   useEffect(() => {
+      if (partner?.professions) { setProfessionsPartner(partner.professions); }
+    }, [partner?.professions]);
   const handleInputChange = (inputKey: string, value: string) => {
     setInputs((prevInputs) => ({
       ...prevInputs,
@@ -84,18 +92,25 @@ const EditpartnerForm = ({partner}: any) => {
       interview: []
     };
 
-    setProfessions((prevProfessions) => [...prevProfessions, newProfession]);
+    setProfessionsPartner((prevProfessions) => [...prevProfessions, newProfession]);
   };
-  const handleProfessionSelect = (selectedName: string, id: number) => {
-    console.log("Обновление профессии", { selectedName, id });
-    setProfessions((prevProfessions) =>
-      prevProfessions.map((prof) =>
-        prof.id === id ? { ...prof, name: selectedName } : prof
-      )
-    );
+  const handleProfessionSelect = (index: number, field: string, value: string) => {
+    const newEntries = [...professionsPartner];
+    newEntries[index] = { ...newEntries[index], [field]: value };
+    setProfessionsPartner(newEntries);
   };
+ 
+  
+  // const handleProfessionSelect = (selectedName: string, id: number) => {
+  //   console.log("Обновление профессии", { selectedName, id });
+  //   setProfessionsPartner((prevProfessions) =>
+  //     prevProfessions.map((prof) =>
+  //       prof.id === id ? { ...prof, name: selectedName } : prof
+  //     )
+  //   );
+  // };
   const handleExperienceSelect = (selectedExperience: string, id: number) => {
-    setProfessions((prevProfessions) =>
+    setProfessionsPartner((prevProfessions) =>
       prevProfessions.map((prof) =>
         prof.id === id ? { ...prof, experience: selectedExperience } : prof
       )
@@ -104,7 +119,7 @@ const EditpartnerForm = ({partner}: any) => {
 
   const handleInputPChange = (id: number, field: string, value: string) => {
     console.log("Обновление профессии", { id, field, value });
-    setProfessions(prevProfessions => {
+    setProfessionsPartner(prevProfessions => {
       return prevProfessions.map(prof => {
         if (prof.id === id) {
           // Убедитесь, что обновляется правильное поле (например, skills)
@@ -116,14 +131,14 @@ const EditpartnerForm = ({partner}: any) => {
   };
   
   const handleDrivePChange = (selectedDriveP: string[],id: number) => {
-    setProfessions((prevProfessions) =>
+    setProfessionsPartner((prevProfessions) =>
       prevProfessions.map((prof) =>
         prof.id === id ? { ...prof, drivePermis: selectedDriveP } : prof
       )
     );};
 
     const handleLangues = (selectedLangues: string[], id: number) => {
-    setProfessions((prevProfessions) =>
+    setProfessionsPartner((prevProfessions) =>
       prevProfessions.map((prof) =>
         prof.id === id ? { ...prof, langue: selectedLangues } : prof
       )
@@ -131,7 +146,7 @@ const EditpartnerForm = ({partner}: any) => {
 
   const getProfessionsDataForSubmit = () => {
     console.log("Профессии для отправки", professions);
-    return professions.map((prof) => ({
+    return professionsPartner.map((prof) => ({
       name: prof.name || '',
       location: prof.location || '',
       skills: prof.skills || '',
@@ -153,7 +168,7 @@ const EditpartnerForm = ({partner}: any) => {
 
   const handleRemoveProfession = (id: number) => {
     // Удаляем элемент по id
-    setProfessions((prevProfessions) =>
+    setProfessionsPartner((prevProfessions) =>
       prevProfessions.filter((profession) => profession.id !== id)
     );
   };
@@ -163,17 +178,12 @@ const EditpartnerForm = ({partner}: any) => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     const professionsData = getProfessionsDataForSubmit();
- 
     const formData = new FormData(event.target);
-  
-    // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
     formData.append('professions', JSON.stringify(professionsData));
-
-  
     try {
       const response = await fetch('/api/partner', {
-        method: 'POST',
+        method: 'PUT',
         body: formData, 
       });
   
@@ -394,7 +404,7 @@ const EditpartnerForm = ({partner}: any) => {
       </div>
     </div>
     <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {professions.map((profession, index) => (
+        {professionsPartner.map((profession, index) => (
           
           <div key={profession.id} className=" p-4 mb-4 ">
             <Card className='relative '>
@@ -407,9 +417,28 @@ const EditpartnerForm = ({partner}: any) => {
                 </Button>
                   <span className='m-1 font-bold'>{index + 1}.</span>
                 <CardTitle className='grid grid-cols-2 gap-1 relative pt-10 px-6'>
-                  <ProfessionSelect
+                <label htmlFor="profession">
+                <select
+  className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+  value={profession.name || ''}
+  onChange={(e) => {
+    const selectedName = e.target.value;
+    const selectedId = parseInt(e.target.selectedOptions[0].dataset.id || '0', 10);
+    handleProfessionSelect(selectedId, 'name', selectedName);
+  }}
+>
+  <option value="">Нет профессии</option>
+  {professions.map((profession: any) => (
+    <option key={profession._id} value={profession.name} data-id={profession.id}>
+      {profession.name}
+    </option>
+  ))}
+</select>
+              </label>
+                  {/* <ProfessionSelect
+                  professionsVal={professions}
                   professionId={profession.id}
-                  onProfessionChange={handleProfessionSelect}/>
+                  onProfessionChange={handleProfessionSelect}/> */}
                   <div>
               <Label>Местоположение</Label>
               <Input 

@@ -1,17 +1,19 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CallHistory } from '../CallHistory/CallHistory';
+import { Badge } from '@/components/ui/badge';
+import RecruiterStage from './RecruiterStage/RecruiterStage';
 
 export const FunnelCandidate = ({ onDataChange, candidate }: any) => {
   // Инициализация с дефолтными значениями
   const [funnel, setFunnel] = useState({
-    presentation: false,
-    viber: false,
+    presentation: true,
+    viber: true,
     whatsapp: true,
-    telegram: false,
-    positive: false,
+    telegram: true,
+    positive: true,
   });
 
   useEffect(() => {
@@ -47,28 +49,26 @@ export const FunnelCandidate = ({ onDataChange, candidate }: any) => {
   };
 
   return (
-    <Card>
-      <CallHistory candidate={candidate} />
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex items-center space-x-2">
+    <>
+    <Card className='p-2'>
+      <CardContent className="flex flex-col items-start gap-2 p-2 pt-5">
+        <div className="flex items-center space-x-2 w-full">
           <Checkbox
             id="presentation"
             name="presentation"
             checked={funnel.presentation}
-            onChange={handleChange}
-          />
+            onChange={handleChange} />
           <label htmlFor="presentation" className="text-sm font-medium leading-none">
             Презентовал(а) компанию Etalones
           </label>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 w-full">
           <Checkbox
             id="viber"
             name="viber"
             checked={funnel.viber}
-            onChange={handleChange}
-          />
+            onChange={handleChange} />
           <label htmlFor="viber" className="text-sm font-medium leading-none">
             Общаемся Viber
           </label>
@@ -79,8 +79,7 @@ export const FunnelCandidate = ({ onDataChange, candidate }: any) => {
             id="whatsapp"
             name="whatsapp"
             checked={funnel.whatsapp}
-            onChange={handleChange}
-          />
+            onChange={handleChange} />
           <label htmlFor="whatsapp" className="text-sm font-medium leading-none">
             Общаемся WhatsApp
           </label>
@@ -91,8 +90,7 @@ export const FunnelCandidate = ({ onDataChange, candidate }: any) => {
             id="telegram"
             name="telegram"
             checked={funnel.telegram}
-            onChange={handleChange}
-          />
+            onChange={handleChange} />
           <label htmlFor="telegram" className="text-sm font-medium leading-none">
             Общаемся Telegram
           </label>
@@ -103,14 +101,16 @@ export const FunnelCandidate = ({ onDataChange, candidate }: any) => {
             id="positive"
             name="positive"
             checked={funnel.positive}
-            onChange={handleChange}
-          />
+            onChange={handleChange} />
           <label htmlFor="positive" className="text-sm font-medium leading-none">
             Положительное впечатление
           </label>
         </div>
       </CardContent>
     </Card>
+      // времено для интерфэйса и идеи
+      <RecruiterStage/>
+      </>
   );
 };
 

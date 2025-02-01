@@ -52,13 +52,18 @@ const SidebarRight = ({
       }
     }
   }, [sidebarROpen, formType]); // Зависимость от состояния сайдбара и типа формы
-
+  const closeSidebar = () => {
+    setSidebarROpen(false);
+    if (formType !== "viewCandidate" && formType !== "viewPartner") {
+      setFormData(null); 
+    }
+  };
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":
         return <AddCandidateForm  />;
       case "editCandidate":
-        return <EditCandidateForm candidate={formData}  />;
+        return <EditCandidateForm candidate={formData}  onSubmitSuccess={closeSidebar}/>;
       case "viewCandidate":
         return <ViewCandidateForm candidate={formData} />;
       case "createManager":

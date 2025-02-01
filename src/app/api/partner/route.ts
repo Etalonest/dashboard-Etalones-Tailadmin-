@@ -1,11 +1,13 @@
 import { connectDB } from "@/src/lib/db";
 import Manager from "@/src/models/Manager";
 import Partner from "@/src/models/Partner";
+import { error } from "console";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
     try {
       const formData = await request.formData();
+      console.log("formData", formData);
       const name = formData.get("name");
       const phone = formData.get("phone");
       const viber = formData.get("viber");
@@ -38,6 +40,7 @@ export const POST = async (request: Request) => {
         { status: 400 }
       );
     }
+   
 
   const body = {
     name,

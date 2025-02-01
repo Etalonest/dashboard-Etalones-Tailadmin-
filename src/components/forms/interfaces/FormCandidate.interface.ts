@@ -7,7 +7,7 @@ export interface DriveOption {
   dateExp: string;
   dateOfIssue: string;
   numberDoc: string;
-  file?: File;
+  file?: File | null;
   }
   export interface File{
     _id?:any;

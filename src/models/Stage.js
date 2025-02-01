@@ -10,13 +10,6 @@ const StageSchema = new Schema({
   status: {
     type: Date,
   },
-  passport:{
-    type: Boolean,
-    document:{
-        type: Schema.Types.ObjectId,
-        ref: 'Document'
-    }
-  },
   visa:{
     type: Boolean,
     document:{
