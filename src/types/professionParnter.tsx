@@ -1,4 +1,5 @@
 export type ProfessionPartner = {
+    _id?: any;
     id: number;
     name: string;
     location: string;
@@ -13,6 +14,7 @@ export type ProfessionPartner = {
     langue: string[];
     workHours: string;
     getStart: Date;
-    candidates: string[]; // Здесь типы ObjectId, можно изменить на string для простоты
+    pDocs: string[];
+    candidates: string[]; 
     interview: string[];
   };

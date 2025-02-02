@@ -1,5 +1,6 @@
 // Тип для профессии партнёра
 export type Profession = {
+    pDocs: any;
     id: string;              // Идентификатор профессии
     name: string;            // Название профессии
     experience: string;      // Опыт работы
@@ -43,7 +44,24 @@ export type Profession = {
       $numberLong: string; // Строка, представляющая число в миллисекундах
     };
   };
-  
+ export type Vacancy = {
+  id: any;
+  _id: any;
+  name: string;
+  location: string;
+  place: number;
+  salary: string;
+  rentPrice: string;
+  avans: string;
+  workwear: string;
+  drivePermis: string[];
+  langue: string[];
+  workHours: string;
+  getStart: Date;
+  pDocs: string[];
+  candidates: string[]; 
+  interview: string[];
+ }
   // Основной тип для партнёра
   export type Partner = {
     id: string;

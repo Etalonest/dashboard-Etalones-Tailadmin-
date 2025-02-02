@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createHandleChange } from '@/src/utils/handlePartnerChange'; 
+import { Document } from '@/src/types/candidate';
 
 const usePartnerData = (partner: any) => {
   const [selectName, setSelectName] = useState(partner?.name || '');
@@ -14,7 +15,8 @@ const usePartnerData = (partner: any) => {
   const [selectSite, setSelectSite] = useState(partner?.site || '');
   const [contractType, setContractType] = useState(partner?.contract?.typeC || '');
   const [contractPrice, setContractPrice] = useState(partner?.contract?.sum || '');
-
+  const [documents, setDocuments] = useState<Document[]>(partner?.documents || []);
+  
   const handleChangeName = createHandleChange(setSelectName);
   const handleChangePhone = createHandleChange(setSelectPhone);
   const handleChangeViber = createHandleChange(setSelectViber);
@@ -27,6 +29,7 @@ const usePartnerData = (partner: any) => {
   const handleChangeSite = createHandleChange(setSelectSite);
   const handleChangeContractType = createHandleChange(setContractType);
   const handleChangeContractPrice = createHandleChange(setContractPrice);
+  const handleChangeDocuments = createHandleChange(setDocuments);
 
   useEffect(() => {
     if (partner) {
@@ -40,6 +43,7 @@ const usePartnerData = (partner: any) => {
       setSelectNumberDE(partner.numberDE || '');
       setSelectLocation(partner.location || '');
       setSelectSite(partner.site || '');
+      setDocuments(partner.documents || []);
       if (partner.contract) {
         setContractType(partner.contract.typeC || '');
         setContractPrice(partner.contract.sum || '');
@@ -60,6 +64,7 @@ const usePartnerData = (partner: any) => {
     selectSite,
     contractType,
     contractPrice,
+    documents,
     handleChangeName,
     handleChangePhone,
     handleChangeViber,
@@ -71,7 +76,9 @@ const usePartnerData = (partner: any) => {
     handleChangeLocation,
     handleChangeSite,
     handleChangeContractType,
-    handleChangeContractPrice
+    handleChangeContractPrice,
+    handleChangeDocuments,
+
   };
 };
 

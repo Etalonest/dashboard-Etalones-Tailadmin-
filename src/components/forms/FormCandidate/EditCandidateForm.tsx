@@ -5,7 +5,7 @@ import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
 import { useSession } from 'next-auth/react';
-import { drivePermisData, statusData, citizenshipOptions, langueLevelData, languesData } from '@/src/config/constants'
+import { drivePermisData, citizenshipOptions, langueLevelData, languesData } from '@/src/config/constants'
 import { DocumentEntry, Langue, CommentEntry } from "../interfaces/FormCandidate.interface"
 
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
@@ -18,7 +18,6 @@ import CMultiSelect from '../../Multiselect/Multiselect';
 import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 import useCandidateData from '@/src/hooks/useCandidateData';
-import { FunnelCandidate } from '../Funnel/FunnelCandidate/FunnelCandidate';
 import {
   Drawer,
   DrawerClose,
@@ -36,20 +35,12 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   const { addNotification } = useNotifications();
   const { professions } = useProfessionContext();
   const [funnelData, setFunnelData] = useState({});
-  const [isOpen, setIsOpen] = useState(false)
-  const [selectesName, setSelectName] = useState(candidate?.name);
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
   const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
-  const [selectAgeNum, setSelectAgeNum] = useState(candidate?.ageNum || "");
-  const [selectStatus, setSelectStatus] = useState(candidate?.status);
   const [professionEntries, setProfessionEntries] = useState(candidate?.professions || []);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>(candidate?.documents || []);
   const [commentEntries, setCommentEntries] = useState<CommentEntry[]>(candidate?.comment || []);
-  const [selectCitizenship, setSelectCititzenship] = useState(candidate?.citizenship || '')
-  const [leavingDate, setLeavingDate] = useState<string>(candidate?.leavingDate || "");
-  const [selectLocations, setSelectLocations] = useState(candidate?.locations || '')
   const [selectDrive, setSelectDrive] = useState(candidate?.drivePermis || []);
-  const [selectCardNumber, setSelectCardNumber] = useState(candidate?.cardNumber || '')
   const [selectLangues, setSelectLangues] = useState<Langue[]>(candidate?.langue || []);
   const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>(candidate?.statusWork || []);
   const {
@@ -74,9 +65,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
       setWorkStatuses(candidate.statusWork);
     }
   },  [candidate?.statusWork]);
-  useEffect(() => {
-    if (candidate?.name) { setSelectName(candidate.name); }
-  }, [candidate?.name]);
+
   useEffect(() => {
     if (candidate?.phone) { setSelectPhone(candidate.phone); }
   }, [candidate?.phone]);
@@ -84,9 +73,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     if (candidate?.additionalPhones) { setAdditionalPhones(candidate.additionalPhones); }
   }, [candidate?.additionalPhones]);
  
-  useEffect(() => {
-    if (candidate?.ageNum) { setSelectAgeNum(candidate.ageNum); }
-  }, [candidate?.ageNum]);
+
   useEffect(() => {
     if (candidate?.documents) { setDocumentEntries(candidate.documents); }
   }, [candidate?.documents]);
@@ -96,38 +83,16 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   useEffect(() => {
     if (candidate?.comment) { setCommentEntries(candidate.comment); }
   }, [candidate?.comment]);
-  useEffect(() => {
-    if (candidate?.citizenship) { setSelectCititzenship(candidate.citizenship); }
-  }, [candidate?.citizenship]);
-  useEffect(() => {
-    if (candidate?.leaving) {
-      const formattedDate = new Date(candidate.leaving).toISOString().split("T")[0];
-      setLeavingDate(formattedDate);
-    }
-  }, [candidate?.leaving]);
-  useEffect(() => {
-    if (candidate?.locations) {
-      setSelectLocations(candidate.locations);
-    }
-  }, [candidate?.locations]);
+
   useEffect(() => {
     if (candidate?.drivePermis) { setSelectDrive(candidate.drivePermis); }
   }, [candidate?.drivePermis]);
-  useEffect(() => {
-    if (candidate?.cardNumber) {
-      setSelectCardNumber(candidate.cardNumber);
-    }
-  }, [candidate?.cardNumber]);
+
   useEffect(() => {
     if (candidate?.langue) {
       setSelectLangues(candidate.langue);
     }
   }, [candidate?.langue]);
-
-  const handleClick = (index: number) => {
-    document.getElementById(`fileInput-${index}`)?.click();
-  };
-
 
   const handleDataChange = (updatedFunnelData: any) => {
     setFunnelData(updatedFunnelData); 
@@ -154,9 +119,6 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectPhone(e.target.value);
-  };
-  const handleChangeAgeNum = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectAgeNum(e.target.value);
   };
 
   const handleAdditionalPhoneChange = (index: number, value: string) => {
@@ -351,7 +313,6 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-  
     if (!candidate || !candidate._id) {
       addNotification({
         title: 'Ошибка',
@@ -497,7 +458,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     </div>           
             </div>
             <DrawerClose className='absolute top-2 right-2'>
-              <Button variant="outline"><X size={18} color="red"/></Button>
+              <X size={18} color="red"/>
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
@@ -521,7 +482,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
             <Button>Скачать</Button>
             </div>
             <DrawerClose className='absolute top-2 right-2'>
-              <Button variant="outline"><X size={18} color="red"/></Button>
+             <X size={18} color="red"/>
             </DrawerClose>
           </DrawerFooter>
     </DrawerContent>
@@ -692,24 +653,26 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
   {commentEntries.map((comment, index) => (
-    <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
-      <Badge>{new Date(commentEntries[commentEntries.length - 1].date)
+  <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
+    <Badge>
+      {new Date(comment.date)
         .toLocaleString()
-        .slice(0, 5)} {/* Берем только день и месяц */}
-        .{new Date(commentEntries[commentEntries.length - 1].date)
-          .getFullYear()
-          .toString()
-          .slice(-2)} {/* Последние 2 цифры года */}</Badge>
-          <Badge className='text-green-700'>{new Date(commentEntries[commentEntries.length - 1].date)
+        .slice(0, 5)}.
+      {new Date(comment.date)
+        .getFullYear()
+        .toString()
+        .slice(-2)}
+    </Badge>
+    <Badge className='text-green-700'>
+      {new Date(comment.date)
         .toLocaleString()
-        .slice(12, 17)} 
-        </Badge>
-      <p className="text-sm">{comment.text}</p>
-      <span className='absolute right-2'>Автор: 
-      {comment.author}
-        </span>
-    </div>
-  ))}
+        .slice(12, 17)}
+    </Badge>
+    <p className="text-sm">{comment.text}</p>
+    <span className='absolute right-2'>Автор: {comment.author}</span>
+  </div>
+))}
+
   <Textarea
     placeholder="Оставьте свой комментарий"
     className="mt-5"

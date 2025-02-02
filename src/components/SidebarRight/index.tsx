@@ -9,15 +9,19 @@ import AddPartnerForm from "@/src/components/forms/FormPartner/AddpartnerForm";
 import EditPartnerForm from "@/src/components/forms/FormPartner/EditPartnerForm";
 import ViewPartnerForm from "@/src/components/forms/FormPartner/ViewParnterForm";
 import { Candidate } from "@/src/types/candidate";
-import { Partner } from "@/src/types/partner";
+import { Partner, Vacancy } from "@/src/types/partner";
 import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
+import AddVacancyForm from "../forms/VacancyForm/AddVacancyForm";
+import { ProfessionPartner } from "@/src/types/professionParnter";
 
 interface SidebarProps {
   sidebarROpen?: boolean;
   setSidebarROpen: (arg: boolean) => void;
   selectedCandidate?: Candidate | null;
   selectedPartner?: Partner | null;
-  formType?: "addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | "addPartner" | "viewPartner" | "editPartner" |null;
+  selectedVacancy?: Vacancy | null;
+  selectedProfession?: ProfessionPartner | null;
+  formType?: "addCandidate" | "editCandidate" | "viewCandidate" | "addVacancy" | "editVacancy" | "viewVacancy" | "createManager" | "addPartner" | "viewPartner" | "editPartner" |null;
 }
 
 const SidebarRight = ({
@@ -26,10 +30,30 @@ const SidebarRight = ({
   formType,
   selectedCandidate,
   selectedPartner,
+  selectedVacancy,
+  selectedProfession
 }: SidebarProps) => {
   const [formData, setFormData] = useState<Candidate | null>(null);
   const [partnerData, setPartnerData] = useState<Partner | null>(null);
-
+  const [vacancyData, setVacancyData] = useState<Vacancy | null>(null);
+  const [professionData, setProfessionData] = useState<any | null>(null);
+useEffect(() => {
+    if (selectedVacancy) {
+      console.log("selectedVacancy updated:", selectedVacancy);
+      setVacancyData(selectedVacancy);
+    }
+  }, [selectedVacancy]);
+  useEffect(() => {
+    if (selectedPartner) {
+      console.log("selectedPartner updated:", selectedPartner);
+      setPartnerData(selectedPartner);
+      
+      // Если партнер есть, извлекаем профессию для вакансии (например, первую профессию)
+      if (selectedPartner.professions && selectedPartner.professions.length > 0) {
+        setProfessionData(selectedPartner.professions[0]); // Пример, если берем первую профессию
+      }
+    }
+  }, [selectedPartner]);
   useEffect(() => {
     if (selectedPartner) {
       console.log("selectedPartner updated:", selectedPartner);
@@ -71,9 +95,15 @@ const SidebarRight = ({
       case "addPartner":
         return <AddPartnerForm  />;
       case "editPartner":
-        return <EditPartnerForm partner={partnerData} />; 
+        return <EditPartnerForm partner={partnerData} onSubmitSuccess={closeSidebar}/>; 
       case "viewPartner":
         return <ViewPartnerForm partner={formData} />;  
+      case "addVacancy":
+          return <AddVacancyForm  profession={selectedProfession} />;
+      // case "editVacancy":
+      //     return <EditVacancyForm vacancy={vacancyData} onSubmitSuccess={closeSidebar}/>; 
+      // case "viewVacancy": 
+      //     return <ViewVacancyForm vacancy={formData} />;
       default:
         return null;
     }

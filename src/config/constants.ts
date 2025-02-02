@@ -1,3 +1,10 @@
+export const pDocsData = [
+  { label: "Пасспорт ЕС", value: "Пасспорт ЕС" },
+  { label: "Карта побыта", value: "Карта побыта" },
+  { label: "Польская виза", value: "Польская виза" },
+  { label: "Паспорт Биометрия Украины", value: "Паспорт Биометрия Украины" },
+  { label: "Не важно", value: "Не важно" },
+]
 export const drivePermisData = [
     { label: "no", value: "Нет удостоверения" },
     { label: "В", value: "B" },

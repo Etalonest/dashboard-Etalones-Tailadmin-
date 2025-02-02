@@ -1,7 +1,6 @@
 import { connectDB } from "@/src/lib/db";
 import Manager from "@/src/models/Manager";
 import Partner from "@/src/models/Partner";
-import { error } from "console";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
@@ -22,7 +21,7 @@ export const POST = async (request: Request) => {
 
       const professionsRaw = formData.get("professions");
       const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
-
+console.log("professions", professions);
       const contractRaw = formData.get("contract");
       const contract = contractRaw ? JSON.parse(contractRaw as string) : {};
       await connectDB();

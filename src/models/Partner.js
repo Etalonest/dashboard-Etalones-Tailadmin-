@@ -3,7 +3,10 @@ import {Document} from './Document';
 import { type } from "os";
 
 const PartnerSchema = new Schema({
- 
+  documentsFile: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Document'
+  }],
     professions: [{
         name: {
           type: String,
@@ -38,7 +41,9 @@ const PartnerSchema = new Schema({
       }],
         langue: [{
           type: String,
-
+        }],
+        pDocs:[{
+          type: String,
         }],
         workHours:{
           type: String
@@ -55,7 +60,7 @@ const PartnerSchema = new Schema({
           {
             type: Schema.Types.ObjectId, ref: 'Interview'
           }
-        ]
+        ],
       }],
       name: {
         type: String,

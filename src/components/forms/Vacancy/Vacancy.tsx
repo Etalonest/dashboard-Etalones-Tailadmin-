@@ -1,11 +1,14 @@
 'use client'
-import { Eye, UserCog, UserRoundPlus } from "lucide-react";
+import { UserRoundPlus } from "lucide-react";
 import { Partner } from '@/src/types/partner';  
-import { useState, useEffect } from 'react';
-import SidebarRight from '../SidebarRight';
+import { useState, useEffect, } from 'react';
+import SidebarRight from '@/src/components/SidebarRight';
 import { usePartners } from '@/src/context/PartnerContext';
 import { useSession } from 'next-auth/react';
-const TablePartner = () => {
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { ProfessionPartner } from "@/src/types/professionParnter";
+const Vacancy = () => {
   const { data: session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
   const { partners, loadPartners} = usePartners();
@@ -15,8 +18,9 @@ const TablePartner = () => {
   const partnersPerPage = 10;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [formType, setFormType] = useState<"addPartner" | "editPartner" | "viewPartner" | null>(null);
+    const [formType, setFormType] = useState<"addVacancy" | "editVacancy" | "viewVacancy" | null>(null);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+    const [selectedProfession, setSelectedProfession] = useState<ProfessionPartner | null>(null);
 console.log("PARTNERS", selectedPartner);
     const currentPartners = filteredPartners.slice(
     (currentPage - 1) * partnersPerPage,
@@ -58,9 +62,10 @@ console.log("PARTNERS", selectedPartner);
     setSearchQuery(event.target.value);
   };
 
-    const toggleSidebar = (type: "addPartner" | "editPartner" | "viewPartner", partner?: Partner) => {
+    const toggleSidebar = (type: "addVacancy" | "editVacancy" | "viewVacancy", partner?: Partner, profession?: ProfessionPartner) => {
       setFormType(type);             
       setSelectedPartner(partner || null); 
+      setSelectedProfession(profession || null);
       setSidebarOpen(prevState => !prevState);  
     };
   return (
@@ -69,15 +74,16 @@ console.log("PARTNERS", selectedPartner);
       <div className='flex items-center gap-3 mb-6 '>
 
         <h4 className="text-xl font-semibold text-black dark:text-white">
-          Мои партнёры
+          Мои Вакансии
         </h4>
-        <UserRoundPlus color='green' onClick={() => toggleSidebar("addPartner")} className='cursor-pointer' />
+        <UserRoundPlus color='green' onClick={() => toggleSidebar("addVacancy")} className='cursor-pointer' />
         </div>
         <SidebarRight 
         sidebarROpen={sidebarOpen} 
         setSidebarROpen={setSidebarOpen} 
         formType={formType} 
-        selectedPartner={selectedPartner} 
+        selectedPartner={selectedPartner}
+        selectedProfession={selectedProfession} 
         />
         <input
           type="text"
@@ -88,73 +94,63 @@ console.log("PARTNERS", selectedPartner);
         />
       </div>
 
-      <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Имя
-            </h5>
-          </div>
-          
-          <div className="p-2.5 text-start xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Документы
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-start sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Добавлен/Обновлён
-            </h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">
-              Телефон
-            </h5>
-          </div>
-        </div>
-
-        {managerId && currentPartners.map((partner, index) => (
-          <div
-            className={`grid grid-cols-3 sm:grid-cols-5 ${'border-b border-stroke dark:border-strokedark'}`}
+        <Table>
+        <TableHeader>
+        <TableRow>
+          <TableHead >Заказчик</TableHead>
+          <TableHead>Свободные места</TableHead>
+          <TableHead className="text-right">На собеседовании</TableHead>
+          <TableHead className="text-right">Документы</TableHead>
+          <TableHead className="text-right">Вакансия</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+      {managerId && currentPartners.map((partner, index) => (
+          <TableRow
+            // className={`grid grid-cols-3 sm:grid-cols-5 ${'border-b border-stroke dark:border-strokedark'}`}
             key={index}
           >
-            <div className="flex items-center gap-3 p-2.5 xl:p-5">
-              <div className="flex-shrink-0">
-                <Eye />
-                <UserCog 
-                onClick={() => toggleSidebar("editPartner", partner)}
-                />
+            <TableCell>
+              <div className="flex ">
+              <p className="hidden text-black dark:text-white sm:block">{partner.companyName || 'Не указано'}</p>
               </div>
-              <p className="hidden text-black dark:text-white sm:block">{partner.name}</p>
-            </div>
+              <p className="hidden text-black text-md font-bold dark:text-white sm:block">{partner.name}</p>
+            </TableCell>
+            <TableCell>
+           <div className="w-full h-[50px] border border-stroke dark:border-strokedark">
 
-           
-
-            <div className="flex items-center justify-start p-2.5 xl:p-5">
-              <div className="text-meta-3">
-                {partner.documents.map((document,index) => (
-                  <div key={index}>{document.docType}</div>
+           </div>
+            </TableCell>
+            <TableCell className="text-right">
+            {partner.professions.map((p,index) => (
+                      <div className="py-2" key={index}>{p.name}</div>
                 ))}
-              </div>
-            </div>
+            </TableCell>
+            <TableCell className="text-right">
+  {partner?.professions?.map((profession, index) => (
+    profession.pDocs?.map((doc: string, docIndex: number) => (
+      <div className="text-end" key={`${index}-${docIndex}`}>{doc}</div>
+    ))
+  ))}
+</TableCell>
 
-            <div className="hidden text-sm items-center justify-center p-2.5 sm:flex xl:p-5">
-              <p className="text-black dark:text-white">
-                {`${new Date(partner.createdAt).toLocaleDateString('ru-RU', {
-                  day: '2-digit', month: 'long', year: '2-digit'
-                })} / ${new Date(partner.updatedAt).toLocaleDateString('ru-RU', {
-                  day: '2-digit', month: 'long', year: '2-digit'
-                })}`}
-              </p>
-            </div>
 
-            <div className="hidden items-center justify-end p-2.5 sm:flex xl:p-5">
-              <p className="text-meta-5">{partner.phone}</p>
+            <div className="flex flex-col gap-2 items-end my-auto">
+            {partner.professions.map((profession: any,index) => (
+
+<div key={index}><div className="py-2" key={index}>
+            {profession.name}
+            <Button onClick={() => toggleSidebar("addVacancy", partner, profession)}>Вакансия</Button>  {/* Передаем профессию */}
+          </div></div>
+))}
+              
             </div>
-          </div>
+            
+          </TableRow>
         ))}
-      </div>
-
+      </TableBody>        
+      </Table>
+      
       {/* Пагинация */}
       {managerId && filteredPartners.length > partnersPerPage && (
         <div className="flex justify-center mt-6">
@@ -181,4 +177,4 @@ console.log("PARTNERS", selectedPartner);
   );
 };
 
-export default TablePartner;
+export default Vacancy;

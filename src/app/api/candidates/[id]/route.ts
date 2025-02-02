@@ -98,7 +98,6 @@ if (commentData) {
         const bufferData = await file.arrayBuffer();
         const buffer = Buffer.from(bufferData);
 
-        // Сохраняем файл в коллекции документов
         const document = new Document({
           name: file.name, // Имя файла
           data: buffer,    // Данные файла
@@ -143,7 +142,6 @@ if (commentData) {
       }
     }
 
-    // Обновляем кандидата в базе данных, добавляем новое имя и документы
     const updatedCandidate = await Candidate.findByIdAndUpdate(id, {
       $set: {
         name: newName || oldCandidate.name, 

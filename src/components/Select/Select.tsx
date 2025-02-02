@@ -6,7 +6,7 @@ export const ProfessionSelect = ({ onProfessionChange, professionId, professions
   console.log("PV", professionsVal.name)
   const { professions } = useProfessionContext();
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedName = e.target.value;  // Получаем выбранное имя профессии
+    const selectedName = e.target.value;  
     if (typeof onProfessionChange === "function") {
       // Передаем имя и id профессии в родительский компонент
       onProfessionChange(selectedName, professionId);  

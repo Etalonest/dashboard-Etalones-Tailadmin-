@@ -187,7 +187,19 @@ export async function GET(request: any, { params }: any) {
         ]
       })
       .populate('role')
-      .populate('partners');
+      .populate({
+        path: 'partners',
+        options: { sort: { updatedAt: -1 } },
+        populate: [
+          {
+            path: 'documents',
+            populate: {
+              path: 'file',
+              select: 'name data contentType',
+            },
+          },
+        ]
+      });
     
       if (!manager) {
 

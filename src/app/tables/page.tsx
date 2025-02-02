@@ -1,12 +1,14 @@
 'use client'
 import Breadcrumb from "@/src/components/Breadcrumbs/Breadcrumb";
-import TableThree from "@/src/components/Tables/TableThree";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
 import TableCandidate from "@/src/components/Tables/TableCandidaate";
 import { ProfessionProvider } from "@/src/context/ProfessionContext";
 import { useSession } from "next-auth/react";
+import Vacancy from "@/src/components/forms/Vacancy/Vacancy";
+import Partner from "@/src/models/Partner";
+import { PartnerProvider } from "@/src/context/PartnerContext";
 
 const TablesPage = () => {
   const { data: session } = useSession();
@@ -22,6 +24,7 @@ const TablesPage = () => {
   return (
     <DefaultLayout>
       <ProfessionProvider>
+        <PartnerProvider>
       <Breadcrumb pageName="Tables" />
 
       <div className="mb-6">
@@ -52,9 +55,9 @@ const TablesPage = () => {
         {/* Условный рендеринг таблиц */}
         {activeTable === "table1" && <TableCandidate/>}
         {activeTable === "table2" && <TablePartner />}
-        {activeTable === "table3" && <TableThree />}
+        {activeTable === "table3" && <Vacancy />}
       </div>
-    
+      </PartnerProvider>
       </ProfessionProvider>
     </DefaultLayout>
   );
