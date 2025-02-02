@@ -2,19 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { IdReference } from '../types/manager';
+import { Manager } from '../types/manager';
 
-// Тип данных менеджера
-interface Manager {
-  _id?: IdReference;
-  name: string;
-  email: string;
-  phone: string;
-  image?: { name: string; data: any; contentType: string };
-  candidates: any[];
-  partners: any[];
-  tasks: any[];
-}
 
 interface ManagerContextType {
   manager: Manager | null;

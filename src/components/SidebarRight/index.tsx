@@ -8,10 +8,11 @@ import ViewCandidateForm from "@/src/components/forms/FormCandidate/ViewCandidat
 import AddPartnerForm from "@/src/components/forms/FormPartner/AddpartnerForm";
 import EditPartnerForm from "@/src/components/forms/FormPartner/EditPartnerForm";
 import ViewPartnerForm from "@/src/components/forms/FormPartner/ViewParnterForm";
+import AddVacancyForm from "../forms/VacancyForm/AddVacancyForm";
+import EditVacancyForm from "../forms/VacancyForm/EditVacancyForm";
 import { Candidate } from "@/src/types/candidate";
 import { Partner, Vacancy } from "@/src/types/partner";
 import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
-import AddVacancyForm from "../forms/VacancyForm/AddVacancyForm";
 import { ProfessionPartner } from "@/src/types/professionParnter";
 
 interface SidebarProps {
@@ -37,6 +38,7 @@ const SidebarRight = ({
   const [partnerData, setPartnerData] = useState<Partner | null>(null);
   const [vacancyData, setVacancyData] = useState<Vacancy | null>(null);
   const [professionData, setProfessionData] = useState<any | null>(null);
+  
 useEffect(() => {
     if (selectedVacancy) {
       console.log("selectedVacancy updated:", selectedVacancy);
@@ -82,6 +84,7 @@ useEffect(() => {
       setFormData(null); 
     }
   };
+  console.log("Vacancy!!!!!", vacancyData);
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":
@@ -100,8 +103,8 @@ useEffect(() => {
         return <ViewPartnerForm partner={formData} />;  
       case "addVacancy":
           return <AddVacancyForm  profession={selectedProfession} />;
-      // case "editVacancy":
-      //     return <EditVacancyForm vacancy={vacancyData} onSubmitSuccess={closeSidebar}/>; 
+      case "editVacancy":
+          return <EditVacancyForm vacancy={vacancyData} onSubmitSuccess={closeSidebar}/>; 
       // case "viewVacancy": 
       //     return <ViewVacancyForm vacancy={formData} />;
       default:

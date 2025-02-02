@@ -13,7 +13,6 @@ import {
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useManager } from "@/src/context/ManagerContext";
 import Candidate from "@/src/models/Candidate";
-import { i } from "framer-motion/client";
 
   export function CandidateTab() {
 const { data: session } = useSession();
@@ -36,7 +35,7 @@ if (session?.managerRole && ['recruiter', 'manager', 'admin'].includes(session.m
           </TableRow>
         </TableHeader>
         <TableBody>
-          {manager?.candidates.map((candidates, index) => (
+          {manager?.candidates && manager?.candidates.map((candidates, index) => (
             <TableRow key={index}>
               <TableCell className="text-start">{candidates.name}</TableCell>
               <TableCell className="text-center">{candidates.phone}</TableCell>

@@ -6,9 +6,6 @@ import { useManager } from '@/src/context/ManagerContext';
 import SidebarRight from "../SidebarRight";
 import { useState } from "react";
 import { Camera, Pencil } from "lucide-react";
-import { TableManagers } from "@/src/components//Tables/TableManagers";
-import { useManagers } from '@/src/context/ManagersContext';
-import { Tabs } from "@radix-ui/react-tabs";
 import { TabsAdmin } from "./tabs/TabsAdmin";
 
 const ProfileComponent = () => {

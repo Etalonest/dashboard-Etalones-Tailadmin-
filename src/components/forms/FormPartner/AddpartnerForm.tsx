@@ -97,6 +97,7 @@ const AddpartnerForm = () => {
       rentPrice: '',
       avans: '',
       workwear: '',
+      pDocs: [],
       drivePermis: [],
       langue: [],
       workHours: '',
@@ -146,7 +147,7 @@ const AddpartnerForm = () => {
       prevProfessions.map((prof) =>
         prof.id === id ? { ...prof, langue: selectedLangues } : prof
       )
-    );};
+    )};
 
   const getProfessionsDataForSubmit = () => {
     console.log("Профессии для отправки", professions);

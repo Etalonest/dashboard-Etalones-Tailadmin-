@@ -51,9 +51,6 @@ export type Profession = {
     docType: any;
     id: string;
     _id: string;
-    // _id: {
-    //   $oid: string; // ID в MongoDB
-    // };
     name: string;
     phone: string;
     age: string;

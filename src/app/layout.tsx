@@ -11,7 +11,7 @@ import { SearchProvider } from "../context/SearchContext";
 import { NotificationProvider } from "../context/NotificationContext";
 import Notifications from "../notification/Notifications";
 import { CandidateProvider } from "../context/CandidateContext";
-
+import { CandidatesProvider } from "../context/CandidatesContext";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,11 +33,13 @@ export default function RootLayout({
       <Notifications />
         <SearchProvider>
         <ManagerProvider>
+          <CandidatesProvider>
           <CandidateProvider>
         <div className="text-black dark:text-white dark:bg-boxdark-2   ">
           {loading ? <Loader /> : children}
         </div>
         </CandidateProvider>
+        </CandidatesProvider>
         </ManagerProvider>
         </SearchProvider>
         </NotificationProvider>

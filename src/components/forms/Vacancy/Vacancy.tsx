@@ -1,13 +1,13 @@
 'use client'
-import { UserRoundPlus } from "lucide-react";
+import { Eye, Plus, Settings, UserRoundPlus } from "lucide-react";
 import { Partner } from '@/src/types/partner';  
-import { useState, useEffect, } from 'react';
+import { useState, useEffect, useCallback, } from 'react';
 import SidebarRight from '@/src/components/SidebarRight';
 import { usePartners } from '@/src/context/PartnerContext';
 import { useSession } from 'next-auth/react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { ProfessionPartner } from "@/src/types/professionParnter";
+import { VacancyType } from "@/src/types/vacancy";
 const Vacancy = () => {
   const { data: session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
@@ -17,11 +17,11 @@ const Vacancy = () => {
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
   const partnersPerPage = 10;
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [formType, setFormType] = useState<"addVacancy" | "editVacancy" | "viewVacancy" | null>(null);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
     const [selectedProfession, setSelectedProfession] = useState<ProfessionPartner | null>(null);
-console.log("PARTNERS", selectedPartner);
+    const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null);
     const currentPartners = filteredPartners.slice(
     (currentPage - 1) * partnersPerPage,
     currentPage * partnersPerPage
@@ -61,13 +61,23 @@ console.log("PARTNERS", selectedPartner);
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
-
-    const toggleSidebar = (type: "addVacancy" | "editVacancy" | "viewVacancy", partner?: Partner, profession?: ProfessionPartner) => {
-      setFormType(type);             
-      setSelectedPartner(partner || null); 
+  const toggleSidebar = useCallback(
+    (type: "addVacancy" | "editVacancy" | "viewVacancy", partner?: Partner, profession?: ProfessionPartner, vacancy?: VacancyType) => {
+      setFormType(type);
+      setSelectedPartner(partner || null);
       setSelectedProfession(profession || null);
-      setSidebarOpen(prevState => !prevState);  
-    };
+      setSelectedVacancy(vacancy || null);
+      setSidebarOpen(prevState => !prevState);
+    },
+    []
+  );
+  const handleEditVacancy = (partner: Partner, vacancy: VacancyType) => {
+    if (!vacancy) {
+      console.log("Вакансия не найдена для редактирования.");
+      return; // Если вакансии нет, не открываем форму редактирования
+    }
+    toggleSidebar("editVacancy", partner, vacancy);
+  };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
@@ -76,7 +86,6 @@ console.log("PARTNERS", selectedPartner);
         <h4 className="text-xl font-semibold text-black dark:text-white">
           Мои Вакансии
         </h4>
-        <UserRoundPlus color='green' onClick={() => toggleSidebar("addVacancy")} className='cursor-pointer' />
         </div>
         <SidebarRight 
         sidebarROpen={sidebarOpen} 
@@ -84,6 +93,7 @@ console.log("PARTNERS", selectedPartner);
         formType={formType} 
         selectedPartner={selectedPartner}
         selectedProfession={selectedProfession} 
+        selectedVacancy={selectedVacancy}
         />
         <input
           type="text"
@@ -136,12 +146,16 @@ console.log("PARTNERS", selectedPartner);
 
 
             <div className="flex flex-col gap-2 items-end my-auto">
-            {partner.professions.map((profession: any,index) => (
+            {partner.professions.map((profession: any,index: any) => (
+    <div className="py-2 text-right" key={index}>
+            <span className="font-bold ">{profession.name}</span>
+            <div className="flex gap-2 justify-end">
+            <button  onClick={() => toggleSidebar("addVacancy", partner, profession)}><Plus/></button>  
+            <button onClick={() => handleEditVacancy(partner, profession.vacancy)}><Settings/></button>  
+            <button onClick={() => toggleSidebar("viewVacancy", partner, profession)}><Eye/></button>  
 
-<div key={index}><div className="py-2" key={index}>
-            {profession.name}
-            <Button onClick={() => toggleSidebar("addVacancy", partner, profession)}>Вакансия</Button>  {/* Передаем профессию */}
-          </div></div>
+            </div>
+          </div>
 ))}
               
             </div>

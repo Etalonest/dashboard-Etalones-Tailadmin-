@@ -17,7 +17,6 @@ const TablePartner = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
     const [formType, setFormType] = useState<"addPartner" | "editPartner" | "viewPartner" | null>(null);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
-console.log("PARTNERS", selectedPartner);
     const currentPartners = filteredPartners.slice(
     (currentPage - 1) * partnersPerPage,
     currentPage * partnersPerPage
@@ -63,6 +62,7 @@ console.log("PARTNERS", selectedPartner);
       setSelectedPartner(partner || null); 
       setSidebarOpen(prevState => !prevState);  
     };
+    
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
