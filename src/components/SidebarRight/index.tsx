@@ -102,7 +102,7 @@ useEffect(() => {
       case "viewPartner":
         return <ViewPartnerForm partner={formData} />;  
       case "addVacancy":
-          return <AddVacancyForm  profession={selectedProfession} />;
+          return <AddVacancyForm  profession={selectedProfession} partner={selectedPartner}/>;
       case "editVacancy":
           return <EditVacancyForm vacancy={vacancyData} onSubmitSuccess={closeSidebar}/>; 
       // case "viewVacancy": 

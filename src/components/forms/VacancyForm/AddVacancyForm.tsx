@@ -10,26 +10,34 @@ import { documentsOptions, drivePermisData, languesData } from "@/src/config/con
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
 import { Vacancy } from "@/src/types/partner";
+import { p } from "framer-motion/client";
 
 interface AddVacancyFormProps {
   profession: any;  // Получаем профессию
+  partner: any;
 }
 
-const AddVacancyForm = ({ profession }: AddVacancyFormProps) => {
-    const { data: session } = useSession();
+const AddVacancyForm = ({ profession, partner }: AddVacancyFormProps) => {
+  console.log("PARTNER", partner);
+  const { data: session } = useSession();
   const { manager } = useManager();
+  const partnerId = partner?._id || '';
   const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
-  const [vacancy, setVacancy] = useState<Vacancy | null>(null);
-
+  const [selectedDrive, setSelectedDrive] = useState(profession?.drivePermis || []);
+  const [selectLangues, setSelectLangues] = useState(profession?.langue || []);
+  const [selectDocs, setSelectDocs] = useState(profession?.pDocs || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
+
+
+
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -48,43 +56,36 @@ const AddVacancyForm = ({ profession }: AddVacancyFormProps) => {
       setImagesCarousel((prevImages) => [...prevImages, ...newImages]); 
     }
   };
-  const handleDrivePChange = (selectedDriveP: string[], vacancyId: number) => {
-    setVacancy((prevVacancy) => {
-      if (prevVacancy && prevVacancy.id === vacancyId) {
-        return { ...prevVacancy, drivePermis: selectedDriveP }; // Обновляем поле drivePermis
-      }
-      return prevVacancy; // Если id не совпадает, возвращаем предыдущее состояние без изменений
-    });
+  const handleDriveChange = (selected: string[]) => {
+    setSelectedDrive(selected);
   };
-  const handleLangueChange = (selectedLangues: string[], vacancyId: number) => {
-    setVacancy((prevVacancy) => {
-      if (prevVacancy && prevVacancy.id === vacancyId) {
-        return { ...prevVacancy, langue: selectedLangues }; 
-      }
-      return prevVacancy; 
-    });
+  const handleLangueChange = (selectedLangues: string[]) => {
+    setSelectLangues(selectedLangues);
   };
-  const handleDocsChange = (selectedDocs: string[], vacancyId: number) => {
-    setVacancy((prevVacancy) => {
-      if (prevVacancy && prevVacancy.id === vacancyId) {
-        return { ...prevVacancy, pDocs: selectedDocs }; 
-      }
-      return prevVacancy; 
-    });
+  
+  const handleDocsChange = (selectedDocs: string[]) => {
+    setSelectDocs(selectedDocs);
+  };
+  const getDriveDataForSubmit = () => {
+    return selectedDrive;
+  };
+  const getLanguesDataForSubmit = () => {
+    return selectLangues;
+  };
+  const getDocsDataForSubmit = () => {
+    return selectDocs;
   };
   const handleSubmit = async (event: any) => {
-    event.preventDefault();
-
-    // const driveData = getDriveDataForSubmit();
-    // const languesData = getLanguesDataForSubmit();
-    
+    event.preventDefault();    
     const formData = new FormData(event.target);
-
-    // Добавляем только те поля, которые отсутствуют в оригинальном formData
+    const driveData = getDriveDataForSubmit();
+    const languesData = getLanguesDataForSubmit();
+    const docsData = getDocsDataForSubmit();
+    formData.append('partnerId', partnerId);
     formData.append('managerId', managerId);
     formData.append('drivePermis', JSON.stringify(driveData));
     formData.append('langue', JSON.stringify(languesData));
-
+    formData.append('documents', JSON.stringify(docsData));
 
     try {
       const response = await fetch('/api/vacancy', {
@@ -161,21 +162,21 @@ const AddVacancyForm = ({ profession }: AddVacancyFormProps) => {
               <Label>Знание языков</Label>
                     <CMultiSelect options={languesData} placeholder={'Выберите языки'}
                       value={profession?.langue || []}
-                      onChange={(selectedLangues: string[]) => handleLangueChange(selectedLangues, profession.id)} 
+                      onChange={handleLangueChange} 
                       />
                   </div> 
              <div>
               <Label>Подходящие документы</Label>
                     <CMultiSelect options={documentsOptions} placeholder={'Выберите документы'}
                       value={profession?.pDocs || []}
-                      onChange={(selectedLangues: string[]) => handleDocsChange(selectedLangues, profession.id)} 
+                      onChange={handleDocsChange}
                       />
                   </div> 
                   <div>
               <Label>Водительское удостоверение</Label>
                     <CMultiSelect options={drivePermisData} placeholder={'Выбериите категории'}
                       value={profession?.drivePermis || []}
-                      onChange={(selectedLangues: string[]) => handleDrivePChange(selectedLangues, profession.id)} 
+                      onChange={handleDriveChange} 
                       />
                   </div>
                   <div>
@@ -184,7 +185,7 @@ const AddVacancyForm = ({ profession }: AddVacancyFormProps) => {
             </div>
             <div>
               <Label>Потенциал объекта:</Label>
-              <Input type="text" name="grafik"  defaultValue={profession?.workHours} />
+              <Input type="text" name="workHours" defaultValue={profession?.workHours} />
             </div>
            
             <Button className="absolute top-4 right-4 bg-green-800 text-white">Добавить вакансию</Button>

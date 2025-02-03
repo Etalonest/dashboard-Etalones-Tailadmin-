@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 import {VacancyImages} from './VacancyImages';
 import {HomeImages} from './HomeImages';
+import {Partner} from './Partner';
 const VacancyOnServerSchema = new Schema({
     image: {
         type: Schema.Types.ObjectId,
@@ -49,8 +50,14 @@ const VacancyOnServerSchema = new Schema({
       grafik: {
         type: String
       },
+      drivePermis:[{
+        type: String,
+      }],
       documents: [{
         type: String
+      }],
+      langues:[{
+        type: String,
       }],
       workHours: {
         type: String
@@ -72,6 +79,10 @@ const VacancyOnServerSchema = new Schema({
       manager: {
         type: Schema.Types.ObjectId,
         ref: 'Manager'
+      },
+      partner:{
+        type: Schema.Types.ObjectId,
+        ref: 'Partner'
       },
       category: {
         type: String
