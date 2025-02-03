@@ -1,9 +1,13 @@
 import { Schema, model, models } from "mongoose";
+import {VacancyOnServer} from './VacancyOnServer';
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
 import {Role} from './Role';
-import { image } from "framer-motion/client";
 const ManagerSchema = new Schema({
+  vacancy: [{
+    type: Schema.Types.ObjectId,
+    ref: 'VacancyOnServer'
+  }],
       email: {
         type: String,
         unique: true,

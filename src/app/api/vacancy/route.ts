@@ -1,117 +1,9 @@
-// import { connectDB } from "@/src/lib/db";
-// import Manager from "@/src/models/Manager";
-// import VacancyOnServer from "@/src/models/VacancyOnServer";
-// import { NextResponse } from "next/server";
-// import Partner from "@/src/models/Partner";
-
-// export const POST = async (request: Request) => {
-//   try {
-//     const formData = await request.formData();
-//     console.log("formData", formData);
-    
-//     const title = formData.get("title");
-//     const place = formData.get("place");
-//     const skills = formData.get("skills");
-//     const roof_type = formData.get("roof_type");
-//     const location = formData.get("location");
-//     const salary = formData.get("salary");
-//     const homePrice = formData.get("homePrice");
-//     const home_descr = formData.get("home_descr");
-//     const work_descr = formData.get("work_descr");
-//     const grafik = formData.get("grafik");
-//     const managerId = formData.get("managerId");
-//     const partnerId = formData.get("partnerId"); // Получаем partnerId из формы
-
-//     const languesRaw = formData.get('langue');
-//     const langues = languesRaw ? JSON.parse(languesRaw as string) : [];
-//     const documentsRaw = formData.get('documents');
-//     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
-//     const drivePermisRaw = formData.get('drivePermis');
-//     const drivePermis = drivePermisRaw ? JSON.parse(drivePermisRaw as string) : [];     
-
-//     await connectDB();
-
-//     const body = {
-//       title,
-//       place,
-//       skills,
-//       roof_type,
-//       location,
-//       salary,
-//       homePrice,
-//       home_descr,
-//       work_descr,
-//       grafik,
-//       drivePermis,
-//       langues,
-//       documents,
-//       manager: managerId,
-//       partner: partnerId, 
-//     };
-
-//     const newVacancyOnServer = new VacancyOnServer(body);
-//     await newVacancyOnServer.save();
-//     console.log("newVacancyOnServer", newVacancyOnServer);
-
-//     // Добавляем вакансию в партнера, если partnerId существует
-//     if (newVacancyOnServer.partnerId) {
-//       const partner = await Partner.findById(newVacancyOnServer.partnerId);
-
-//       if (!partnerId) {
-//         return new NextResponse(
-//           JSON.stringify({ message: "Партнёр не найден" }),
-//           { status: 404 }
-//         );
-//       }
-
-//       partner.professions.push({
-//         vacancy: newVacancyOnServer._id, // Добавляем только ID вакансии
-//       });
-
-//       // Сохраняем обновленного партнера
-//       await partner.save();
-//       const updatedPartner = await Partner.findById(partner._id);
-//       console.log("Updated Partner:", updatedPartner);
-//     }
-
-//     // Обновляем менеджера
-//     if (newVacancyOnServer.manager) {
-//       const manager = await Manager.findById(newVacancyOnServer.manager);
-
-//       if (!manager) {
-//         return new NextResponse(
-//           JSON.stringify({ message: "Менеджер не найден" }),
-//           { status: 404 }
-//         );
-//       }
-
-//       await Manager.findByIdAndUpdate(
-//         newVacancyOnServer.manager,
-//         { $addToSet: { vacancy: newVacancyOnServer._id } },
-//         { new: true }
-//       );
-//     }
-
-//     return new NextResponse(
-//       JSON.stringify({ message: "Новая вакансия создана успешно", partner: newVacancyOnServer }),
-//       { status: 201 }
-//     );
-
-//   } catch (error) {
-//     return new NextResponse(
-//       JSON.stringify({
-//         message: "Ошибка при создании вакансии",
-//         error,
-//       }),
-//       { status: 500 }
-//     );
-//   }
-// };
 import { connectDB } from "@/src/lib/db";
 import Manager from "@/src/models/Manager";
 import VacancyOnServer from "@/src/models/VacancyOnServer";
 import { NextResponse } from "next/server";
 import Partner from "@/src/models/Partner";
+
 
 export const POST = async (request: Request) => {
   try {
@@ -193,23 +85,24 @@ export const POST = async (request: Request) => {
     }
 
     // Обновляем менеджера
-    if (newVacancyOnServer.manager) {
-      const manager = await Manager.findById(newVacancyOnServer.manager);
-
-      if (!manager) {
-        return new NextResponse(
-          JSON.stringify({ message: "Менеджер не найден" }),
-          { status: 404 }
+    if (managerId) {
+        const manager = await Manager.findById(managerId);
+  
+        if (!manager) {
+          return new NextResponse(
+            JSON.stringify({ message: "Менеджер не найден" }),
+            { status: 404 }
+          );
+        }
+  
+        const updatedManager = await Manager.findByIdAndUpdate(
+          managerId,
+          { $addToSet: { vacancy: newVacancyOnServer._id } },
+          { new: true }
         );
+  
+        console.log("Updated Manager:", updatedManager);
       }
-
-      await Manager.findByIdAndUpdate(
-        newVacancyOnServer.manager,
-        { $addToSet: { vacancy: newVacancyOnServer._id } },
-        { new: true }
-      );
-    }
-
     return new NextResponse(
       JSON.stringify({ message: "Новая вакансия создана успешно", partner: newVacancyOnServer }),
       { status: 201 }
