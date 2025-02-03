@@ -132,46 +132,57 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 
     setProfessionsPartner((prevProfessions) => [...prevProfessions, newProfession]);
   };
+  // const handleProfessionSelect = (index: number, field: string, value: string) => {
+  //   const newEntries = [...professionsPartner];
+  //   newEntries[index] = { ...newEntries[index], [field]: value };
+  //   setProfessionsPartner(newEntries);
+  // };
   const handleProfessionSelect = (index: number, field: string, value: string) => {
-    const newEntries = [...professionsPartner];
-    newEntries[index] = { ...newEntries[index], [field]: value };
+    const newEntries = professionsPartner.map((profession, i) => {
+      if (i === index) {
+        return { ...profession, [field]: value };
+      }
+      return profession;
+    });
+  
+    // Обновляем состояние с новым массивом
     setProfessionsPartner(newEntries);
   };
- 
+  
+  const handleInputPChange = (index: number, field: string, value: string) => {
+    const newEntries = [...professionsPartner]; // Создаем новый массив
+    newEntries[index] = { 
+      ...newEntries[index], 
+      [field]: value // Обновляем поле, переданное в `field` (например, 'place')
+    };
+    setProfessionsPartner(newEntries); // Обновляем состояние с новым массивом
+  };
 
 
-  const handleInputPChange = (id: number, field: string, value: string) => {
-    console.log("Обновление профессии", { id, field, value });
-    setProfessionsPartner(prevProfessions => {
-      return prevProfessions.map(prof => {
-        if (prof.id === id) {
-          return { ...prof, [field]: value };
-        }
-        return prof;
-      });
-    });
+  
+  const handleDrivePChange = (selectedDriveP: string[], index: number) => {
+    setProfessionsPartner((prevProfessions) =>
+      prevProfessions.map((prof, idx) =>
+        idx === index ? { ...prof, drivePermis: selectedDriveP } : prof
+      )
+    );
+  };
+  const handleLangues = (selectedLangues: string[], index: number) => {
+    setProfessionsPartner((prevProfessions) =>
+      prevProfessions.map((prof, idx) =>
+        idx === index ? { ...prof, langue: selectedLangues } : prof
+      )
+    );
   };
   
-  const handleDrivePChange = (selectedDriveP: string[],id: number) => {
+  const handlePDocs = (selectedPDocs: string[], index: number) => {
     setProfessionsPartner((prevProfessions) =>
-      prevProfessions.map((prof) =>
-        prof.id === id ? { ...prof, drivePermis: selectedDriveP } : prof
+      prevProfessions.map((prof, idx) =>
+        idx === index ? { ...prof, pDocs: selectedPDocs } : prof
       )
-    );};
-
-    const handleLangues = (selectedLangues: string[], id: number) => {
-    setProfessionsPartner((prevProfessions) =>
-      prevProfessions.map((prof) =>
-        prof.id === id ? { ...prof, langue: selectedLangues } : prof
-      )
-    )};
-    const handlePDocs = (selectedPDocs: string[], id: number) => {
-      setProfessionsPartner((prevProfessions) =>
-        prevProfessions.map((prof) =>
-          prof.id === id ? { ...prof, pDocs: selectedPDocs } : prof
-        )
-      );
-    };
+    );
+  };
+  
     const getCommentData = (formData: FormData, userName: string) => {
       const commentText = formData.get('comment');
     
@@ -528,7 +539,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
             </div>
         
       <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {professionsPartner.map((profession, index) => (
+        {professionsPartner.map((profession: any, index: any) => (
 
           <div key={profession._id} className=" p-4 mb-4 ">
             <Card className='relative '>
@@ -546,11 +557,8 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                   <select
                     className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
                     value={profession?.name || ''}
-                    onChange={(e) => {
-                      const selectedName = e.target.value;
-                      const selectedId = parseInt(e.target.selectedOptions[0].dataset.id || '0', 10);
-                      handleProfessionSelect(selectedId, 'name', selectedName);
-                    } }
+                    onChange={(e) => {const selectedName = e.target.value;
+                      handleProfessionSelect(index, 'name', selectedName);} }
                   >
                     <option value="">Нет профессии</option>
                     {professions.map((profession: any) => (
@@ -582,11 +590,8 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                       <select
                         className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
                         value={profession?.experience || ''}
-                        onChange={(e) => {
-                          const selectedExperience = e.target.value;
-                          const selectedId = parseInt(e.target.selectedOptions[0].dataset.id || '0', 10);
-                          handleProfessionSelect(selectedId, 'experience', selectedExperience);
-                        } }
+                         onChange={(e) => {const selectedName = e.target.value;
+                      handleProfessionSelect(index, 'experience', selectedName);} }
                       >
                         <option value="">Нет опыта</option>
                         {expiriences.map((experience: any) => (
@@ -634,13 +639,13 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     <Label>Наличие В/У</Label>
                     <CMultiSelect options={drivePermisData} placeholder={'Выбериите категории'}
                       value={profession?.drivePermis || []}
-                      onChange={(selectedDriveP: string[]) => handleDrivePChange(selectedDriveP, profession.id)} />
+                      onChange={(selectedDriveP: string[]) => handleDrivePChange(selectedDriveP, index)} />
                   </div>
                   <div>
                     <Label>Знание языков</Label>
                     <CMultiSelect options={languesData} placeholder={'Выберите языки'}
                       value={profession?.langue || []}
-                      onChange={(selectedLangues: string[]) => handleLangues(selectedLangues, profession.id)} />
+                      onChange={(selectedLangues: string[]) => handleLangues(selectedLangues, index)} />
 
                   </div>
                 </div>
@@ -651,24 +656,25 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     suggestions={suggestionsData.wHours}
                     value={profession?.workHours || ''}
                     placeholder="Количество часов отработки"
-                    onChange={(value) => handleInputPChange(profession.id, 'workHours', value)} />
+                    onChange={(value) => handleInputPChange(index, 'workHours', value)} />
                   <div>
                     <Label>Свободные места</Label>
                     <Input type='number' placeholder="Введите количество свободных мест"
                       value={profession?.place}
-                      onChange={(e) => handleInputPChange(profession.id, 'place', e.target.value)} />
+                      onChange={(e) => handleInputPChange(index, 'place', e.target.value)} />
                   </div>
                   <div>
                   <Label>Набор открыт с:</Label>
                   <Input type='date' placeholder="Введите дату открытия"
                     value={profession?.getStart ? new Date(profession.getStart).toISOString().split('T')[0] : ''}
-                    onChange={(e) => handleInputPChange(profession.id, 'getStart', e.target.value)} />
+                    onChange={(e) => handleInputPChange(index, 'getStart', e.target.value)} />
                 </div>
                 <div>
                   <Label>Подходящие документы</Label>
                   <CMultiSelect options={pDocsData} placeholder={'Выберите документы'}
                       value={profession?.pDocs || []}
-                      onChange={(selectedPDocs: string[]) => handlePDocs(selectedPDocs, profession.id)} />
+                      onChange={(selectedPDocs: string[]) => handlePDocs(selectedPDocs, index)} 
+                      />
                 </div>
                 </div>
                

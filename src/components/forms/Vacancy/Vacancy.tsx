@@ -143,16 +143,18 @@ const Vacancy = () => {
     ))
   ))}
 </TableCell>
-
-
             <div className="flex flex-col gap-2 items-end my-auto">
             {partner.professions.map((profession: any,index: any) => (
     <div className="py-2 text-right" key={index}>
             <span className="font-bold ">{profession.name}</span>
             <div className="flex gap-2 justify-end">
-            <button  onClick={() => toggleSidebar("addVacancy", partner, profession)}><Plus/></button>  
-            <button onClick={() => handleEditVacancy(partner, profession.vacancy)}><Settings/></button>  
-            <button onClick={() => toggleSidebar("viewVacancy", partner, profession)}><Eye/></button>  
+            <button  className={`text-${profession.vacancy ? 'gray-500' : 'green-500'} ${profession.vacancy ? 'cursor-not-allowed' : ''}`}
+            onClick={() => toggleSidebar("addVacancy", partner, profession)}
+            disabled={profession.vacancy}><Plus/></button>  
+            <button className=" text-green-500"
+             onClick={() => handleEditVacancy(partner, profession.vacancy)}><Settings/></button>  
+            <button className=" text-green-500"
+             onClick={() => toggleSidebar("viewVacancy", partner, profession)}><Eye/></button>  
 
             </div>
           </div>
