@@ -592,7 +592,8 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
             </div><div>
             <Label>Водительское удостоверение</Label>
             <CMultiSelect options={drivePermisData} 
-            value={Array.isArray(drivePermis) ? drivePermis : [drivePermis]}            placeholder={'Выбериите категории'}
+            value={Array.isArray(drivePermis) ? drivePermis : [drivePermis]}            
+            placeholder={'Выбериите категории'}
             onChange={handleDriveChange} />
             </div> 
 

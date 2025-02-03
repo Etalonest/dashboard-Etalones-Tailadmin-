@@ -6,11 +6,11 @@ import { useManager } from "@/src/context/ManagerContext";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import CMultiSelect from "../../Multiselect/Multiselect";
-import { documentsOptions, languesData } from "@/src/config/constants";
+import { documentsOptions, drivePermisData, languesData } from "@/src/config/constants";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useNotifications } from "@/src/context/NotificationContext";
@@ -19,14 +19,23 @@ import { v4 as uuidv4Original } from 'uuid';
 
 
 const EditVacancyForm = ({ vacancy }: any) => {
-  console.log("vacancy", vacancy);
-    const { data: session } = useSession();
+  const vacancyH= vacancy?.vacancy;
+  const { data: session } = useSession();
   const { manager } = useManager();
   const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
-
+  const [vacancyData, setVacancyData] = useState<any>({});
+  const [drivePermis, setDrivePermis] = useState(vacancyH?.drivePermis || []);
+  const [langues, setLangues] = useState(vacancyH?.langues || []);
+  const [documents, setDocuments] = useState(vacancyH?.documents || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (vacancy) {
+      setVacancyData(vacancy);
+    }
+  }, [vacancy]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -45,24 +54,40 @@ const EditVacancyForm = ({ vacancy }: any) => {
       setImagesCarousel((prevImages) => [...prevImages, ...newImages]); 
     }
   };
-
+  const handleDriveChange = (selected: string[]) => {
+    setDrivePermis(selected);
+  };
+  const handleLangueChange = (selected: string[]) => {
+    setLangues(selected);
+  };
+  const handleDocumentsChange = (selected: string[]) => {
+    setDocuments(selected);
+  };
+  const getDriveDataForSubmit = () => {
+    return drivePermis;
+  };
+  const getLanguesDataForSubmit = () => {
+    return langues;
+  };
+  const getDocumentsDataForSubmit = () => {
+    return documents;
+  };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-
-    // const driveData = getDriveDataForSubmit();
-    // const languesData = getLanguesDataForSubmit();
-    
+    const driveData = getDriveDataForSubmit();
+    const languesData = getLanguesDataForSubmit();
+    const documentsData = getDocumentsDataForSubmit();
     const formData = new FormData(event.target);
 
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
-    // formData.append('drivePermis', JSON.stringify(driveData));
+    formData.append('drivePermis', JSON.stringify(driveData)); 
     formData.append('langue', JSON.stringify(languesData));
-
+    formData.append('documents', JSON.stringify(documentsData));
 
     try {
-      const response = await fetch('/api/vacancy', {
-        method: 'POST',
+      const response = await fetch(`/api/vacancy/${vacancyH?.id}`, {
+        method: 'PUT',
         body: formData, // Используем formData, так как это содержит как текст, так и файлы
       });
 
@@ -90,11 +115,12 @@ const EditVacancyForm = ({ vacancy }: any) => {
       console.error('Ошибка при добавлении кандидата:', error);
     }
   };
+
   return (
     <Card className="m-4">
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <div>Добавить вакансию для {vacancy?.title}</div>
+          <div>Редактировать вакансию  {vacancyH?.title}</div>
           <div className="flex gap-2">
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Вакансия на сайте</Label>
@@ -116,40 +142,51 @@ const EditVacancyForm = ({ vacancy }: any) => {
           <div>
             <div>
               <Label>Название вакансии:</Label>
-              <Input type="text" defaultValue={vacancy?.name} name="title"
-                className="font-bold" />
-            </div>
-            <div>
-              <Label>Короткое описание вакансии:</Label>
-              <Input type="text"  name="roof_type" defaultValue={vacancy?.roof_type}
+              <Input type="text" defaultValue={vacancyH?.title} name="title"
                 className="font-bold" />
             </div>
             <div>
               <Label>Место работы:</Label>
-              <Input type="text" name="location" defaultValue={vacancy?.location} />
+              <Input type="text" name="location" defaultValue={vacancyH?.location} />
             </div>
             <div>
               <Label>Стоимость проживания:</Label>
-              <Input type="text" name="homePrice" defaultValue={vacancy?.rentPrice} />
+              <Input type="text" name="homePrice" defaultValue={vacancyH?.homePrice} />
             </div>
             <div>
               <Label>Зарплата:</Label>
-              <Input type="text" name="salary" defaultValue={vacancy?.salary} />
-            </div>
-              {/* <div>
-              <Label>Подходящие документы</Label>
-                    <CMultiSelect options={documentsOptions} placeholder={'Выберите языки'}
-                      value={vacancy?.pDocs || []}
-                      onChange={(selectedLangues: string[]) => handleLangues(selectedLangues, vacancy.id)} 
-                      />
-                  </div> */}
-                  <div>
-              <Label>Свободные места:</Label>
-              <Input type="number" name="place" defaultValue={vacancy?.place} />
+              <Input type="text" name="salary" defaultValue={vacancyH?.salary} />
             </div>
             <div>
-              <Label>Навыки:</Label>
-              <Input type="text" name="skills" defaultValue={vacancy?.skills} />
+              <Label>Знание языков</Label>
+                    <CMultiSelect options={languesData} placeholder={'Выберите языки'}
+                      value={Array.isArray(langues) ? langues : [langues]}
+                      onChange={handleLangueChange} 
+                      />
+                  </div> 
+             <div></div>
+              <div>
+              <Label>Подходящие документы</Label>
+                    <CMultiSelect options={documentsOptions} placeholder={'Выберите подходящие документы'} 
+                   value={Array.isArray(documents) ? documents : [documents]}            
+                    onChange={handleDocumentsChange}           
+                      />
+                  </div>
+                 
+            <div>
+            <Label>Водительское удостоверение</Label>
+            <CMultiSelect options={drivePermisData} 
+            value={Array.isArray(drivePermis) ? drivePermis : [drivePermis]}            
+            placeholder={'Выбериите категории'}
+            onChange={handleDriveChange} />
+            </div> 
+            <div>
+              <Label>Свободные места:</Label>
+              <Input type="number" name="place" defaultValue={vacancyH?.place} />
+            </div>
+            <div>
+              <Label>Потенциал объекта:</Label>
+              <Input type="text" name="workHours" defaultValue={vacancyH?.workHours} />
             </div>
             <div>
               <Label>График:</Label>
@@ -159,13 +196,22 @@ const EditVacancyForm = ({ vacancy }: any) => {
 
           </div>
           <div className="flex flex-col gap-7 h-full">
+          <div>
+              <Label>Навыки:</Label>
+              <Textarea  name="skills" defaultValue={vacancyH?.skills} />
+            </div>
+            <div>
+              <Label>Короткое описание вакансии:</Label>
+              <Textarea   name="roof_type" defaultValue={vacancyH?.roof_type}
+                className="font-bold" />
+            </div>
             <div className="h-full">
             <Label>Описание работы:</Label>
-            <Textarea className="h-full" name="work_descr" defaultValue={vacancy?.workdescr} />
+            <Textarea className="h-full" name="work_descr" defaultValue={vacancyH?.work_descr} />
             </div>
             <div className="h-full">
             <Label>Описание условий проживания:</Label>
-            <Textarea className="h-full" name="home_descr" defaultValue={vacancy?.workdescr} />
+            <Textarea className="h-full" name="home_descr" defaultValue={vacancyH?.home_descr} />
             </div>
           </div>
           <div className="flex justify-start flex-col gap-2">

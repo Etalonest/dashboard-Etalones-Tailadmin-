@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ProfessionPartner } from "@/src/types/professionParnter";
 import { VacancyType } from "@/src/types/vacancy";
 const Vacancy = () => {
+    
   const { data: session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
   const { partners, loadPartners} = usePartners();
@@ -26,7 +27,21 @@ const Vacancy = () => {
     (currentPage - 1) * partnersPerPage,
     currentPage * partnersPerPage
   );
-
+  const fetchVacancies = async (vacancyId: string) => {
+    console.log("Vacancy ID", vacancyId);
+    try {
+      const response = await fetch(`/api/vacancy/${vacancyId}`);
+      if (!response.ok) {
+        throw new Error('Не удалось загрузить данные вакансии');
+      }
+  
+      // Извлечение данных вакансии
+      const vacancy = await response.json();
+      return vacancy;
+    } catch (error) {
+      console.error('Ошибка при загрузке вакансии:', error);
+    }
+  };
   
   useEffect(() => {
     if (managerId && partners.length === 0) {
@@ -39,7 +54,6 @@ const Vacancy = () => {
       const filtered = partners.filter((partner) => {
         const lowerCaseSearch = searchQuery.toLowerCase();
     
-        // Убедитесь, что partner имеет name и phone
         return (
           (partner.name && partner.name.toLowerCase().includes(lowerCaseSearch)) ||
           (partner.phone && partner.phone.toLowerCase().includes(lowerCaseSearch))
@@ -49,21 +63,16 @@ const Vacancy = () => {
     }
   }, [searchQuery, partners]);
 
-
-  
-
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // Обработчик для изменения поиска
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
   const toggleSidebar = useCallback(
     (type: "addVacancy" | "editVacancy" | "viewVacancy", partner?: Partner, profession?: ProfessionPartner, vacancy?: VacancyType) => {
-      setFormType(type);
+        setFormType(type);
       setSelectedPartner(partner || null);
       setSelectedProfession(profession || null);
       setSelectedVacancy(vacancy || null);
@@ -71,13 +80,32 @@ const Vacancy = () => {
     },
     []
   );
-  const handleEditVacancy = (partner: Partner, vacancy: VacancyType) => {
-    if (!vacancy) {
+  const handleEditVacancy = async (partner: Partner, profession: any) => {
+    const vacancyId = profession;
+  
+    if (!vacancyId) {
       console.log("Вакансия не найдена для редактирования.");
-      return; // Если вакансии нет, не открываем форму редактирования
+      return;
     }
-    toggleSidebar("editVacancy", partner, vacancy);
+  
+    // Логируем ID вакансии
+    console.log("Vacancy ID from profession:", vacancyId);
+  
+    // Запрашиваем вакансию по ID
+    const vacancy = await fetchVacancies(vacancyId);
+  
+    if (!vacancy) {
+      console.log("Вакансия с таким ID не найдена!");
+      return;
+    }
+  
+    console.log("Vacancy found:", vacancy);
+  
+    // Открываем боковую панель с данными о вакансии
+    toggleSidebar("editVacancy", partner, profession, vacancy);
   };
+  
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
@@ -143,6 +171,8 @@ const Vacancy = () => {
     ))
   ))}
 </TableCell>
+<TableCell>
+
             <div className="flex flex-col gap-2 items-end my-auto">
             {partner.professions.map((profession: any,index: any) => (
     <div className="py-2 text-right" key={index}>
@@ -161,7 +191,8 @@ const Vacancy = () => {
 ))}
               
             </div>
-            
+            </TableCell>
+
           </TableRow>
         ))}
       </TableBody>        

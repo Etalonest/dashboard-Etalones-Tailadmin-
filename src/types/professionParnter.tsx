@@ -1,4 +1,5 @@
 export type ProfessionPartner = {
+    vacancy?: any;
     _id?: any;
     id: number;
     name: string;
