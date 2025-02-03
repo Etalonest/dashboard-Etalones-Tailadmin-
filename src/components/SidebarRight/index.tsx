@@ -84,7 +84,6 @@ useEffect(() => {
       setFormData(null); 
     }
   };
-  console.log("Vacancy!!!!!", vacancyData);
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":

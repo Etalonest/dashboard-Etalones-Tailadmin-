@@ -1,6 +1,6 @@
 import { Schema, model, models } from "mongoose";
 import {Document} from './Document';
-import {VacancyOnServer} from './VacancyOnServer';
+import {Vacancy} from './Vacancy';
 const PartnerSchema = new Schema({
   documentsFile: [{
     type: Schema.Types.ObjectId,
@@ -9,7 +9,7 @@ const PartnerSchema = new Schema({
     professions: [{
       vacancy:{
         type: Schema.Types.ObjectId,
-        ref: 'VacancyOnServer'
+        ref: 'Vacancy'
       },
         name: {
           type: String,

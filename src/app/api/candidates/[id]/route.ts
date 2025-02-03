@@ -5,12 +5,7 @@ import Manager from '@/src/models/Manager';
 import Document from '@/src/models/Document';
 import { NextResponse } from 'next/server';
 import { CommentEntry } from '@/src/components/forms/interfaces/FormCandidate.interface';
-// Интерфейсы для типизации
-interface CandidateUpdate {
-  partners?: string;
-  manager?: string;
-  [key: string]: any;
-}
+
 
 interface CandidateDoc {
   manager?: any;
@@ -36,7 +31,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   await connectDB();
 
   try {
-    // Получаем форму данных
     const formData = await request.formData();
     console.log("FORMDATA", formData);
 

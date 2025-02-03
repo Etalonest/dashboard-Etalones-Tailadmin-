@@ -1,12 +1,13 @@
 import { Schema, model, models } from "mongoose";
-import {VacancyOnServer} from './VacancyOnServer';
+import {Vacancy} from './Vacancy';
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
 import {Role} from './Role';
+
 const ManagerSchema = new Schema({
   vacancy: [{
     type: Schema.Types.ObjectId,
-    ref: 'VacancyOnServer'
+    ref: 'Vacancy'
   }],
       email: {
         type: String,

@@ -24,7 +24,6 @@ interface AddVacancyFormProps {
 }
 
 const AddVacancyForm = ({ profession, partner }: AddVacancyFormProps) => {
-  console.log("PARTNER", partner);
   const { data: session } = useSession();
   const { manager } = useManager();
   const partnerId = partner?._id || '';
@@ -38,7 +37,6 @@ const AddVacancyForm = ({ profession, partner }: AddVacancyFormProps) => {
 
 
 
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -49,13 +47,37 @@ const AddVacancyForm = ({ profession, partner }: AddVacancyFormProps) => {
       reader.readAsDataURL(file); 
     }
   };
+  useEffect(() => {
+    if (selectedImage) {
+      console.log("Selected Image", selectedImage);
+    }
+  }, [selectedImage]);
   const handleImageCarouselChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newImages = Array.from(files).map((file) => URL.createObjectURL(file)); 
-      setImagesCarousel((prevImages) => [...prevImages, ...newImages]); 
+      const newImages: string[] = [];
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          if (reader.result) {
+            newImages.push(reader.result as string);
+            if (newImages.length === files.length) {
+              setImagesCarousel((prevImages) => [...prevImages, ...newImages]);
+            }
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
     }
   };
+
+  useEffect(() => {
+    if (imagesCarousel.length > 0) {
+      console.log("Selected Image Carousel (base64)", imagesCarousel);
+    }
+  }, [imagesCarousel]);
   const handleDriveChange = (selected: string[]) => {
     setSelectedDrive(selected);
   };

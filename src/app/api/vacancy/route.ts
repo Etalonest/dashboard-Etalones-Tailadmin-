@@ -1,6 +1,6 @@
 import { connectDB } from "@/src/lib/db";
 import Manager from "@/src/models/Manager";
-import VacancyOnServer from "@/src/models/VacancyOnServer";
+import Vacancy from "@/src/models/Vacancy";
 import { NextResponse } from "next/server";
 import Partner from "@/src/models/Partner";
 
@@ -21,8 +21,7 @@ export const POST = async (request: Request) => {
     const work_descr = formData.get("work_descr");
     const grafik = formData.get("grafik");
     const managerId = formData.get("managerId");
-    const partnerId = formData.get("partnerId"); // Получаем partnerId из формы
-    const professionName = formData.get("professionName"); // Название профессии, куда добавим вакансию
+    const partnerId = formData.get("partnerId"); 
 
     const languesRaw = formData.get('langue');
     const langues = languesRaw ? JSON.parse(languesRaw as string) : [];
@@ -51,11 +50,10 @@ export const POST = async (request: Request) => {
       partner: partnerId, 
     };
 
-    const newVacancyOnServer = new VacancyOnServer(body);
-    await newVacancyOnServer.save();
-    console.log("newVacancyOnServer", newVacancyOnServer);
+    const newVacancy = new Vacancy(body);
+    await newVacancy.save();
+    console.log("newVacancy", newVacancy);
 
-    // Добавляем вакансию в нужную профессию партнера по имени профессии
     if (partnerId) {
       const partner = await Partner.findById(partnerId);
 
@@ -66,7 +64,6 @@ export const POST = async (request: Request) => {
         );
       }
 
-      // Ищем профессию по имени
       const professionIndex = partner.professions.findIndex((profession:any) => profession.name === title);
 
       if (professionIndex === -1) {
@@ -76,7 +73,7 @@ export const POST = async (request: Request) => {
         );
       }
 
-      partner.professions[professionIndex].vacancy = newVacancyOnServer._id;
+      partner.professions[professionIndex].vacancy = newVacancy._id;
 
       // Сохраняем обновленного партнера
       await partner.save();
@@ -97,14 +94,14 @@ export const POST = async (request: Request) => {
   
         const updatedManager = await Manager.findByIdAndUpdate(
           managerId,
-          { $addToSet: { vacancy: newVacancyOnServer._id } },
+          { $addToSet: { vacancy: newVacancy._id } },
           { new: true }
         );
   
         console.log("Updated Manager:", updatedManager);
       }
     return new NextResponse(
-      JSON.stringify({ message: "Новая вакансия создана успешно", partner: newVacancyOnServer }),
+      JSON.stringify({ message: "Новая вакансия создана успешно", partner: newVacancy }),
       { status: 201 }
     );
 

@@ -1,4 +1,16 @@
 export type VacancyType = {
+    homeImages: any[];
+    image: any;
+    documents: any[];
+    urgently: boolean;
+    last: boolean;
+    onSite: boolean;
+    grafik: string;
+    work_descr: string;
+    home_descr: string;
+    homePrice: string;
+    roof_type: string;
+    title: string;
   _id:any  
   id: any;
     name: string;

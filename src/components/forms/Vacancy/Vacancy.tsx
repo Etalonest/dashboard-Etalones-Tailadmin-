@@ -27,7 +27,7 @@ const Vacancy = () => {
     (currentPage - 1) * partnersPerPage,
     currentPage * partnersPerPage
   );
-  const fetchVacancies = async (vacancyId: string) => {
+  const fetchVacancy = async (vacancyId: string) => {
     console.log("Vacancy ID", vacancyId);
     try {
       const response = await fetch(`/api/vacancy/${vacancyId}`);
@@ -92,7 +92,7 @@ const Vacancy = () => {
     console.log("Vacancy ID from profession:", vacancyId);
   
     // Запрашиваем вакансию по ID
-    const vacancy = await fetchVacancies(vacancyId);
+    const vacancy = await fetchVacancy(vacancyId);
   
     if (!vacancy) {
       console.log("Вакансия с таким ID не найдена!");

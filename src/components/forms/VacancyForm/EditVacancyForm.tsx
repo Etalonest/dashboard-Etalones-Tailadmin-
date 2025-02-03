@@ -20,23 +20,28 @@ import { v4 as uuidv4Original } from 'uuid';
 
 const EditVacancyForm = ({ vacancy }: any) => {
   const vacancyH= vacancy?.vacancy;
+  console.log("Image", vacancyH?.image.data);
   const { data: session } = useSession();
   const { manager } = useManager();
   const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
-  const [vacancyData, setVacancyData] = useState<any>({});
   const [drivePermis, setDrivePermis] = useState(vacancyH?.drivePermis || []);
   const [langues, setLangues] = useState(vacancyH?.langues || []);
   const [documents, setDocuments] = useState(vacancyH?.documents || []);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState(vacancyH?.image || '');
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
   useEffect(() => {
-    if (vacancy) {
-      setVacancyData(vacancy);
+    if (vacancyH?.image) {
+      setSelectedImage(`data:${vacancyH.image.contentType};base64,${Buffer.from(vacancyH.image.data).toString('base64')}`);
     }
-  }, [vacancy]);
 
+    if (vacancyH?.homeImages?.length > 0) {
+      const images = vacancyH.homeImages.map((image: any) => 
+        `data:${image.contentType};base64,${Buffer.from(image.data).toString('base64')}`);
+      setImagesCarousel(images);
+    }
+  }, [vacancyH]);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -86,7 +91,7 @@ const EditVacancyForm = ({ vacancy }: any) => {
     formData.append('documents', JSON.stringify(documentsData));
 
     try {
-      const response = await fetch(`/api/vacancy/${vacancyH?.id}`, {
+      const response = await fetch(`/api/vacancy/${vacancyH?._id}`, {
         method: 'PUT',
         body: formData, // Используем formData, так как это содержит как текст, так и файлы
       });
@@ -171,8 +176,7 @@ const EditVacancyForm = ({ vacancy }: any) => {
                    value={Array.isArray(documents) ? documents : [documents]}            
                     onChange={handleDocumentsChange}           
                       />
-                  </div>
-                 
+                  </div>                
             <div>
             <Label>Водительское удостоверение</Label>
             <CMultiSelect options={drivePermisData} 
@@ -220,9 +224,35 @@ const EditVacancyForm = ({ vacancy }: any) => {
            <Input type="file" name="image" className="col-span-2" 
            onChange={handleImageChange}/>
            </div>
-            <Image src={selectedImage || "/images/logo/logo-red.png"}
+           <figure>
+  {selectedImage ? (
+    <Image
+      src={selectedImage} 
+      alt={vacancyH?.image?.name || "Uploaded file"} 
+      width={400}
+      height={400}
+    />
+  ) : vacancyH?.image ? (
+    <Image
+      src={`data:${vacancyH?.image.contentType};base64,${Buffer.from(vacancyH?.image.data).toString('base64')}`} 
+      alt={vacancyH?.image.name || "Default image"} 
+      width={400}
+      height={400}
+    />
+  ) : (
+    <Image
+      src="/images/logo/logo-red.png"
+      alt="Default image"
+      width={400}
+      height={400}
+    />
+  )}
+</figure>
+
+
+            {/* <Image src={selectedImage || "/images/logo/logo-red.png"}
              alt={""} width={450} height={300} 
-             className="rounded-md max-h-max" />
+             className="rounded-md max-h-max" /> */}
          
           <div className="flex justify-start flex-col gap-2">
             <div className="grid grid-cols-3 gap-2">
