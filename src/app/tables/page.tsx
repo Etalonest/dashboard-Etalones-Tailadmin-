@@ -6,7 +6,7 @@ import TablePartner from "@/src/components/Tables/TablePartner";
 import TableCandidate from "@/src/components/Tables/TableCandidaate";
 import { ProfessionProvider } from "@/src/context/ProfessionContext";
 import { useSession } from "next-auth/react";
-import Vacancy from "@/src/components/forms/Vacancy/Vacancy";
+import Vacancy from "@/src/components/Vacancy/Vacancy";
 import Partner from "@/src/models/Partner";
 import { PartnerProvider } from "@/src/context/PartnerContext";
 

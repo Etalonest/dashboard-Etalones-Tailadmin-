@@ -45,10 +45,27 @@ export type Profession = {
     };
   };
  export type Vacancy = {
+  homeImages: any[];
+    image: any;
+    documents: any[];
+    urgently: boolean;
+    last: boolean;
+    onSite: boolean;
   id: any;
   _id: any;
+  title: string;
   name: string;
+  description: string;
+  date: string;
+  status: string;
+  experience: string;
+  skills: string;
   location: string;
+  grafik: string;
+  work_descr: string;
+  home_descr: string;
+  homePrice: string;
+  roof_type: string;
   place: number;
   salary: string;
   rentPrice: string;

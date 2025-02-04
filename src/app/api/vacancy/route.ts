@@ -1,6 +1,6 @@
 import { connectDB } from "@/src/lib/db";
 import Manager from "@/src/models/Manager";
-import Vacancy from "@/src/models/Vacancy";
+import Vacancies from "@/src/models/Vacancies";
 import { NextResponse } from "next/server";
 import Partner from "@/src/models/Partner";
 
@@ -50,7 +50,7 @@ export const POST = async (request: Request) => {
       partner: partnerId, 
     };
 
-    const newVacancy = new Vacancy(body);
+    const newVacancy = new Vacancies(body);
     await newVacancy.save();
     console.log("newVacancy", newVacancy);
 

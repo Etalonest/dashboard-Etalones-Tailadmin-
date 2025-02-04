@@ -2,7 +2,7 @@ import { Schema, model, models } from "mongoose";
 import {VacancyImages} from './VacancyImages';
 import {HomeImages} from './HomeImages';
 import {Partner} from './Partner';
-const VacancySchema = new Schema({
+const VacanciesSchema = new Schema({
     image: {
         type: Schema.Types.ObjectId,
         ref: 'VacancyImages'
@@ -87,7 +87,7 @@ const VacancySchema = new Schema({
       category: {
         type: String
       }
-});
+},{ timestamps: true });
 
-const Vacancy = models?.Vacancy || model("Vacancy", VacancySchema);
-export default Vacancy;
+const Vacancies = models?.Vacancies || model("Vacancies", VacanciesSchema);
+export default Vacancies;

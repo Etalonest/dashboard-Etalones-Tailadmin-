@@ -1,9 +1,11 @@
 import { connectDB } from "@/src/lib/db";
-import Vacancy from "@/src/models/Vacancy";
+import Vacancies from "@/src/models/Vacancies";
 import { VacancyType } from "@/src/types/vacancy";
 import { NextResponse } from "next/server";
 import VacancyImages from "@/src/models/VacancyImages";
 import HomeImages from "@/src/models/HomeImages";
+import { processImage } from '@/src/lib/imageProcessor';
+
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
     const { id } = params;
     await connectDB();
@@ -14,7 +16,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       console.log("FORMDATA", formData);
   
       // Получаем старую вакансию
-      const oldVacancy = await Vacancy.findById(id).lean() as VacancyType | null;
+      const oldVacancy = await Vacancies.findById(id).lean() as VacancyType | null;
       if (!oldVacancy) {
         return NextResponse.json({ message: "Vacancy not found" }, { status: 404 });
       }
@@ -33,29 +35,27 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const newWork_descr = formData.get('work_descr') as string;
       const newGrafik = formData.get('grafik') as string;
       const newWorkHours = formData.get('workHours') as string;
-      const newDocuments = JSON.parse(formData.get('documents') as string);
+      const newDocuments = JSON.parse(formData.get('documents') as string) || [];
       const newLangues = JSON.parse(formData.get('langue') as string);
       const drivePermisData = JSON.parse(formData.get('drivePermis') as string);
-  
-      let savedImage: any = null;  
-
+      
       const file = formData.get('image');
+      let savedImage: any = null;  
       if (file && file instanceof Blob) {
         try {
           const existingImage = await VacancyImages.findOne({ name: file.name });
       
           if (existingImage) {
-            // Если изображение найдено, используем его ID
             savedImage = existingImage;
             console.log('Image already exists with ID:', savedImage._id);
           } else {
-            // Если изображения нет, сохраняем новое
-            const bufferData = await file.arrayBuffer();  // Преобразуем файл в буфер
-            const buffer = Buffer.from(bufferData);
-      
+            // const bufferData = await file.arrayBuffer();  
+            // const buffer = Buffer.from(bufferData);
+            const processedImage = await processImage(file);
+
             const newImage = new VacancyImages({
               name: file.name,
-              data: buffer,
+              data: processedImage,
               contentType: file.type,
             });
       
@@ -110,7 +110,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       
       // Обновление вакансии
       try {
-        const updatedVacancy = await Vacancy.findByIdAndUpdate(id, {
+        const updatedVacancy = await Vacancies.findByIdAndUpdate(id, {
           $set: {
             title: newTitle || oldVacancy.title,
             place: newPlace || oldVacancy.place,
@@ -125,17 +125,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             drivePermis: drivePermisData || oldVacancy.drivePermis,
             langue: newLangues || oldVacancy.langue,
             workHours: newWorkHours || oldVacancy.workHours,
-            pDocs: newDocuments || oldVacancy.pDocs,
+            documents: newDocuments || oldVacancy.pDocs,
           },
         homeImages: savedHomeImages.length > 0 ? savedHomeImages : oldVacancy.homeImages,
          image: savedImage ? savedImage._id : oldVacancy.image,
         }, { new: true });
   
         console.log('Vacancy updated:', updatedVacancy);
-        return NextResponse.json({ message: "Candidate updated", content: "", success: true }, { status: 200 });
+        return NextResponse.json({ message: "Вакансия обновлена", content: "", success: true }, { status: 200 });
       } catch (error : any) {
-        console.error('Error updating vacancy:', error);
-        return NextResponse.json({ message: 'Error updating vacancy', error: error.message }, { status: 500 });
+        console.error('Ошибка при обновлении вакансии:', error);
+        return NextResponse.json({ message: 'Ошибка при обновлении вакансии', error: error.message }, { status: 500 });
       }
   
     } catch (error: any) {
@@ -149,8 +149,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const { id } = params;
     await connectDB();
   
-    const vacancy = await Vacancy.findById(id)
-      .populate(["image", "homeImages"])
+    const vacancy = await Vacancies.findById(id)
+      .populate(["image", "homeImages", "partner", "manager"])
       .lean() as any | null;
     if (!vacancy) {
       return NextResponse.json({ message: "Vacancy not found" }, { status: 404 });

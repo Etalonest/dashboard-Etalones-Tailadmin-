@@ -7,7 +7,7 @@ const HomeImagesShema = new Schema({
           contentType: String
         
       
-});
+},{ timestamps: true });
 
 const HomeImages = models?.HomeImages || model("HomeImages", HomeImagesShema);
 

@@ -14,6 +14,8 @@ import { Candidate } from "@/src/types/candidate";
 import { Partner, Vacancy } from "@/src/types/partner";
 import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
 import { ProfessionPartner } from "@/src/types/professionParnter";
+import ViewVacancy from "../forms/VacancyForm/ViewVacancy";
+import { VacancyType } from "@/src/types/vacancy";
 
 interface SidebarProps {
   sidebarROpen?: boolean;
@@ -36,7 +38,7 @@ const SidebarRight = ({
 }: SidebarProps) => {
   const [formData, setFormData] = useState<Candidate | null>(null);
   const [partnerData, setPartnerData] = useState<Partner | null>(null);
-  const [vacancyData, setVacancyData] = useState<Vacancy | null>(null);
+  const [vacancyData, setVacancyData] = useState<VacancyType | null>(null);
   const [professionData, setProfessionData] = useState<any | null>(null);
   
 useEffect(() => {
@@ -104,8 +106,8 @@ useEffect(() => {
           return <AddVacancyForm  profession={selectedProfession} partner={selectedPartner}/>;
       case "editVacancy":
           return <EditVacancyForm vacancy={vacancyData} onSubmitSuccess={closeSidebar}/>; 
-      // case "viewVacancy": 
-      //     return <ViewVacancyForm vacancy={formData} />;
+      case "viewVacancy": 
+          return <ViewVacancy vacancy={vacancyData} onSubmitSuccess={closeSidebar}/>;
       default:
         return null;
     }

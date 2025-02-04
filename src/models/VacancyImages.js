@@ -8,7 +8,7 @@ const VacancyImagesShema = new Schema({
           contentType: String
         
       
-});
+},{ timestamps: true });
 
 const VacancyImages = models?.VacancyImages || model("VacancyImages", VacancyImagesShema);
 

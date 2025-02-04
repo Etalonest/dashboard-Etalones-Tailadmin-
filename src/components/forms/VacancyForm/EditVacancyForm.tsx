@@ -18,9 +18,8 @@ import { v4 as uuidv4Original } from 'uuid';
 
 
 
-const EditVacancyForm = ({ vacancy }: any) => {
+const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
   const vacancyH= vacancy?.vacancy;
-  console.log("Image", vacancyH?.image.data);
   const { data: session } = useSession();
   const { manager } = useManager();
   const managerId = session?.managerId || '';
@@ -31,6 +30,15 @@ const EditVacancyForm = ({ vacancy }: any) => {
   const [selectedImage, setSelectedImage] = useState(vacancyH?.image || '');
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
+  useEffect(() => {
+    if (vacancyH) {
+      setDrivePermis(vacancyH.drivePermis || []);
+      setLangues(vacancyH.langues || []);
+      setDocuments(vacancyH.documents || []);
+      setSelectedImage(vacancyH.image || '');
+      setImagesCarousel(vacancyH.images || []); // Пример для изображения
+    }
+  }, [vacancyH]);
   useEffect(() => {
     if (vacancyH?.image) {
       setSelectedImage(`data:${vacancyH.image.contentType};base64,${Buffer.from(vacancyH.image.data).toString('base64')}`);
@@ -106,6 +114,7 @@ const EditVacancyForm = ({ vacancy }: any) => {
           type: 'success',
           id: uuidv4Original(),
         });
+        onSubmitSuccess();
       }
 
       if (data.error) {
@@ -194,9 +203,9 @@ const EditVacancyForm = ({ vacancy }: any) => {
             </div>
             <div>
               <Label>График:</Label>
-              <Textarea  name="grafik"  />
+              <Textarea  name="grafik" className="h-full"  defaultChecked={vacancyH?.grafik} />
             </div>
-            <Button className="absolute top-4 right-4 bg-green-800 text-white">Добавить вакансию</Button>
+            <Button className="absolute top-4 right-4 bg-green-800 text-white">Сохранить изменения</Button>
 
           </div>
           <div className="flex flex-col gap-7 h-full">
