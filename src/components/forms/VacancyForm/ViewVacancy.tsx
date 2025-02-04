@@ -190,7 +190,7 @@ const ViewVacancy = ({ vacancy }: any) => {
 </div>
 
                 </CardContent>
-                <CardFooter className="flex flex-col items-end">
+                <CardFooter className="flex flex-col items-start">
 <div className="flex gap-2 items-center">
     <Label className="my-2">Партнёр:</Label>
     <span className="font-semibold">
