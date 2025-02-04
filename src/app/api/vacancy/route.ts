@@ -1,9 +1,32 @@
-import { connectDB } from "@/src/lib/db";
-import Manager from "@/src/models/Manager";
-import Vacancies from "@/src/models/Vacancies";
 import { NextResponse } from "next/server";
+import { connectDB } from "@/src/lib/db";  
+import Vacancies from "@/src/models/Vacancies";  
 import Partner from "@/src/models/Partner";
+import Manager from "@/src/models/Manager";
 
+export const GET = async (req: Request) => {
+  const url = new URL(req.url);
+  const professionNames = url.searchParams.get('professionNames');
+  if (!professionNames) {
+    return new NextResponse("Параметр professionNames обязателен", { status: 400 });
+  }
+
+  const professionList = professionNames.split(","); 
+
+  try {
+    await connectDB();
+
+    const vacancies = await Vacancies.find({
+      title: { $in: professionList }  
+    }).sort({ title: 1 }).populate('manager');
+
+    return new NextResponse(JSON.stringify(vacancies), { status: 200 });
+  } catch (error: any) {
+    return new NextResponse(`Ошибка при получении вакансий: ${error.message}`, {
+      status: 500,
+    });
+  }
+};
 
 export const POST = async (request: Request) => {
   try {

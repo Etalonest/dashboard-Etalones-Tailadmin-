@@ -17,6 +17,7 @@ import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 import CMultiSelect from '../../Multiselect/Multiselect';
 import { Textarea } from '@/components/ui/textarea';
 import { FunnelCandidate } from '../Funnel/FunnelCandidate/FunnelCandidate';
+import SuitableV from '../../SuitableV/SuitableV';
 
 
 const AddCandidateForm = () => {
@@ -465,8 +466,7 @@ const AddCandidateForm = () => {
         </div>
             </form>
             <div className="flex-2  p-4">
-            <FunnelCandidate onDataChange={handleCandidateData} author={managerId}/>
-         <FunnelCandidate onDataChange={handleCandidateData}/>
+            <SuitableV selectedProfessions={professionEntries.map((prof) => prof.name)} />
         </div>
         </div>
                

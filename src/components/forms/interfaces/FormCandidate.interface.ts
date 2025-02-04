@@ -12,7 +12,7 @@ export interface DriveOption {
   export interface File{
     _id?:any;
     name?: string;
-    data?:any;
+    data?:string;
     contentType?: string;
   } 
 
@@ -28,7 +28,9 @@ export interface DriveOption {
     salaryWorker?: string;
   }
   export interface Profession {
-     name: string; expirience: string; category: string; 
+     name: string; 
+     expirience: string; 
+     category: string; 
 }
   export interface Langue {
     name: string;

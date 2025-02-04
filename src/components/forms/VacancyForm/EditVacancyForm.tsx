@@ -243,7 +243,7 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
     />
   ) : vacancyH?.image ? (
     <Image
-      src={`data:${vacancyH?.image.contentType};base64,${Buffer.from(vacancyH?.image.data).toString('base64')}`} 
+      src={`data:${vacancyH?.image.contentType};base64,${vacancyH?.image.data}`} 
       alt={vacancyH?.image.name || "Default image"} 
       width={400}
       height={400}
