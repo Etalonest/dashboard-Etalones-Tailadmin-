@@ -10,7 +10,8 @@ import { useSession } from 'next-auth/react';
 const TableCandidate = () => {
   const { data: session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
-  const { candidates, loadCandidates } = useCandidates(); // Получаем кандидаты из контекста
+  // const { candidates, loadCandidates } = useCandidates(); // Получаем кандидаты из контекста
+    const { candidates, isLoading, error } = useCandidates();
   const [loading, setLoading] = useState<boolean>(false); 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,11 +28,11 @@ const TableCandidate = () => {
     currentPage * candidatesPerPage
   );
 
-  useEffect(() => {
-    if (managerId && candidates.length === 0) {
-      loadCandidates(managerId);  
-    }
-  }, [managerId, loadCandidates, candidates.length]);
+  // useEffect(() => {
+  //   if (managerId && candidates.length === 0) {
+  //     loadCandidates(managerId);  
+  //   }
+  // }, [managerId, loadCandidates, candidates.length]);
   useEffect(() => {
     if (candidates && Array.isArray(candidates)) {
       const filtered = candidates.filter((candidate) => {
@@ -76,7 +77,7 @@ const TableCandidate = () => {
   };
 
   if (loading) {
-    return <Loader />; // Если загрузка, показываем лоадер
+    return <Loader />; 
   }
 
   return (

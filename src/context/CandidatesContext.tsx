@@ -1,6 +1,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Candidate } from '@/src/types/candidate';
+import { useSession } from 'next-auth/react';
 
 interface CandidatesContextType {
   candidates: Candidate[];
@@ -15,16 +16,21 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
+  const { data: session } = useSession();
+  const managerId = session?.managerId;
   const loadCandidates = async (managerId: string) => {
     setIsLoading(true);
     setError(null);
+
     try {
-      const response = await fetch(`/api/candidate-by-manager/${managerId}`); // изменено на plural
+      const response = await fetch(`/api/candidate-by-manager/${managerId}`);
       const data = await response.json();
 
       if (response.ok) {
-        setCandidates(data.candidates); // Предполагаем, что сервер возвращает кандидатов в объекте { candidates }
+        // Если кандидаты уже загружены, не делаем повторный запрос
+        if (candidates.length === 0) {
+          setCandidates(data.candidates);
+        }
       } else {
         setError(data.message || 'Не удалось загрузить кандидатов');
       }
@@ -34,6 +40,13 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Проверка, если кандидаты уже есть, то не загружаем их снова
+    if (managerId && candidates.length === 0) {
+      loadCandidates(managerId); // Используйте правильный ID
+    }
+  }, [candidates, managerId]); // Зависят от candidates и managerId, чтобы избежать повторных запросов
 
   return (
     <CandidatesContext.Provider value={{ candidates, loadCandidates, isLoading, error }}>

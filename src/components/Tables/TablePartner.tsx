@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 const TablePartner = () => {
   const { data: session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
-  const { partners, loadPartners} = usePartners();
+  const { partners, } = usePartners();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
@@ -23,11 +23,11 @@ const TablePartner = () => {
   );
 
   
-  useEffect(() => {
-    if (managerId && partners.length === 0) {
-      loadPartners(managerId);  
-    }
-  }, [managerId, loadPartners, partners.length]);
+  // useEffect(() => {
+  //   if (managerId && partners.length === 0) {
+  //     loadPartners(managerId);  
+  //   }
+  // }, [managerId, loadPartners, partners.length]);
 
   useEffect(() => {
     if (partners && Array.isArray(partners)) {

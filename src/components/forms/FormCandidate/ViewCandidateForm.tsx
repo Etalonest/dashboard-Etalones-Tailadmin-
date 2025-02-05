@@ -1,5 +1,5 @@
 import React from 'react';
-import SuitableV from '../../SuitableV/SuitableV';
+import TransferToKurator from '../../TransferToKurator/TransferToKurator';
 
 interface Candidate {
   name: string;
@@ -8,7 +8,7 @@ interface Candidate {
   // добавьте другие поля, которые вам нужны
 }
 
-const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
+const ViewCandidateForm = ({ candidate, onSubmitSuccess }: { candidate: Candidate | null, onSubmitSuccess: any }) => {
 
   // Проверка на null
   if (!candidate) {
@@ -16,9 +16,9 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
   }
 
   return (
-    <div className='grid grid-cols-2 gap-5'>
+    <div className='grid grid-cols-3 gap-5'>
         
-      <div>
+      <div className='col-span-2'>
       <h2>Просмотр кандидата</h2>
       <p><strong>Имя:</strong> {candidate.name}</p>
       <p><strong>Телефон:</strong> {candidate.phone}</p>
@@ -26,7 +26,7 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
         <span key={index}>{profession.name}{index < candidate.professions.length - 1 ? ', ' : ''}</span>
       ))}</p>
       </div>
-      <SuitableV selectedProfessions={candidate?.professions.map((prof) => prof.name)}/>
+      <TransferToKurator selectedProfessions={candidate?.professions.map((prof) => prof.name)}/>
     </div>
   );
 };

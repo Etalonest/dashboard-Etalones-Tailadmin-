@@ -19,7 +19,7 @@ import { ProfessionPartner } from '@/src/types/professionParnter';
 import { Contract } from '@/src/components/forms/interfaces/FormCandidate.interface';
 
 
-const AddpartnerForm = () => {
+const AddpartnerForm = (onSubmitSuccess: any) => {
     const { data: session } = useSession();
     const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();

@@ -13,6 +13,19 @@ const providers = [
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
+  session: {
+    strategy: "jwt", // Если используете JWT
+  },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token", // Имя cookie для сессии
+      options: {
+        httpOnly: true, // Запрещает доступ к cookie через JavaScript
+        secure: process.env.NODE_ENV === "production", // Использовать secure cookies только в production
+        maxAge: 24 * 60 * 60, // Время жизни cookie (24 часа)
+      },
+    },
+  },
   callbacks: {
     // Этот колбэк выполняется при получении сессии
     async session({ session, token }) {

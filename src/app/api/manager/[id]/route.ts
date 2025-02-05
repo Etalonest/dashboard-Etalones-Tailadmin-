@@ -177,7 +177,7 @@ export async function GET(request: any, { params }: any) {
             path: 'documents',
             populate: {
               path: 'file',
-              select: 'name data contentType',
+              select: 'name contentType',
             },
           },
           {
@@ -195,7 +195,7 @@ export async function GET(request: any, { params }: any) {
             path: 'documents',
             populate: {
               path: 'file',
-              select: 'name data contentType',
+              select: 'name contentType',
             },
           },
         ]

@@ -16,11 +16,10 @@ import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 import CMultiSelect from '../../Multiselect/Multiselect';
 import { Textarea } from '@/components/ui/textarea';
-import { FunnelCandidate } from '../Funnel/FunnelCandidate/FunnelCandidate';
 import SuitableV from '../../SuitableV/SuitableV';
 
 
-const AddCandidateForm = () => {
+const AddCandidateForm = (onSubmitSuccess: any) => {
   const { data: session } = useSession();
   const { professions } = useProfessionContext();
   const { addNotification } = useNotifications();
@@ -267,6 +266,8 @@ const AddCandidateForm = () => {
           type: 'success',
           id: uuidv4Original(),
         });
+        onSubmitSuccess();
+
       }
 
       if (data.error) {

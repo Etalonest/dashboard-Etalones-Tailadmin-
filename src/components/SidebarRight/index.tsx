@@ -89,15 +89,15 @@ useEffect(() => {
   const renderForm = () => {
     switch (formType) {
       case "addCandidate":
-        return <AddCandidateForm  />;
+        return <AddCandidateForm  onSubmitSuccess={closeSidebar}/>;
       case "editCandidate":
         return <EditCandidateForm candidate={formData}  onSubmitSuccess={closeSidebar}/>;
       case "viewCandidate":
-        return <ViewCandidateForm candidate={formData} />;
+        return <ViewCandidateForm candidate={formData} onSubmitSuccess={closeSidebar}/>;
       case "createManager":
-        return <FormCreateManager />;
+        return <FormCreateManager onSubmitSuccess={closeSidebar}/>;
       case "addPartner":
-        return <AddPartnerForm  />;
+        return <AddPartnerForm  onSubmitSuccess={closeSidebar}/>;
       case "editPartner":
         return <EditPartnerForm partner={partnerData} onSubmitSuccess={closeSidebar}/>; 
       case "viewPartner":

@@ -5,7 +5,7 @@ import Select from "@/src/components/inputs/Select/Select";
 
 
 
-const FormCreateManager = () => {
+const FormCreateManager = (onSubmitSuccess: any) => {
     // Состояния формы
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
