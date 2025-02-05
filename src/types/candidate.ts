@@ -43,14 +43,16 @@ export type Profession = {
   
   // Основной тип для кандидата
   export type Candidate = {
+    stages: any;
+    stage: any;
     ageNum: string;
     partners: Partner[];
     dateArrival: string;
     citizenship: string;
     additionalPhones: string[];
     docType: any;
-    id: string;
-    _id: string;
+    id?: string;
+    _id?: string;
     name: string;
     phone: string;
     age: string;

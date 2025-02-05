@@ -1,43 +1,40 @@
 import { Schema, model, models } from "mongoose";
+import {Candidate} from './Candidate';
+import {Partner} from './Partner';
+import {Manager} from './Manager';
+import {Stage} from './Stage';
+
 
 const TaskSchema = new Schema({
-  name: {
-    type: String,
+  taskName: {
+    type: String, // Название задачи (например, "Анкетирование", "Подбор вакансии")
   },
   description: {
-    type: String,
+    type: String, // Описание задачи
   },
   status: {
-    type: String,
+    type: String, // Статус задачи (например, "in-progress", "completed")
   },
-  date: {
-    type: Date,
-    default: Date.now,
+  stage: {
+    type: Schema.Types.ObjectId,
+    ref: 'Stage', // Связь с этапом, на котором находится задача
   },
-  manager: {
+  candidate: {
     type: Schema.Types.ObjectId,
-    ref: 'Manager',
+    ref: 'Candidate', // Связь с кандидатом
   },
-  partners: [{
+  assignedTo: {
     type: Schema.Types.ObjectId,
-    ref: 'Partner'
-  }],
-  candidates: [{
+    ref: 'Manager', // Кто отвечает за выполнение задачи
+  },
+  partner: {
     type: Schema.Types.ObjectId,
-    ref: 'Candidate'
-  }],
-  comment: [{
-    author: {
-      type: String
-    },
-    text: {
-      type: String
-    },
-    date: {
-      type: Date,
-      default: Date.now
-    }
-  }]});
+    ref: 'Partner', // Связь с партнером
+  },
+  dueDate: {
+    type: Date, // Дата, к которой нужно выполнить задачу
+  },  
+});
 
 const Task = models?.Task || model("Task", TaskSchema);
 export default Task;

@@ -26,7 +26,7 @@ const ViewCandidateForm = ({ candidate, onSubmitSuccess }: { candidate: Candidat
         <span key={index}>{profession.name}{index < candidate.professions.length - 1 ? ', ' : ''}</span>
       ))}</p>
       </div>
-      <TransferToKurator selectedProfessions={candidate?.professions.map((prof) => prof.name)}/>
+      <TransferToKurator candidate={candidate} selectedProfessions={candidate?.professions.map((prof) => prof.name)}/>
     </div>
   );
 };

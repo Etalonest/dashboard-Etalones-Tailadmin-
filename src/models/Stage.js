@@ -1,36 +1,51 @@
 import { Schema, model, models } from "mongoose";
 import {Candidate} from './Candidate';
-import {User} from './User';
 import {Partner} from './Partner';
+import {Manager} from './Manager';
 import {Task} from './Task';
+import {Vacancies} from './Vacancies';
 const StageSchema = new Schema({
   stage: {
-    type: String,
+    type: String, // Название этапа (например, stage-zero, stage-recruiter и т.д.)
+  },
+  vacancy: {
+    type: Schema.Types.ObjectId,
+    ref: 'Vacancies', // Вакансия, на которую кандидат претендует
   },
   status: {
-    type: Date,
+    type: String, // Статус кандидата на текущем этапе (например, 'в процессе', 'завершено', 'отказ', 'ожидает')
   },
-  visa:{
-    type: Boolean,
-    document:{
-        type: Schema.Types.ObjectId,
-        ref: 'Document'
-    }
+  comment: {
+    type: String, // Дополнительные комментарии по этапу
   },
-  passport:{
-    type: Boolean,
-    document:{
-        type: Schema.Types.ObjectId,
-        ref: 'Document'
-    }
+  partner: {
+    type: Schema.Types.ObjectId,
+    ref: 'Partner', // Партнер, с которым работает кандидат
   },
   candidate: {
     type: Schema.Types.ObjectId,
-    ref: 'Candidate',
+    ref: 'Candidate', // Кандидат, проходящий через этап
   },
   responsible: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Manager', // Менеджер, ответственный за этап
+  },
+  startDate: {
+    type: Date, // Дата начала этапа
+  },
+  endDate: {
+    type: Date, // Дата окончания этапа (если применимо)
+  },
+  reasonForHalt: {
+    type: String, // Причина остановки на этапе
+  },
+  isFinal: {
+    type: Boolean, // Завершен ли процесс
+    default: false,
+  },
+  uniqueCandidateVacancy: {
+    type: Schema.Types.ObjectId,
+    ref: 'Vacancies', // Уникальная связь, чтобы предотвратить повторные собеседования
   },
 }, { timestamps: true });
 

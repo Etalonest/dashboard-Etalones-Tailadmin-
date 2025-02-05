@@ -12,11 +12,13 @@ import {
  import { useSession } from "next-auth/react";
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useManager } from "@/src/context/ManagerContext";
-import Candidate from "@/src/models/Candidate";
+import { useCandidates } from '@/src/context/CandidatesContext';
 
   export function CandidateTab() {
 const { data: session } = useSession();
 const { manager } = useManager();
+const { candidates, isLoading, error } = useCandidates();
+console.log("test!!!", candidates[0]?.stages.comment)
 if (session?.managerRole && ['recruiter', 'manager', 'admin'].includes(session.managerRole)) {
 
     return (
@@ -35,12 +37,12 @@ if (session?.managerRole && ['recruiter', 'manager', 'admin'].includes(session.m
           </TableRow>
         </TableHeader>
         <TableBody>
-          {manager?.candidates && manager?.candidates.map((candidates, index) => (
+          {manager?.candidates && candidates.map((candidates, index) => (
             <TableRow key={index}>
               <TableCell className="text-start">{candidates.name}</TableCell>
               <TableCell className="text-center">{candidates.phone}</TableCell>
               <TableCell className="text-center">Кандидаты</TableCell>
-              <TableCell className="text-center">Статус</TableCell>
+              <TableCell className="text-center">{candidates?.stages?.comment}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                 <DropdownMenuTrigger><Button ><span>Подробнее</span></Button></DropdownMenuTrigger>

@@ -13,6 +13,7 @@ export interface ManagerImage {
   
   // Тип для кандидатов, партнеров, задач и других связанных сущностей
   export interface IdReference {
+    stage: any;
     documents: any;
     id: number;
     professions: any;

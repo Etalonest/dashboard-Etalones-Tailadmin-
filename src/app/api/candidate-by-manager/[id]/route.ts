@@ -49,6 +49,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
               }
             ]
           })
+          .populate("stages");
     if (!candidates || candidates.length === 0) {
       return NextResponse.json({ message: 'Кандидаты не найдены' }, { status: 404 });
     }

@@ -9,10 +9,10 @@ const CandidateSchema = new Schema({
     type: Boolean, 
     default: true 
   },
-  stages: [{
+  stages: {
     type: Schema.Types.ObjectId,
     ref: 'Stage'
-  }],
+  },
   dialogs: [{
     type: Schema.Types.ObjectId,
     ref: 'Dialog'

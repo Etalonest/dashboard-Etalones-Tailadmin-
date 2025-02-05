@@ -6,7 +6,7 @@ import ChartTwo from "../Charts/ChartTwo";
 import ChatCard from "../Chat/ChatCard";
 import Stats from "@/src/components/stats/Stats";
 import { useManager } from "@/src/context/ManagerContext";
-import TableCandidate from "../Tables/TableCandidaate";
+import TableCandidate from "../Tables/TableCandidate";
 import { Eye } from "lucide-react";
 import ChartCandAdded from "../Charts/ChartCandAdded";
 const MapOne = dynamic(() => import("@/src/components/Maps/MapOne"), {

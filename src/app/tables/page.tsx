@@ -3,7 +3,7 @@ import Breadcrumb from "@/src/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
-import TableCandidate from "@/src/components/Tables/TableCandidaate";
+import TableCandidate from "@/src/components/Tables/TableCandidate";
 import { ProfessionProvider } from "@/src/context/ProfessionContext";
 import { useSession } from "next-auth/react";
 import Vacancy from "@/src/components/Vacancy/Vacancy";

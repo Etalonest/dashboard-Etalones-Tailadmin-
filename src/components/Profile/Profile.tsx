@@ -215,33 +215,7 @@ const ProfileComponent = () => {
         </button>
       </div>
 <TabsAdmin/>
-              {/* <div className="mx-auto mb-5.5 mt-4.5 grid max-w-full grid-cols-4 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
-              <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
-                  <span className="font-semibold text-black dark:text-white">
-                    {manager?.candidates.length ?? 0}
-                  </span>
-                  <span className="text-sm">Кандидатов</span>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
-                  <span className="font-semibold text-black dark:text-white">
-                    {manager?.candidates.length ?? 0}
-                  </span>
-                  <span className="text-sm">Кандидатов</span>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
-                  <span className="font-semibold text-black dark:text-white">
-                    {manager?.partners.length ?? 0}
-                  </span>
-                  <span className="text-sm">Партнёров</span>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-1 px-4 xsm:flex-row">
-                  <span className="font-semibold text-black dark:text-white">
-                    {manager?.tasks.length ?? 0}
-                  </span>
-                  <span className="text-sm">Задач</span>
-                </div>
-              </div> */}
-{/* <TableManagers managers={managers} onClick={toggleSidebar} /> */}
+            
               <div className="mx-auto max-w-180">
                 <h4 className="font-semibold text-black dark:text-white">
                   About Me

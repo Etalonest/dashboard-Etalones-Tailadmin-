@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/src/lib/db';
 import  Candidate  from '@/src/models/Candidate';
 import Manager from '@/src/models/Manager';
+import Stage from '@/src/models/Stage';
+import Task from '@/src/models/Task';
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -145,6 +147,42 @@ console.log("documents", documents);
 
     await newCandidate.save();
 
+    const newStage = new Stage({
+      stage: 'recruiter', // Этап рекрутера
+      status: 'in-progress',
+      candidate: newCandidate._id,
+      responsible: managerId,
+      comment: 'Кандидат добавлен на этап рекрутера',
+    });
+    await newStage.save();
+
+    newCandidate.stages = newStage._id; // Сохраняем ID последнего этапа у кандидата
+    await newCandidate.save();
+
+    const newTask1 = new Task({
+      taskName: 'Анкетирование', // Название задачи
+      description: 'Провести анкетирование кандидата', // Описание
+      status: 'in-progress', // Статус задачи
+      stage: newStage._id, // Связь с этапом
+      candidate: newCandidate._id, // Связь с кандидатом
+      assignedTo: managerId, // Менеджер, ответственный за задачу
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 1 день)
+    });
+    
+    await newTask1.save(); // Сохраняем задачу 1
+    
+    // Задача 2: Подбор вакансии
+    const newTask2 = new Task({
+      taskName: 'Подбор вакансии', // Название задачи
+      description: 'Выбрать вакансии для кандидата', // Описание
+      status: 'in-progress', // Статус задачи
+      stage: newStage._id, // Связь с этапом
+      candidate: newCandidate._id, // Связь с кандидатом
+      assignedTo: managerId, // Менеджер, ответственный за задачу
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 2 дня)
+    });
+    
+    await newTask2.save();
     // Если у кандидата есть менеджер, обновляем его список кандидатов
     if (newCandidate.manager) {
       const manager = await Manager.findById(newCandidate.manager);
