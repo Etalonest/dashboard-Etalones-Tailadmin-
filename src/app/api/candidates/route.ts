@@ -16,10 +16,10 @@ export const GET = async (request: NextRequest) => {
     const offset = (page - 1) * limit;
 
     const candidates = await Candidate.find({})
-      .sort({ 'createdAt': -1 })
+      .sort({ 'updatedAt': -1 })
       .skip(offset)
       .limit(limit)
-      .populate(['manager','tasks']); 
+      .populate(['manager','tasks', 'stages']); 
 
     const totalCandidates = await Candidate.countDocuments({});
     const totalPages = Math.ceil(totalCandidates / limit);

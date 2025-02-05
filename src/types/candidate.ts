@@ -65,6 +65,7 @@ export type Profession = {
     documents: Document[]; // Массив документов
     langue: Language; // Языковая информация
     manager: {
+      name: any;
       $oid: string; // ID менеджера
     };
     status: string;

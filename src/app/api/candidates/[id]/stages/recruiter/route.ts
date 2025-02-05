@@ -30,7 +30,7 @@ export async function POST(req : any, { params }: any) {
       comment: comment, // Комментарий
       vacancy: vacancy, // Вакансия
     });
-
+ 
     // Сохраняем этап в базе данных
     await newStage.save();
 

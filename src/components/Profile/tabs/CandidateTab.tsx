@@ -18,13 +18,12 @@ import { useCandidates } from '@/src/context/CandidatesContext';
 const { data: session } = useSession();
 const { manager } = useManager();
 const { candidates, isLoading, error } = useCandidates();
-console.log("test!!!", candidates[0]?.stages.comment)
+// console.log("test!!!", candidates[0]?.stages.comment)
 if (session?.managerRole && ['recruiter', 'manager', 'admin'].includes(session.managerRole)) {
 
     return (
       <Table>
         <TableCaption className="font-bold text-center ">
-        
                       
           </TableCaption>
         <TableHeader>

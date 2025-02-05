@@ -2,6 +2,7 @@
 import { auth } from "@/auth";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import ProfileComponent from "@/src/components/Profile/Profile";
+import { AllCandidatesProvider } from "@/src/context/AllCandidatesContext";
 import { ManagersProvider } from "@/src/context/ManagersContext";
 import { redirect } from 'next/navigation';
 
@@ -15,7 +16,9 @@ const Profile = async () => {
   return (
     <DefaultLayout>
       <ManagersProvider>
+        <AllCandidatesProvider>
       <ProfileComponent />
+      </AllCandidatesProvider>
       </ManagersProvider>
     </DefaultLayout>
   );

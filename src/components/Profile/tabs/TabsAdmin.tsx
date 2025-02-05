@@ -93,7 +93,6 @@
 
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import styles from './TabsAdmin.module.css';
 import { AccountTab } from "./AccountTab";
 import { SalesmanTab } from "./SalesmanTab";
 import { CandidateTab } from "./CandidateTab";
@@ -104,6 +103,7 @@ import { useSession } from "next-auth/react";
 import { useManagers } from "@/src/context/ManagersContext";
 import SidebarRight from "../../SidebarRight";
 import { UsersTab } from "./UsersTab";
+import {CandidateTable} from "./CandidateTable/CandidateTable";
 
 export function TabsAdmin() {
   const { data: session } = useSession(); 
@@ -128,13 +128,13 @@ export function TabsAdmin() {
       case "salles":
         return <SalesmanTab />;
       case "candidate":
-        return <CandidateTab />;
+        return <CandidateTable />;
       case "partner":
         return <PartnerTab />;
       case "recruiter":
         return <RecruiterTab />;
       default:
-        return <CandidateTab />;
+        return <CandidateTable />;
     }
   };
 
@@ -181,13 +181,13 @@ export function TabsAdmin() {
         formType={formType} 
       />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="flex flex-wrap w-full">
+        <TabsList className="flex gap-2 flex-wrap w-full">
           {visibleTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className={`${styles.tabsTrigger} ${activeTab === tab.value ? styles.tabsTriggerActive : ""}`}
-            >
+              className={`${activeTab === tab.value ? 'bg-slate-300 text-black border-2 border-slate-500' : 'bg-slate-200 border-slate-300 border-2'} px-5 py-2.5 rounded cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-300`}
+              >
               {tab.label}
             </TabsTrigger>
           ))}
