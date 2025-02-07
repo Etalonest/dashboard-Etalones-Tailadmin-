@@ -40,8 +40,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     selectLocation,
     documents,
     selectSite,
-    contractType,
-    contractPrice,
+    contract,
     handleChangeName,
     handleChangePhone,
     handleChangeViber,
@@ -53,8 +52,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     handleChangeLocation,
     handleChangeSite,
     handleChangeDocuments,
-    handleChangeContractType,
-    handleChangeContractPrice
+    handleChangeContract,
   } = usePartnerData(partner);
   const [selectDrive, setSelectDrive] = useState(partner?.profession?.drivePermis || []);
   const [commentEntries, setCommentEntries] = useState<CommentEntry[]>(partner?.comment || []);
@@ -337,7 +335,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       console.error('Ошибка при добавлении кандидата:', error);
     }
   };
- console.log("DOCUMENTS", documents); 
+ console.log("DOCUMENTS", partner); 
   return (
     <>
     <div>
@@ -489,16 +487,16 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     name='contractType'
                     label="Тип контракта"
                     suggestions={suggestionsData.contractType}
-                    value={contractType}
+                    value={contract.contractType}
                     placeholder="Введите тип контракта"
-                    onChange={(value) => handleInputChange('contractType', value)} />
+                    onChange={(value) => handleChangeContract('contractType', value)} />
                   <AutocompleteInput
                     name='contractPrice'
                     label="Цена контракта"
                     suggestions={suggestionsData.contractPrice}
-                    value={contractPrice}
+                    value={contract.contractPrice}
                     placeholder="Введите цену контракта"
-                    onChange={(value) => handleInputChange('contractPrice', value)} />
+                    onChange={(value) => handleChangeContract('contractPrice', value)} />
                 </CardContent>
                 <Button variant="outline" className='bg-green-900 text-white w-full'
                   onClick={handleButtonClick} type='button'>
@@ -561,18 +559,21 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                       handleProfessionSelect(index, 'name', selectedName);} }
                   >
                     <option value="">Нет профессии</option>
-                    {professions.map((profession: any) => (
-                      <option key={profession._id} value={profession.name} data-id={profession.id}>
+                    {professions.map((profession: any, index: number) => (
+                      <option key={index} value={profession.name} data-id={profession.id}>
                         {profession.name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <Label>Местоположение</Label>
-                  <Input
-                    value={profession?.location}
-                    onChange={(e) => handleInputPChange(profession.id, 'location', e.target.value)} />
+                  {/* <Label>Местоположение</Label> */}
+                  <AutocompleteInput
+                  value={profession?.location || ''}
+                  label="Местоположение"
+                  suggestions={suggestionsData.location}
+                  placeholder="Укажите местоположение"
+                  onChange={(value) => handleInputPChange(index, 'location', value)} />
                 </div>
 
               </CardTitle>
@@ -583,7 +584,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     label="Навыки"
                     suggestions={suggestionsData.skils}
                     placeholder="Укажите набор навыков"
-                    onChange={(value) => handleInputPChange(profession.id, 'skills', value)} />
+                    onChange={(value) => handleInputPChange(index, 'skills', value)} />
                   <div>
                     <Label>Опыт работы</Label>
                     <label htmlFor="profession">
@@ -611,13 +612,13 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     suggestions={suggestionsData.sallary}
                     placeholder="Зарплата работника"
                     value={profession?.salary || ''}
-                    onChange={(value) => handleInputPChange(profession.id, 'salary', value)} />
+                    onChange={(value) => handleInputPChange(index, 'sallary', value)} />
                   <AutocompleteInput
                     label="Цена проживания"
                     suggestions={suggestionsData.homePrice}
                     value={profession?.rentPrice || ''}
                     placeholder="Стоимость проживания"
-                    onChange={(value) => handleInputPChange(profession.id, 'rentPrice', value)} />
+                    onChange={(value) => handleInputPChange(index, 'rentPrice', value)} />
                 </div>
                 <div className='grid grid-cols-2 gap-2'>
 
@@ -626,13 +627,13 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     suggestions={suggestionsData.avance}
                     value={profession?.avans || ''}
                     placeholder="Отношение к авансу"
-                    onChange={(value) => handleInputPChange(profession.id, 'avans', value)} />
+                    onChange={(value) => handleInputPChange(index, 'avans', value)} />
                   <AutocompleteInput
                     label="Спецодежда"
                     suggestions={suggestionsData.workwear}
                     value={profession?.workwear || ''}
                     placeholder="Спецодежда"
-                    onChange={(value) => handleInputPChange(profession.id, 'workwear', value)} />
+                    onChange={(value) => handleInputPChange(index, 'workwear', value)} />
                 </div>
                 <div className='grid grid-cols-2 gap-2'>
                   <div>

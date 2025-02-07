@@ -5,13 +5,22 @@ import {Manager} from './Manager';
 import {Task} from './Task';
 import {Vacancies} from './Vacancies';
 const StageSchema = new Schema({
+  tasks:[{
+    type: Schema.Types.ObjectId,
+    ref: 'Task', // Задача, связанная с этапом
+    default: [],
+  }],
   stage: {
     type: String, // Название этапа (например, stage-zero, stage-recruiter и т.д.)
   },
   vacancy: {
     type: Schema.Types.ObjectId,
-    ref: 'Vacancies', // Вакансия, на которую кандидат претендует
+    ref: 'Vacancies', 
   },
+  likedVacancy:[{
+    type: Schema.Types.ObjectId,
+    ref: 'Vacancies', 
+  }],
   status: {
     type: String, // Статус кандидата на текущем этапе (например, 'в процессе', 'завершено', 'отказ', 'ожидает')
   },

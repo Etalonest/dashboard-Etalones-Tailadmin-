@@ -35,6 +35,11 @@ export const professionSkills = {
   };
   
 export const suggestionsData = {
+  location: [
+    'Германия',
+    'Бельгия',
+    'Голландия',
+    'Польша',],
     contractType: [
         'Почасовый',
         'Ежемесячный',

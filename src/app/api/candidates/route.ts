@@ -19,7 +19,7 @@ export const GET = async (request: NextRequest) => {
       .sort({ 'updatedAt': -1 })
       .skip(offset)
       .limit(limit)
-      .populate(['manager','tasks', 'stages']); 
+      .populate(['manager','tasks', 'stages','documents']); 
 
     const totalCandidates = await Candidate.countDocuments({});
     const totalPages = Math.ceil(totalCandidates / limit);
@@ -27,7 +27,7 @@ export const GET = async (request: NextRequest) => {
     const response = {
       candidates,
       page,
-      totalPages, // Убедитесь, что это поле присутствует
+      totalPages, 
       totalCandidates,
       hasNextPage: page < totalPages,
       hasPrevPage: page > 1,

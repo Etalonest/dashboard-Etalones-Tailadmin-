@@ -7,7 +7,7 @@ import Candidate from '@/src/models/Candidate';
 export async function POST(req : any, { params }: any) {
   try {
     const { candidateId } = params; // Получаем ID кандидата из URL
-    const { status, responsible, comment, vacancy } = await req.json(); // Получаем данные из тела запроса
+    const { status, responsible, comment, vacancy } = await req.json(); 
 
     // Подключаемся к базе данных
     await connectDB();
@@ -23,7 +23,7 @@ export async function POST(req : any, { params }: any) {
 
     // Создаем новый этап для кандидата
     const newStage = new Stage({
-      stage: 'curator', // Указываем этап
+      stage: 'recruiter', // Указываем этап
       status: status, // Статус
       candidate: candidateId, // ID кандидата
       responsible: responsible, // Ответственный
@@ -37,7 +37,7 @@ export async function POST(req : any, { params }: any) {
     // Обновляем кандидата, добавляем ссылку на новый этап
     candidate.lastStage = newStage._id;
     await candidate.save();
-
+console.log("candidate", candidate);
     return new Response(
       JSON.stringify({
         message: 'Этап куратор успешно добавлен',

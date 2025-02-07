@@ -28,17 +28,27 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
 
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState(false);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    const value = event.target.value; // Получаем строку из input
     setInputValue(value);
-    onChange(value); // Передаем значение обратно родительскому компоненту
+    onChange(value); // Передаем это значение обратно родительскому компоненту
     setFilteredSuggestions(
       suggestions.filter((suggestion) =>
         suggestion.toLowerCase().includes(value.toLowerCase())
       )
     );
   };
+  
+  // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = event.target.value;
+  //   setInputValue(value);
+  //   onChange(value); // Передаем значение обратно родительскому компоненту
+  //   setFilteredSuggestions(
+  //     suggestions.filter((suggestion) =>
+  //       suggestion.toLowerCase().includes(value.toLowerCase())
+  //     )
+  //   );
+  // };
 
   const handleSuggestionClick = (suggestion: string) => {
     setInputValue(suggestion);

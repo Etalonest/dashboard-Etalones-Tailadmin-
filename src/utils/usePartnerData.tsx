@@ -13,8 +13,10 @@ const usePartnerData = (partner: any) => {
   const [selectNumberDE, setSelectNumberDE] = useState(partner?.numberDE || '');
   const [selectLocation, setSelectLocation] = useState(partner?.location || '');
   const [selectSite, setSelectSite] = useState(partner?.site || '');
-  const [contractType, setContractType] = useState(partner?.contract?.typeC || '');
-  const [contractPrice, setContractPrice] = useState(partner?.contract?.sum || '');
+  const [contract, setContract] = useState<{ [key: string]: string }>({
+    contractType: partner?.contract?.typeC || '',
+    contractPrice: partner?.contract?.sum || '',
+  });
   const [documents, setDocuments] = useState<Document[]>(partner?.documents || []);
   
   const handleChangeName = createHandleChange(setSelectName);
@@ -27,8 +29,7 @@ const usePartnerData = (partner: any) => {
   const handleChangeNumberDE = createHandleChange(setSelectNumberDE);
   const handleChangeLocation = createHandleChange(setSelectLocation);
   const handleChangeSite = createHandleChange(setSelectSite);
-  const handleChangeContractType = createHandleChange(setContractType);
-  const handleChangeContractPrice = createHandleChange(setContractPrice);
+  const handleChangeContract = createHandleChange(setContract);
   const handleChangeDocuments = createHandleChange(setDocuments);
 
   useEffect(() => {
@@ -44,11 +45,10 @@ const usePartnerData = (partner: any) => {
       setSelectLocation(partner.location || '');
       setSelectSite(partner.site || '');
       setDocuments(partner.documents || []);
-      if (partner.contract) {
-        setContractType(partner.contract.typeC || '');
-        setContractPrice(partner.contract.sum || '');
-      }
-    }
+      setContract({
+        type: partner.contract?.type || '',
+        sum: partner.contract?.sum || ''
+      });    }
   }, [partner]);
 
   return {
@@ -62,8 +62,7 @@ const usePartnerData = (partner: any) => {
     selectNumberDE,
     selectLocation,
     selectSite,
-    contractType,
-    contractPrice,
+    contract,
     documents,
     handleChangeName,
     handleChangePhone,
@@ -75,8 +74,7 @@ const usePartnerData = (partner: any) => {
     handleChangeNumberDE,
     handleChangeLocation,
     handleChangeSite,
-    handleChangeContractType,
-    handleChangeContractPrice,
+    handleChangeContract,
     handleChangeDocuments,
 
   };

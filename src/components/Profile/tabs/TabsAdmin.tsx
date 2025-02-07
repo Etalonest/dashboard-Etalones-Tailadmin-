@@ -93,7 +93,6 @@
 
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { AccountTab } from "./AccountTab";
 import { SalesmanTab } from "./SalesmanTab";
 import { CandidateTab } from "./CandidateTab";
 import { PartnerTab } from "./PartnerTab";
@@ -104,6 +103,8 @@ import { useManagers } from "@/src/context/ManagersContext";
 import SidebarRight from "../../SidebarRight";
 import { UsersTab } from "./UsersTab";
 import {CandidateTable} from "./CandidateTable/CandidateTable";
+import CandidatesInWork from "../../CandidatesInWork/CandidatesInWork";
+import TasksList from "../../tasksList/TasksList";
 
 export function TabsAdmin() {
   const { data: session } = useSession(); 
@@ -122,19 +123,21 @@ export function TabsAdmin() {
       case "users":
         return <UsersTab />;
       case "tasks":
-        return <AccountTab />;
+        return <TasksList />;
       case "managers":
         return <ManagersTab managers={managers} onClick={toggleSidebar} />;
       case "salles":
         return <SalesmanTab />;
       case "candidate":
         return <CandidateTable />;
+      case "candidateIsInWork":
+        return <CandidatesInWork />;
       case "partner":
         return <PartnerTab />;
       case "recruiter":
         return <RecruiterTab />;
       default:
-        return <CandidateTable />;
+        return <CandidatesInWork />;
     }
   };
 
@@ -165,6 +168,8 @@ export function TabsAdmin() {
     { value: "managers", label: "Менеджеры" },
     { value: "salles", label: "Продажники" },
     { value: "candidate", label: "Кандидаты" },
+    { value: "candidateIsInWork", label: "Кандидаты в работе" },
+    { value: "tasks", label: "Задачи" },
     { value: "partner", label: "Партнёры" },
     { value: "recruiter", label: "Рекрутеры" }
   ];

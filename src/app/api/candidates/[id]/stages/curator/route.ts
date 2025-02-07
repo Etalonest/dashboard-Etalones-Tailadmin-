@@ -4,6 +4,9 @@ import { connectDB } from '@/src/lib/db';
 import Stage from '@/src/models/Stage';
 import Candidate from '@/src/models/Candidate'; 
 import Vacancies from '@/src/models/Vacancies'; 
+import Task from '@/src/models/Task';
+import Manager from '@/src/models/Manager';
+
 
 export const POST = async (req: Request, { params }: any) => {
     const { id } = params;
@@ -49,13 +52,49 @@ export const POST = async (req: Request, { params }: any) => {
       vacancy: vacancy, // ID вакансии
     });
 
-    // Сохраняем этап в базе данных
     await newStage.save();
     console.log("newStage", newStage);
 
-    // Обновляем кандидата, добавляем ссылку на новый этап
-    candidate.lastStage = newStage._id;
+    candidate.stages = newStage._id;
     await candidate.save();
+    console.log("candidate", candidate);
+    const newTask1 = new Task({
+      taskName: 'Потвердить данные из анкеты', // Название задачи
+      description: 'Проговорить анкету с кандидатом чтоб он потвердил данные', // Описание задачи
+      status: 'in-progress', // Статус задачи
+      stage: newStage._id, // Связь с этапом
+      candidate: id, // Связь с кандидатом
+      assignedTo: responsible, // Менеджер, ответственный за задачу
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 1 день)
+    });
+    
+    await newTask1.save(); // Сохраняем задачу 1
+    
+    // Задача 2: Подбор вакансии
+    const newTask2 = new Task({
+      taskName: 'Потвердить данные указаные в анкете', 
+      description: 'Передать на собеседование по выбраной вакансии', // Описание
+      status: 'in-progress', // Статус задачи
+      stage: newStage._id, // Связь с этапом
+      candidate: id, // Связь с кандидатом
+      assignedTo: responsible, // Менеджер, ответственный за задачу
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 2 дня)
+    });
+    
+    await newTask2.save();
+    // Если у кандидата есть менеджер, обновляем его список кандидатов
+    if (id.manager) {
+      const manager = await Manager.findById(id.manager);
+      if (manager) {
+        await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: id._id } });
+      }
+    }
+    if (!newStage.tasks) {
+      newStage.tasks = [];
+    }
+    newStage.tasks.push(newTask1._id, newTask2._id); // Добавляем ID задач
+    await newStage.save();
+console.log("newStage", newStage?.tasks);
 
     return new Response(
       JSON.stringify({
