@@ -50,7 +50,7 @@ export const ManagersProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     fetchManagers();
-  }, []); 
+  }, [session?.managerRole]);
 
   return (
     <ManagersContext.Provider value={{ managers, setManagers }}>

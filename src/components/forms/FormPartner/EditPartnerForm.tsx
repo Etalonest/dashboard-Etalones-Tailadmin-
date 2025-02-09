@@ -10,7 +10,7 @@ import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
 import { drivePermisData, expiriences, languesData, pDocsData } from '@/src/config/constants';
-import { CirclePlus, Download, X } from 'lucide-react';
+import { Car, CirclePlus, Download, PencilLine, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { CommentEntry, DocumentEntry} from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
@@ -21,6 +21,16 @@ import { Badge } from '@/components/ui/badge';
 import {Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { Avatar } from '@radix-ui/react-avatar';
+import Image from 'next/image';
+import { InputTransparent } from '../../inputs/inputTransparent';
+import { Popover, PopoverTrigger } from '@radix-ui/react-popover';
+import { PopoverContent } from '@/components/ui/popover';
 
 const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   const { professions } = useProfessionContext();
@@ -54,16 +64,12 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     handleChangeDocuments,
     handleChangeContract,
   } = usePartnerData(partner);
-  const [selectDrive, setSelectDrive] = useState(partner?.profession?.drivePermis || []);
   const [commentEntries, setCommentEntries] = useState<CommentEntry[]>(partner?.comment || []);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>(partner?.documents || []);
   const [professionsPartner, setProfessionsPartner] = useState<ProfessionPartner[]>(
     partner?.professions || []  
   );  
-  const [inputs, setInputs] = useState<{ [key: string]: string }>({
-    contractType: partner?.contract?.typeC || '',
-    contractPrice: partner?.contract?.sum || '',
-  });
+
 
    useEffect(() => {
       if (partner?.comment) { setCommentEntries(partner.comment); }
@@ -101,12 +107,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   
       setDocumentEntries(updatedDocuments);
     };
-  const handleInputChange = (inputKey: string, value: string) => {
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [inputKey]: value,
-    }));
-  };
+
   const handleButtonClick = () => {
     const newProfession: ProfessionPartner = {
       id: professions.length + 1,
@@ -130,11 +131,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 
     setProfessionsPartner((prevProfessions) => [...prevProfessions, newProfession]);
   };
-  // const handleProfessionSelect = (index: number, field: string, value: string) => {
-  //   const newEntries = [...professionsPartner];
-  //   newEntries[index] = { ...newEntries[index], [field]: value };
-  //   setProfessionsPartner(newEntries);
-  // };
+
   const handleProfessionSelect = (index: number, field: string, value: string) => {
     const newEntries = professionsPartner.map((profession, i) => {
       if (i === index) {
@@ -156,8 +153,6 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     setProfessionsPartner(newEntries); // Обновляем состояние с новым массивом
   };
 
-
-  
   const handleDrivePChange = (selectedDriveP: string[], index: number) => {
     setProfessionsPartner((prevProfessions) =>
       prevProfessions.map((prof, idx) =>
@@ -181,7 +176,8 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     );
   };
   
-    const getCommentData = (formData: FormData, userName: string) => {
+
+  const getCommentData = (formData: FormData, userName: string) => {
       const commentText = formData.get('comment');
     
       if (commentText !== '') {
@@ -218,17 +214,12 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     }));
   };
   
-
-  const handleRemoveProfession = (id: number) => {
-    // Удаляем элемент по id
+  const handleRemoveProfession = (index: number) => {
     setProfessionsPartner((prevProfessions) =>
-      prevProfessions.filter((profession) => profession.id !== id)
+      prevProfessions.filter((_, i) => i !== index) // Удаляем элемент по индексу
     );
   };
-
-  const getDriveDataForSubmit = () => {
-    return selectDrive;
-  };
+  
   const downloadFile = async (fileId: string, fileName: string) => {
     try {
       const response = await fetch(`/api/documents/${fileId}`, {
@@ -262,6 +253,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       });
     }
   };
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (!partner || !partner._id) {
@@ -337,24 +329,168 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   };
  console.log("DOCUMENTS", partner); 
   return (
-    <>
-    <div>
-    <h2 className="text-center text-black text-2xl font-semibold mb-2">Редактировать {selectName}</h2>
-    <div className='container mx-auto flex'>
-    <form onSubmit={handleSubmit} className='flex-1 '>
+    <div className='container mx-auto flex justify-center'>
+    <form onSubmit={handleSubmit} >   
+      <Card>
+        <CardHeader className='grid grid-cols-3 gap-2'>
+        <Image src="/images/user/user-01.png" className='w-16 h-16 rounded-full' width={400} height={400} alt="user" />
+        <InputTransparent placeholder="Имя" name='name'/>
+        <InputTransparent placeholder="Телефон" name='phone'/>
+        <Popover>
+          <PopoverTrigger>
+            <Button type='button' variant="link" >Соцсети</Button>
+          </PopoverTrigger>
+          <PopoverContent>
+          <div>
+                    <Label>Viber</Label>
+                    <Input placeholder="+495651322654" name='viber'
+                      value={selectViber || ''}
+                      onChange={handleChangeViber} />
+                  </div>
+                  <div>
+                    <Label>Whatsapp</Label>
+                    <Input placeholder="+495651322654" name='whatsapp'
+                      value={selectWhatsapp || ''}
+                      onChange={handleChangeWhatsapp} />
+                  </div>
+                  <div>
+                    <Label>Telegram</Label>
+                    <Input placeholder="+495651322654" name='telegram'
+                      value={selectTelegram || ''}
+                      onChange={handleChangeTelegram} />
+                  </div>
+                  <div>
+                    <Label>Почта</Label>
+                    <Input placeholder="mail@gmail.com" name='email'
+                      value={selectEmail || ''}
+                      onChange={handleChangeEmail} />
+                  </div>
+          </PopoverContent>
+        </Popover>
+        <Popover>
+          <PopoverTrigger>
+            <Button type='button' variant="link" >Фирма</Button>
+          </PopoverTrigger>
+          <PopoverContent>
+          <div>
+                    <Label>Название фирмы</Label>
+                    <Input placeholder="GMBH gfgtg" name='companyName'
+                      value={selectCompanyName || ''}
+                      onChange={handleChangeCompanyName} />
+                  </div>
+                  <div>
+                    <Label>Номер DE</Label>
+                    <Input placeholder="DE495651322654" name='numberDE'
+                      value={selectNumberDE || ''}
+                      onChange={handleChangeNumberDE} />
+                  </div>
+                  <div>
+                    <Label>Местоположение</Label>
+                    <Input placeholder="Дюсельдорф" name='location'
+                      value={selectLocation || ''}
+                      onChange={handleChangeLocation} />
+                  </div>
+                  <div>
+                    <Label>Сайт</Label>
+                    <Input placeholder="www.site.com" name='site'
+                      value={selectSite || ''}
+                      onChange={handleChangeSite} />
+                  </div>
+                  <div className='col-span-2 grid grid-cols-3 gap-2'>
+                  <div>
+                    <Label>Тип контракта</Label>
+                  <Input
+                    name='typeC'
+                    value={contract.typeC}
+                    placeholder="Введите тип контракта"
+                    onChange={(e) => handleChangeContract(e, 'typeC')} />
+                    </div>
+                    <div>
+                      <Label>Сумма контракта</Label>
+                  <Input
+                    name='contractPrice'
+                    value={contract.sum}
+                    placeholder="Введите цену контракта"
+                    onChange={(e) => handleChangeContract(e, 'contractPrice')} />
+                    </div>
+                    <div>
+                      <Label>Минимальная зарплата работника</Label>
+                    <Input
+                    name='salaryWorker'
+                    value={contract.salaryWorker}
+                    placeholder="Введите минимальную зарплату работника"
+                    onChange={(e) => handleChangeContract(e, 'salaryWorker')} />
+                    </div>
+                  </div>
+          </PopoverContent>
+        </Popover><Popover>
+          <PopoverTrigger>
+            <Button type='button' variant="link" >Комментарии</Button>
+          </PopoverTrigger>
+          <PopoverContent>
+          <Textarea
+                    placeholder="Оставьте свой комментарий"
+                    className="my-5 "
+                    id="comment" name="comment"/>
+  <ScrollArea className="max-h-50 rounded-md border">
+  {commentEntries.map((comment, index) => (
+  <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
+    <Badge>
+      {new Date(comment.date)
+        .toLocaleString()
+        .slice(0, 5)}.
+      {new Date(comment.date)
+        .getFullYear()
+        .toString()
+        .slice(-2)}
+    </Badge>
+    <Badge className='text-green-700'>
+      {new Date(comment.date)
+        .toLocaleString()
+        .slice(12, 17)}
+    </Badge>
+    <p className="text-sm">{comment.text}</p>
+    <span className=''>Автор: {comment.author}</span>
+  </div>
+))}
+</ScrollArea> 
+          </PopoverContent>
+        </Popover>
+        </CardHeader>
+<CardContent className='mt-0 grid grid-cols-2 gap-2'>
+
+</CardContent>
+      </Card>
             <div className="p-2">
-              <Card>
+              {/* <Card>
                 <CardHeader className='grid grid-cols-3 gap-2'>
-                  <CardTitle>Личные данные</CardTitle>
-                  <div className="col-span-2">
-          <DocumentChoise 
+                  <CardTitle className='col-span-3 flex justify-end items-center gap-2'><PencilLine/><span> {selectName}</span></CardTitle>
+                  <DocumentChoise 
           initialSelectedDocuments={documents}
           onDocumentsChange={handleDocumentChange} />
-          <div className='w-full h-[2px] bg-gray-300 my-2 mr-5 rounded-md'></div>
-          </div>
-          <div className='w-full flex'>
-            <CardTitle>Загруженые документы</CardTitle>
-  {documents.map((doc: any, index: any) => (
+          <Drawer>
+    <DrawerTrigger>
+  <Button type='button'  variant="outline" >Добавить файл</Button>
+    </DrawerTrigger>
+    <DrawerContent>
+      <DrawerHeader>
+        <DrawerTitle>
+      Добавить документ
+        </DrawerTitle>
+        <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
+      </DrawerHeader>
+      <DrawerFooter >
+            <div className='flex gap-2 items-center justify-center'>
+            <Button>Загрузить</Button>
+            <Button>Скачать</Button>
+            </div>
+            <DrawerClose className='absolute top-2 right-2'>
+              <X size={18} color="red"/>
+            </DrawerClose>
+          </DrawerFooter>
+    </DrawerContent>
+  </Drawer>
+          {documents.map((doc: any, index: any) => (
     <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>
       <Drawer>
         <DrawerTrigger >
@@ -396,115 +532,107 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       </Drawer>
     </div>
   ))}
-  <Drawer>
-    <DrawerTrigger>
-  <CirclePlus color='green' />
-    </DrawerTrigger>
-    <DrawerContent>
-      <DrawerHeader>
-        <DrawerTitle>
-      Добавить документ
-        </DrawerTitle>
-        <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
-      </DrawerHeader>
-      <DrawerFooter >
-            <div className='flex gap-2 items-center justify-center'>
-            <Button>Загрузить</Button>
-            <Button>Скачать</Button>
-            </div>
-            <DrawerClose className='absolute top-2 right-2'>
-              <X size={18} color="red"/>
-            </DrawerClose>
-          </DrawerFooter>
-    </DrawerContent>
-  </Drawer>
-</div>
                 </CardHeader>
                 <CardContent className='mt-0 grid grid-cols-2 gap-2'>
-                  <div>
+                <CardTitle>
                     <Label>ФИО</Label>
                     <Input placeholder="Имя" name='name'
                       value={selectName || ''}
                       onChange={handleChangeName} />
-                  </div><div>
-                    <Label>Телефон</Label>
+                       <Label>Телефон</Label>
                     <Input placeholder="+495651322654" name='phone'
                       value={selectPhone || ''}
                       onChange={handleChangePhone} />
-                  </div><div>
+                      <div>
+                  <HoverCard>
+                    <HoverCardTrigger>
+                    <Button type='button' variant="link">Соцсети</Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent>
+                    <div>
                     <Label>Viber</Label>
                     <Input placeholder="+495651322654" name='viber'
                       value={selectViber || ''}
                       onChange={handleChangeViber} />
-                  </div><div>
+                  </div>
+                  <div>
                     <Label>Whatsapp</Label>
                     <Input placeholder="+495651322654" name='whatsapp'
                       value={selectWhatsapp || ''}
                       onChange={handleChangeWhatsapp} />
-                  </div><div>
+                  </div>
+                  <div>
                     <Label>Telegram</Label>
                     <Input placeholder="+495651322654" name='telegram'
                       value={selectTelegram || ''}
                       onChange={handleChangeTelegram} />
-                  </div><div>
+                  </div>
+                  <div>
                     <Label>Почта</Label>
                     <Input placeholder="mail@gmail.com" name='email'
                       value={selectEmail || ''}
                       onChange={handleChangeEmail} />
                   </div>
-                  {/* <Button variant="outline" className='bg-green-900 text-white mt-8'>Добавить информацию</Button> */}
+                    </HoverCardContent>
 
-                </CardContent>
-
-              </Card>
-              <Card>
-                <CardHeader className='pb-0'>
-                  <CardTitle>Фирма</CardTitle>
-                </CardHeader>
-                <CardContent className='mt-0 grid grid-cols-2 gap-2'>
-                  <div>
+                  </HoverCard>
+                  <HoverCard>
+                    <HoverCardTrigger>
+                    <Button type='button' variant="link">Фирма</Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent >
+                    <div>
                     <Label>Название фирмы</Label>
                     <Input placeholder="GMBH gfgtg" name='companyName'
                       value={selectCompanyName || ''}
                       onChange={handleChangeCompanyName} />
-                  </div><div>
+                  </div>
+                  <div>
                     <Label>Номер DE</Label>
                     <Input placeholder="DE495651322654" name='numberDE'
                       value={selectNumberDE || ''}
                       onChange={handleChangeNumberDE} />
-                  </div><div>
+                  </div>
+                  <div>
                     <Label>Местоположение</Label>
                     <Input placeholder="Дюсельдорф" name='location'
                       value={selectLocation || ''}
                       onChange={handleChangeLocation} />
-                  </div><div>
+                  </div>
+                  <div>
                     <Label>Сайт</Label>
                     <Input placeholder="www.site.com" name='site'
                       value={selectSite || ''}
                       onChange={handleChangeSite} />
                   </div>
-                  <AutocompleteInput
-                    name='contractType'
-                    label="Тип контракта"
-                    suggestions={suggestionsData.contractType}
-                    value={contract.contractType}
+                  <div className='col-span-2 grid grid-cols-3 gap-2'>
+                  <Input
+                    name='typeC'
+                    value={contract.typeC}
                     placeholder="Введите тип контракта"
-                    onChange={(value) => handleChangeContract('contractType', value)} />
-                  <AutocompleteInput
+                    onChange={(e) => handleChangeContract(e, 'typeC')} />
+                  <Input
                     name='contractPrice'
-                    label="Цена контракта"
-                    suggestions={suggestionsData.contractPrice}
-                    value={contract.contractPrice}
+                    value={contract.sum}
                     placeholder="Введите цену контракта"
-                    onChange={(value) => handleChangeContract('contractPrice', value)} />
-                </CardContent>
-                <Button variant="outline" className='bg-green-900 text-white w-full'
-                  onClick={handleButtonClick} type='button'>
-                  Добавить профессию</Button>
-              </Card>
-              <Card className='p-4'>
-<CardContent>
-  <CardTitle>Комментарий</CardTitle>
+                    onChange={(e) => handleChangeContract(e, 'contractPrice')} />
+                    <Input
+                    name='salaryWorker'
+                    value={contract.salaryWorker}
+                    placeholder="Введите минимальную зарплату работника"
+                    onChange={(e) => handleChangeContract(e, 'salaryWorker')} />
+                  </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                  <HoverCard>
+                    <HoverCardTrigger>
+                    <Button type='button' variant="link">Комментарии:</Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent >
+                    <Textarea
+                    placeholder="Оставьте свой комментарий"
+                    className="mt-5"
+                    id="comment" name="comment"/>
   <ScrollArea className="max-h-50 w-full rounded-md border">
   {commentEntries.map((comment, index) => (
   <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
@@ -527,24 +655,27 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   </div>
 ))}
 </ScrollArea>
-  <Textarea
-    placeholder="Оставьте свой комментарий"
-    className="mt-5"
- id="comment" name="comment"
-        />
-</CardContent>
-              </Card>
+                    </HoverCardContent>
+                  </HoverCard>
+                  </div>
+                  </CardTitle>       
+                </CardContent>
+              </Card> */}
             </div>
         
-      <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {/* <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <Button variant="outline" 
+                  onClick={handleButtonClick} type='button'>
+                  Добавить профессию</Button>
         {professionsPartner.map((profession: any, index: any) => (
 
-          <div key={profession._id} className=" p-4 mb-4 ">
+          <div key={index} className=" p-4 mb-4 ">
             <Card className='relative '>
               <Button
+                type='button'
                 variant="outline"
-                className="bg-red-600 text-white absolute right-2 top-2 p-2"
-                onClick={() => handleRemoveProfession(profession._id)}
+                className="bg-red-600 text-white absolute right-2 top-2 p-2 w-max h-8"
+                onClick={() => handleRemoveProfession(index)}
               >
                 <X size={15} />
               </Button>
@@ -567,7 +698,6 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                   </select>
                 </div>
                 <div>
-                  {/* <Label>Местоположение</Label> */}
                   <AutocompleteInput
                   value={profession?.location || ''}
                   label="Местоположение"
@@ -685,17 +815,15 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 
           </div>
         ))}
-      </div>
+      </div> */}
       <Button
-        className='fixed top-4 right-4 bg-green-900 text-white hover:bg-green-700'
-        type='submit'>Сохранить</Button>
+        className='fixed top-4 right-4 bg-slate-100 border-2 border-green-800 text-green-800 hover:bg-slate-200 '
+        type='submit'>Сохранить обновления</Button>
 
     </form>
 </div>
 
        
-      </div>
-     </>
   );
 };
 

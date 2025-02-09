@@ -6,6 +6,11 @@ import Document from '@/src/models/Document';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 
 interface PartnerI {
+  salaryWorker: any;
+  sum: any;
+  typeC: any;
+  location: any;
+  contractType: any;
   viber: any;
   telegram: any;
   whatsapp: any;
@@ -45,7 +50,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         return NextResponse.json({ message: "Такой партнёр не найден" }, { status: 404 });
       }
   
-      console.log(`Old Partner Retrieved: ${JSON.stringify(oldPartner)}`);
   
       // Получаем новое имя (если оно передано в форме)
       const newName = formData.get('name') ? formData.get('name') as string : oldPartner.name;
@@ -57,8 +61,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const newCompanyName = formData.get('companyName') ? formData.get('companyName') as string : oldPartner.companyName;
       const newNumberDE = formData.get('numberDE') ? formData.get('numberDE') as string : oldPartner.numberDE;
       const newSite = formData.get('site') ? formData.get('site') as string : oldPartner.site;
-      const newLocations = formData.get('locations') ? formData.get('locations') as string : oldPartner.locations;
+      const newLocation = formData.get('location') ? formData.get('location') as string : oldPartner.location;
       const newManager = formData.get('manager') ? formData.get('manager') : oldPartner.manager;
+      const newContractType = formData.get('typeC') ? formData.get('typeC') as string : oldPartner.typeC;
+      const newContractPrice = formData.get('sum') ? formData.get('sum') as string : oldPartner.sum;
+      const newContractSalary = formData.get('salaryWorker') ? formData.get('salaryWorker') as string : oldPartner.salaryWorker;
       const commentData = formData.get('comment');
       let newComment = [];
       if (commentData) {
@@ -78,7 +85,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           console.error("Invalid JSON in professions field", error);
         }
       }
-      console.log("PROFESSIONSDATA", professionsData);
   
      
       const documentEntries = JSON.parse(formData.get('documents') as string);
@@ -138,6 +144,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           }
         }
       }
+      const updatedContract = {
+        typeC: newContractType,
+        sum: newContractPrice,
+      };
       const updatedPartner = await Partner.findByIdAndUpdate(id, {
         $set: {
           name: newName,
@@ -149,9 +159,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           companyName: newCompanyName,
           numberDE: newNumberDE,
           site: newSite,
-          locations: newLocations,
+          location: newLocation,
           manager: newManager,
           documents: documentsData,
+          contract: updatedContract,
           professions: professionsData,
         },
         $push: {

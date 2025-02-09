@@ -119,7 +119,7 @@ useEffect(() => {
       setSidebarROpen(false);
     }
     localStorage.removeItem("selectedCandidate"); 
-  }, []);
+  }, [setSidebarROpen]);
 
 
   return (

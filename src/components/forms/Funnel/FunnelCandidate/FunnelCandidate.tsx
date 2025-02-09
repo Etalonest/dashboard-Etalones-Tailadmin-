@@ -108,7 +108,7 @@ export const FunnelCandidate = ({ onDataChange, candidate }: any) => {
         </div>
       </CardContent>
     </Card>
-      // времено для интерфэйса и идеи
+       {/* времено для интерфэйса и идеи */}
       <RecruiterStage/>
       </>
   );

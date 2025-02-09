@@ -30,10 +30,10 @@ interface Manager {
   }
 
   export function ManagersTab({ onClick }: TableManagersProps) { 
-const { data: session } = useSession();
+    const { data: session } = useSession();
+    const { managers } = useManagers();
 if (session?.managerRole === 'admin') {
 
-  const { managers } = useManagers();
   
     return (
         <>

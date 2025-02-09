@@ -156,7 +156,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useSession } from "next-auth/react";
-import { useManagers } from "@/src/context/ManagersContext";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -176,45 +175,72 @@ interface Role {
 export function UsersTab() { 
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const { data: session } = useSession();
 
-  if (session?.managerRole === 'admin') {
 
 
-  // Функция для загрузки ролей
-  useEffect(() => { 
-    const fetchRoles = async () => {
-      try {
-        const response = await fetch("/api/role");
-        if (!response.ok) {
-          throw new Error("Ошибка при загрузке ролей");
-        }
-        const data = await response.json();
-        setRoles(data);
-      } catch (error: any) {
-        console.log(error);
-      } 
-    };
-    fetchRoles();
-  }, []);
+  // // Функция для загрузки ролей
+  // useEffect(() => { 
+  //   const fetchRoles = async () => {
+  //     try {
+  //       const response = await fetch("/api/role");
+  //       if (!response.ok) {
+  //         throw new Error("Ошибка при загрузке ролей");
+  //       }
+  //       const data = await response.json();
+  //       setRoles(data);
+  //     } catch (error: any) {
+  //       console.log(error);
+  //     } 
+  //   };
+  //   fetchRoles();
+  // }, []);
 
-  // Функция для загрузки пользователей
+  // // Функция для загрузки пользователей
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const response = await fetch("/api/user"); 
+  //       if (!response.ok) {
+  //         throw new Error("Ошибка при загрузке пользователей");
+  //       }
+  //       const data = await response.json();
+  //       setUsers(data);
+  //     } catch (error: any) {
+  //       console.log(error);
+  //     } 
+  //   };
+  //   fetchUsers();
+  // }, []);
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/user"); 
-        if (!response.ok) {
-          throw new Error("Ошибка при загрузке пользователей");
-        }
-        const data = await response.json();
-        setUsers(data);
-      } catch (error: any) {
-        console.log(error);
-      } 
-    };
-    fetchUsers();
-  }, []);
+    if (session?.managerRole === 'admin') {
+      const fetchData = async () => {
+        try {
+          const rolesResponse = await fetch("/api/role");
+          if (!rolesResponse.ok) {
+            throw new Error("Ошибка при загрузке ролей");
+          }
+          const rolesData = await rolesResponse.json();
+          setRoles(rolesData);
 
+          const usersResponse = await fetch("/api/user");
+          if (!usersResponse.ok) {
+            throw new Error("Ошибка при загрузке пользователей");
+          }
+          const usersData = await usersResponse.json();
+          setUsers(usersData);
+        } catch (error: any) {
+          console.log(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [session?.managerRole]);
   // Хэндлер для изменения роли пользователя
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -240,6 +266,9 @@ export function UsersTab() {
       console.log(error);
     }
   };
+  if (isLoading) {
+    return <div>Loading...</div>; // Пока загружаем, показываем индикатор загрузки
+  }
   return (
     <>
       <span className="font-bold text-md">Пользователи EtalonesAdmin</span>
@@ -296,4 +325,4 @@ export function UsersTab() {
       </Table>
     </>
   );
-}}
+}

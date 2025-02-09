@@ -14,8 +14,8 @@ const usePartnerData = (partner: any) => {
   const [selectLocation, setSelectLocation] = useState(partner?.location || '');
   const [selectSite, setSelectSite] = useState(partner?.site || '');
   const [contract, setContract] = useState<{ [key: string]: string }>({
-    contractType: partner?.contract?.typeC || '',
-    contractPrice: partner?.contract?.sum || '',
+    typeC: partner?.contract?.typeC || '',
+    sum: partner?.contract?.sum || '',
   });
   const [documents, setDocuments] = useState<Document[]>(partner?.documents || []);
   

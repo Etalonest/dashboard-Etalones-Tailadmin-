@@ -21,9 +21,9 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 
   export function RecruiterTab() {
 const { data: session } = useSession();
+const { managers } = useManagers();
 if (session?.managerRole === 'admin') {
 
-  const { managers } = useManagers();
     return (
       <Table>
         <TableCaption className="font-bold text-center ">

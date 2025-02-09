@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Candidate } from '@/src/types/candidate';
 import { useSession } from 'next-auth/react';
 
@@ -18,7 +18,9 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
   const managerId = session?.managerId;
-  const loadCandidates = async (managerId: string) => {
+
+  // Оборачиваем функцию loadCandidates в useCallback, чтобы избежать её пересоздания
+  const loadCandidates = useCallback(async (managerId: string) => {
     setIsLoading(true);
     setError(null);
 
@@ -39,14 +41,14 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [candidates.length]); // Добавляем зависимость от length, чтобы предотвратить повторные запросы
 
   useEffect(() => {
     // Проверка, если кандидаты уже есть, то не загружаем их снова
     if (managerId && candidates.length === 0) {
       loadCandidates(managerId); // Используйте правильный ID
     }
-  }, [candidates, managerId]); // Зависят от candidates и managerId, чтобы избежать повторных запросов
+  }, [candidates.length, managerId, loadCandidates]); // Пересчитываем, если менеджер или список кандидатов изменяется
 
   return (
     <CandidatesContext.Provider value={{ candidates, loadCandidates, isLoading, error }}>

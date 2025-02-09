@@ -3,7 +3,7 @@ import Manager from "@/src/models/Manager";
 import Candidate from "@/src/models/Candidate";  // Подключаем модель Candidate
 import Partner from "@/src/models/Partner";    // Подключаем модель Partner
 
-export async function GET({ params }) {
+export async function GET({ params }: any) {
   const { id } = params;  // Параметры извлекаются через params, используем 'id', а не 'managerId'
   console.log("Запрос на статистику для менеджера с ID:", id);  // Лог для отслеживания ID менеджера
 

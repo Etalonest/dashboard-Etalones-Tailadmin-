@@ -1,36 +1,31 @@
 const nodemailer = require('nodemailer');
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail', // Replace with your email provider
-            auth: {
-                user: 'developerar4y@gmail.com', // Replace with your email address
-                pass: 'your_password' // Replace with your email password
-            }
-        });
+// Убедитесь, что transporter создаётся только один раз
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Замените на ваш почтовый сервис
+    auth: {
+        user: 'developerar4y@gmail.com', // Ваш email
+        pass: 'your_password' // Ваш пароль
+    }
+});
 
-        module.exports = {
-            transporter
-        };
-        
-        const { transporter } = require('./utils/email');
-
-        const sendEmail = async (options) => {
-        try {
+const sendEmail = async (options) => {
+    try {
         const mailOptions = {
-        from: 'your_email@gmail.com', // Sender address
-        to: options.to, // Recipient address
-        subject: options.subject, // Email subject
-        html: options.html // Email content (HTML)
+            from: 'your_email@gmail.com', // Адрес отправителя
+            to: options.to,               // Адрес получателя
+            subject: options.subject,     // Тема письма
+            html: options.html            // Содержимое письма (HTML)
         };
-       
+
         const info = await transporter.sendMail(mailOptions);
-       
         console.log('Email sent successfully:', info.response);
-        } catch (error) {
+    } catch (error) {
         console.error('Error sending email:', error);
-        }
-        };
-       
-        module.exports = {
-        sendEmail
-        };
+    }
+};
+
+// Экспортируем только sendEmail, transporter не нужен
+module.exports = {
+    sendEmail
+};

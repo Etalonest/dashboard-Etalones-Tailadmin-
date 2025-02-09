@@ -185,7 +185,7 @@ export function TabsAdmin() {
         setSidebarROpen={setSidebarOpen}
         formType={formType} 
       />
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
         <TabsList className="flex gap-2 flex-wrap w-full">
           {visibleTabs.map((tab) => (
             <TabsTrigger
