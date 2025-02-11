@@ -53,6 +53,13 @@ const ManagerSchema = new Schema({
       role:{
         type: Schema.Types.ObjectId,
         ref: 'Role'
+      },
+      pushSubscription: { 
+        endpoint: String,
+        keys: {
+          p256dh: String,
+          auth: String
+        }
       }
 });
 

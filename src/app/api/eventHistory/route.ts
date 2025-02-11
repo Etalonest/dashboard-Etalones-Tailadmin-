@@ -1,26 +1,27 @@
 import { connectDB } from "@/src/lib/db";
-import Task from "@/src/models/Task";
-import { NextResponse } from "next/server";
-
+import EventLog from "@/src/models/EventLog";
 
 export const GET = async (request: Request) => {
   try {
     await connectDB();
-    const tasks = await Task.find({})
-    .lean() 
+    const eventLogs = await EventLog.find({})
+    .sort({ 'createdAt': -1 })
     .populate({
-      path: 'candidate',
+      path: 'manager',
       select: 'name', 
     })
     .populate({
-      path: 'assignedTo',
+      path: 'relatedId',
       select: 'name', 
     })
-    return new NextResponse(JSON.stringify(tasks), { status: 200 });
-  }
-  catch (error) {
+    .populate({
+      path: 'appointed',
+      select: 'name', 
+    })
+    return new Response(JSON.stringify(eventLogs), { status: 200 });
+  } catch (error) {
     console.error("Ошибка при получении данных Задач:", error);
-    return new NextResponse(
+    return new Response(
       JSON.stringify({ message: "Ошибка при получении данных Задач" }),
       { status: 500 }
     );

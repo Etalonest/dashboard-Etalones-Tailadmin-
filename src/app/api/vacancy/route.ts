@@ -3,6 +3,7 @@ import { connectDB } from "@/src/lib/db";
 import Vacancies from "@/src/models/Vacancies";  
 import Partner from "@/src/models/Partner";
 import Manager from "@/src/models/Manager";
+import EventLog from "@/src/models/EventLog";
 
 export const GET = async (req: Request) => {
   const url = new URL(req.url);
@@ -123,6 +124,14 @@ export const POST = async (request: Request) => {
   
         console.log("Updated Manager:", updatedManager);
       }
+      const eventLog = new EventLog({
+        eventType: 'Создана вакансия',
+        relatedId: newVacancy._id,
+        manager: managerId,
+        description: `Добавлена новая вакансия: ${newVacancy.title}`,
+      });
+      console.log("EVENTLOG", eventLog)
+      await eventLog.save();
     return new NextResponse(
       JSON.stringify({ message: "Новая вакансия создана успешно", partner: newVacancy }),
       { status: 201 }

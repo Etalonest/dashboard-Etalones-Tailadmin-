@@ -334,8 +334,11 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       <Card>
         <CardHeader className='grid grid-cols-3 gap-2'>
         <Image src="/images/user/user-01.png" className='w-16 h-16 rounded-full' width={400} height={400} alt="user" />
-        <InputTransparent placeholder="Имя" name='name'/>
-        <InputTransparent placeholder="Телефон" name='phone'/>
+        <InputTransparent placeholder="Имя" name='name' value={selectName || ''}
+          onChange={handleChangeName}/>
+        <InputTransparent placeholder="Телефон" name='phone' value={selectPhone || ''}
+          onChange={handleChangePhone}
+        />
         <Popover>
           <PopoverTrigger>
             <Button type='button' variant="link" >Соцсети</Button>

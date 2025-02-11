@@ -6,6 +6,10 @@ import {Stage} from './Stage';
 
 
 const TaskSchema = new Schema({
+  appointed: {
+    type: Schema.Types.ObjectId,
+    ref: 'Manager', 
+  },
   taskName: {
     type: String, // Название задачи (например, "Анкетирование", "Подбор вакансии")
   },

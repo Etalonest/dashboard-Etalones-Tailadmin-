@@ -1,13 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+'use client';
+import React, { createContext, useContext, useState } from 'react';
 
-// Тип данных кандидата
 interface Candidate {
-  map(arg0: (candidate: import("../types/candidate").Candidate, index: number) => React.JSX.Element): React.ReactNode;
-  filter: any;
-  length: number;
   _id: string;
   name: string;
-  dialogs: any[];  
+  dialogs: string[];
 }
 
 interface CandidateContextType {
@@ -44,7 +41,7 @@ export const CandidateProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 export const useCandidates = (): CandidateContextType => {
   const context = useContext(CandidateContext);
   if (!context) {
-    throw new Error('useCandidate должен использоваться внутри CandidateProvider');
+    throw new Error('useCandidates должен использоваться внутри CandidateProvider');
   }
   return context;
 };

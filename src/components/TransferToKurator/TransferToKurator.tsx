@@ -13,15 +13,16 @@ import {
   } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { HandCoins, HousePlus, MapPinned, OctagonAlert, X } from "lucide-react";
+import { HandCoins, HousePlus, MapPinned, OctagonAlert, ThumbsUp, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import { useSession, signIn } from "next-auth/react";
 const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
+    const { data: session } = useSession();
+    const appointed = session?.managerId ?? 'defaultManagerId';
     const [filteredVacancies, setFilteredVacancies] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [vacanciesCache, setVacanciesCache] = useState<any[]>([]); 
-
     const [selectedVacancy, setSelectedVacancy] = useState<any | null>(null); // Состояние для выбранной вакансии
     const [comment, setComment] = useState<string>(''); // Для комментария
 
@@ -76,6 +77,7 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
     
         // Создаем объект FormData
         const formData = new FormData();
+        formData.append('appointed', appointed); 
         formData.append('status', 'in-progress'); // Статус
         formData.append('responsible', selectedVacancy.manager._id); // Менеджер вакансии
         formData.append('comment', comment); // Комментарий
@@ -104,7 +106,32 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
     const handleSelectVacancy = (vacancy: any) => {
         setSelectedVacancy(vacancy); // Сохраняем выбранную вакансию
     };
-
+    const handleLikeOrDislike = async (vacancy: any, action: 'like' | 'dislike') => {
+        if (!session) {
+            console.error("Пользователь не аутентифицирован");
+            return; // Выходим, если сессия отсутствует
+        }
+    
+        try {
+            const response = await fetch(`/api/vacancy/${vacancy._id}/likeOrDislike`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: candidate._id, action }), // Передаем ID пользователя и действие
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Не удалось ${action === 'like' ? 'поставить лайк' : 'поставить дизлайк'}`);
+            }
+    
+            const result = await response.json();
+            console.log("Количество лайков", result.likesCount);
+            console.log("Количество дизлайков", result.dislikesCount);
+        } catch (error) {
+            console.error(`Ошибка при ${action === 'like' ? 'ставлении лайка' : 'ставлении дизлайка'}:`, error);
+        }
+    };
     return (
         <div>
             <Card className="p-2 w-max">
@@ -139,10 +166,22 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
                                         </div>
                                     </CardContent>
                                     <div className="flex gap-2 items-center justify-end">
+                                    <div className="flex gap-2 items-center">
+    <p>{vacancy.likes.length}</p>
+    <button onClick={() => session ? handleLikeOrDislike(vacancy, 'like') : signIn("google")}>
+        <ThumbsUp 
+            fill={vacancy.likes.includes(candidate._id ?? '') ? "#FF0707" : "none"} // Используем оператор ?? для значения по умолчанию
+            style={{ cursor: session ? 'pointer' : 'not-allowed' }} 
+        />
+    </button>
+    </div>   
+                                        <div className="flex gap-1 w-full justify-end items-center p-3">
                                         <span className="text-sm font-semibold">Куратор:</span>
                                         <span className="text-sm">{vacancy.manager?.name}</span>
+                                        </div>
                                     </div>
-                                </Card>
+
+                                  </Card>
                                 <div className="flex flex-col items-start h-full">
                                     <Link href={`/vacancy/${vacancy._id}`} passHref target="blank">
                                         <Button className="w-full bg-slate-100 text-black hover:bg-slate-200 mt-8">Посмотреть вакансию</Button>

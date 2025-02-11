@@ -1,6 +1,8 @@
 import { connectDB } from "@/src/lib/db";
+import EventLog from "@/src/models/EventLog";
 import Manager from "@/src/models/Manager";
 import Partner from "@/src/models/Partner";
+import { p } from "framer-motion/client";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
@@ -78,6 +80,14 @@ console.log("professions", professions);
         );
       }
   
+      const eventLog = new EventLog({
+        eventType: 'Создан партнёр',
+        relatedId: newPartner._id,
+        manager: manager,
+        description: `Добавлен новый партнёр: ${newPartner.name}`,
+      });
+      console.log("EVENTLOG", eventLog)
+      await eventLog.save();
       return new NextResponse(
         JSON.stringify({ message: "Новый партнёр создан успешно", partner: newPartner }),
         { status: 201 }

@@ -21,9 +21,10 @@ import { p } from "framer-motion/client";
 interface AddVacancyFormProps {
   profession: any;  // Получаем профессию
   partner: any;
+  onSubmitSuccess: () => void;
 }
 
-const AddVacancyForm = ({ profession, partner }: AddVacancyFormProps) => {
+const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyFormProps) => {
   const { data: session } = useSession();
   const { manager } = useManager();
   const partnerId = partner?._id || '';
@@ -125,6 +126,7 @@ const AddVacancyForm = ({ profession, partner }: AddVacancyFormProps) => {
           type: 'success',
           id: uuidv4Original(),
         });
+        onSubmitSuccess();
       }
 
       if (data.error) {

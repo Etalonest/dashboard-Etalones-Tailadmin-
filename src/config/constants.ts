@@ -1,3 +1,8 @@
+export const taskStats =[
+  { label: "В работе", value: "В работе" },
+  { label: "Выполнена", value: "Выполнена" },
+  { label: "Отменено", value: "Отменено" },
+]
 export const pDocsData = [
   { label: "Пасспорт ЕС", value: "Пасспорт ЕС" },
   { label: "Карта побыта", value: "Карта побыта" },

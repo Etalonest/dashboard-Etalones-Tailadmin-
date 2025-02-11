@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import SuitableV from "@/src/components/SuitableV/SuitableV";
 
 const calculateCompletionPercentage = (candidate: any) => {
   let filledFields = 0;
@@ -76,12 +77,7 @@ export const RecruiterStage = ({ candidate }: any) => {
             </div>
           </div>
         </CardContent>
-        <CardTitle className="text-center">
-            Подходящие вакансии
-        </CardTitle>
-        <CardContent>
-            
-        </CardContent>
+            <SuitableV/>
       </Card>
     </>
   );

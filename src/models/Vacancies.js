@@ -4,6 +4,7 @@ import {HomeImages} from './HomeImages';
 import {Partner} from './Partner';
 // import {Interview} from './Interview';
 import {Candidate} from './Candidate';
+import { type } from "os";
 const VacanciesSchema = new Schema({
     image: {
         type: Schema.Types.ObjectId,
@@ -89,10 +90,17 @@ const VacanciesSchema = new Schema({
       category: {
         type: String
       },
-      // iterviews: [{
-      //   type: Schema.Types.ObjectId,
-      //   ref: 'Interview'
-      // }],
+      likes:[{
+        type: String,
+      }],
+      dislikes:[{
+        type: String,
+
+      }],
+      iterviews: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Candidate'
+      }],
       candidates:[{
         type: Schema.Types.ObjectId,
         ref: 'Candidate'

@@ -4,6 +4,7 @@ import  Candidate  from '@/src/models/Candidate';
 import Manager from '@/src/models/Manager';
 import Stage from '@/src/models/Stage';
 import Task from '@/src/models/Task';
+import EventLog from '@/src/models/EventLog';
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -118,6 +119,9 @@ console.log("documents", documents);
         JSON.stringify({
           error: true,
           message: `Кандидат с таким номером телефона уже существует: ${name} ${phone}`,
+          metadata: {
+            candidateId: existingCandidate._id.toString(), 
+          }, 
         }),
         { status: 400 }
       );
@@ -183,14 +187,21 @@ console.log("documents", documents);
     });
     
     await newTask2.save();
-    // Если у кандидата есть менеджер, обновляем его список кандидатов
+    const eventLog = new EventLog({
+      eventType: 'Добавлен кандидат',
+      relatedId: newCandidate._id,
+      manager: managerId,
+      description: `Добавлен новый кандидат: ${name}`,
+    });
+    console.log("EVENTLOG", eventLog)
+    await eventLog.save();
     if (newCandidate.manager) {
       const manager = await Manager.findById(newCandidate.manager);
       if (manager) {
         await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: newCandidate._id } });
       }
     }
-
+   
     return new NextResponse(
       JSON.stringify({
         success: true,

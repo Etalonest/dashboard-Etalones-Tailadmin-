@@ -21,9 +21,10 @@ import SuitableV from '../../SuitableV/SuitableV';
 
 const AddCandidateForm = (onSubmitSuccess: any) => {
   const { data: session } = useSession();
+  const managerId = session?.managerId || '';
+  const authorName = session?.user?.name || '';
   const { professions } = useProfessionContext();
   const { addNotification } = useNotifications();
-  const [candidateData, setCandidateData] = useState<any>(null);
   const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>([]);
   const [phone, setPhone] = useState<string>('');
   const [comment, setComment] = useState<CommentEntry>({
@@ -45,13 +46,7 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     category: ''
   }]);
 
-  const managerId = session?.managerId || '';
 
-  const authorName = session?.user?.name || '';
- 
-  const handleCandidateData = (data: any) => {
-    setCandidateData(data);  
-  };
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(e.target.value);
   };
@@ -62,8 +57,6 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     return selectedDrive;
   };
 
-
-
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
     setComment((prevComment) => ({
@@ -71,7 +64,6 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
       text: value,
     }));
   };
-
 
   const addLangue = () => {
     setLanguesEntries([...languesEntries, { name: '', level: '' }]);
@@ -87,15 +79,12 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     setLanguesEntries(updatedLangues);
   };
 
-
   const getLanguesDataForSubmit = () => {
     return languesEntries.map(lang => ({
       name: lang.name || '',
       level: lang.level || ''
     }));
   };
-
-
 
 
   const handleStatusesChange = (selectWS: string[]) => {
@@ -152,8 +141,6 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     }));
   };
 
-
-
   const removeProfessionEntry = (index: number) => {
     const newEntries = professionEntries.filter((_, i) => i !== index);
     setProfessionEntries(newEntries);
@@ -200,6 +187,9 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
         addNotification({
           title: "Обновлено",
           content: `Кандидат с таким номером уже существует. Имя: ${data.candidate.name} Номер: ${data.candidate.phone}`,
+          metadata: {
+            candidateId: data.candidate._id.toString(), 
+          },
           type: "error",
           id: uuidv4Original(),
         });

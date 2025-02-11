@@ -1,57 +1,73 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { da } from "date-fns/locale";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Select from "../inputs/Select/Select";
+import { citizenshipOptions, taskStats } from "@/src/config/constants";
+
 export default function TasksList() {
+  const { data: session } = useSession();
+  const managerId = session?.managerId;
+  console.log("managerId", managerId);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [message, setMessage] = useState<string | null>(null);
 
-    const [tasks, setTasks] = useState<any[]>([]);
-    useEffect(() => {
-        const fetchTasks = async () => {
-          try {
-            const response = await fetch("/api/tasks"); 
-            if (!response.ok) {
-              throw new Error("Ошибка при загрузке задач");
-            }
-            const data = await response.json();
-            setTasks(data);
-          } catch (error: any) {
-            console.log(error);
-          } 
-        };
-        fetchTasks();
-      }, []);
-      console.log("TASK", tasks)
-    return (
-        <Table className="m-5">
-            <TableHead>
-                <TableHeader>
-                    <TableRow className="grid grid-cols-11 gap-2 ">
-                        <TableHead className="font-bold">Назначил</TableHead>
-                        <TableHead className="font-bold col-span-3">Задача</TableHead>
-                        <TableHead className="font-bold col-span-2">Имя</TableHead>
-                        <TableHead className="font-bold">Этап</TableHead>
-                        {/* <TableHead className="font-bold col-span-2">Последне события</TableHead>
-                        <TableHead className=" font-bold ">Результат</TableHead> */}
-                        <TableHead className=" font-bold"></TableHead>
-                    </TableRow>
-                    <TableBody>
-                    {tasks.map((task: any, index: any) => (
-                       <TableRow key={index} className="grid grid-cols-11 gap-2 ">
-                        <TableCell>{task?.assignedTo.name}</TableCell>
-                        <TableCell className="col-span-3">{task?.taskName}</TableCell>
-                        <TableCell className="col-span-2">{task?.candidate.name}</TableCell>
-                        <TableCell>{task?.stage.status}</TableCell>
-                        {/* <TableCell className="col-span-2">1</TableCell>
-                        <TableCell >1</TableCell> */}
-                        <TableCell><Button>Сохранить изменения</Button></TableCell>
-                        </TableRow>
-                        ))} 
-                    </TableBody>       
-                    </TableHeader>
-            </TableHead>
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(`/api/tasks/${managerId}/forManager`); // Передаем managerId в запрос
+        const data = await response.json();
+
+        // Если пришло сообщение, отображаем его
+        if (data.message) {
+          setMessage(data.message);
+        } else {
+          setTasks(data); // иначе, если пришли задачи, заполняем массив
+        }
+      } catch (error: any) {
+        console.log(error);
+      }
+    };
+    fetchTasks();
+  }, [managerId]);
+console.log("tasks", tasks);
+  return (
+    <div className="m-5">
+      {/* Если есть сообщение (например, "Нет задач"), выводим его */}
+      {message ? (
+        <p>{message}</p>
+      ) : (
+        <Table>
+          <TableHead>
+            <TableRow className="grid grid-cols-11 gap-2">
+              <TableHead className="font-bold">Назначил</TableHead>
+              <TableHead className="font-bold col-span-3">Задача</TableHead>
+              <TableHead className="font-bold col-span-2">Имя</TableHead>
+              <TableHead className="font-bold">Этап</TableHead>
+              <TableHead className="font-bold"></TableHead>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {Array.isArray(tasks) && tasks.map((task: any, index: any) => (
+              <TableRow key={index} className="grid grid-cols-11 gap-2">
+                <TableCell>{task?.appointed?.name}</TableCell>
+                <TableCell className="col-span-3">{task?.taskName}</TableCell>
+                <TableCell className="col-span-2">{task?.candidate?.name}</TableCell>
+                <TableCell className="col-span-2">
+                <Select  id="status" name="status" placeholder='Статус выполнения'
+            defaultValue={task?.status}
+            options={taskStats} />
+                  </TableCell>
+                <TableCell>
+                  <Button>Сохранить изменения</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
-    );
+      )}
+    </div>
+  );
 }
-
-
