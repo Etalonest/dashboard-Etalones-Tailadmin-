@@ -108,7 +108,10 @@ const PartnerSchema = new Schema({
         sum: String,
         salaryWorker: String,
       },
-      
+      statusWork: [{
+        name: String,
+        date: Date
+      }],
       documents: [{
         file: {
           type: Schema.Types.ObjectId,

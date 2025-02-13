@@ -45,9 +45,10 @@ const usePartnerData = (partner: any) => {
       setSelectLocation(partner.location || '');
       setSelectSite(partner.site || '');
       setDocuments(partner.documents || []);
-      setContract({
-        type: partner.contract?.type || '',
-        sum: partner.contract?.sum || ''
+      setContract({ 
+        typeC: partner.contract?.typeC || '',
+        sum: partner.contract?.sum || '',
+        salaryWorker: partner.contract?.salaryWorker || '',
       });    }
   }, [partner]);
 

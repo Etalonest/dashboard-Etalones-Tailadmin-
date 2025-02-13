@@ -48,7 +48,6 @@ export const POST = async (request: Request) => {
 
     const formData = await request.formData();
 console.log("formData", formData);
-    // Чтение полей формы
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
     const ageNum = formData.get('ageNum') as string;
@@ -62,15 +61,14 @@ console.log("formData", formData);
     const funnel = formData.get('funnel') as any;
     const documentsRaw = formData.get('documents');
     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
-console.log("documents", documents);
-    // Преобразуем строки в массивы для дополнительных данных
+    console.log("documents", documents);
     const additionalPhones = JSON.parse(formData.get('additionalPhones') as string);
 
     const professionsRaw = formData.get('professions');
     const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
 
-    const commentRaw = formData.get('comment');
     const managerId = formData.get('managerId'); 
+    const commentRaw = formData.get('comment');
     
     const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
       // Проверяем, является ли строка валидным JSON

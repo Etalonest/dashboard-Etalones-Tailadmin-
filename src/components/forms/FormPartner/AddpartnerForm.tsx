@@ -14,18 +14,36 @@ import CMultiSelect from '../../Multiselect/Multiselect';
 import { drivePermisData, languesData } from '@/src/config/constants';
 import { X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { CommentEntry } from '../interfaces/FormCandidate.interface';
+import { CommentEntry, DocumentEntry } from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 import { Contract } from '@/src/components/forms/interfaces/FormCandidate.interface';
+import { Textarea } from '@/components/ui/textarea';
+import { DocumentChoise } from './DocumentChoise/DocumentChoise';
+import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 
 
 const AddpartnerForm = (onSubmitSuccess: any) => {
-    const { data: session } = useSession();
-    const managerId = session?.managerId || '';
+  const { data: session } = useSession();
+  const managerId = session?.managerId || '';
+  const authorName = session?.user?.name || '';
   const { addNotification } = useNotifications();
   const [phone, setPhone] = useState<string>('');
   const [numberDE, setNumberDE] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [professions, setProfessions] = useState<ProfessionPartner[]>([]);
+  const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
+  const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>([]);
+  const [contract, setContract] = useState<Contract>({
+    typeC: '',
+    sum: '',
+    salaryWorker: '',
+  });
+  const [comment, setComment] = useState<CommentEntry>({
+      authorId: '',
+      author: '',
+      text: '',
+      date: new Date(),
+    });
   const handleUniqueFieldCheck = async (field: string, value: string) => {
     if (value.trim() === '') return;  // Пропуск пустого значения
 
@@ -66,18 +84,7 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
   const handleNumberDEBlur = () => handleUniqueFieldCheck('numberDE', numberDE);
   const handleEmailBlur = () => handleUniqueFieldCheck('email', email);
 
-   const [comment, setComment] = useState<CommentEntry>({
-      authorId: '',
-      author: '',
-      text: '',
-      date: new Date(),
-    });
-  const [professions, setProfessions] = useState<ProfessionPartner[]>([]);
-  const [contract, setContract] = useState<Contract>({
-    typeC: '',
-    sum: '',
-    salaryWorker: '',
-  });
+
 
   const handleInputChange = (field: string, value: string) => {
     setContract((prevContract) => ({
@@ -85,6 +92,27 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
       [field]: value,
     }));
   };
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const { value } = e.target;
+      setComment((prevComment) => ({
+        ...prevComment,
+        text: value,
+      }));
+    };
+    const getSWforSubmit = () => {
+      return workStatuses.map(status => ({
+        name: status.name,
+        date: status.date
+      }));
+    };
+    const getDocumentsDataForSubmit = () => {
+      return documentEntries.map(doc => ({
+        docType: doc.docType || '',
+        dateExp: doc.dateExp || '',
+        dateOfIssue: doc.dateOfIssue || '',
+        numberDoc: doc.numberDoc || '',
+      }));
+    };
   const handleButtonClick = () => {
     const newProfession: ProfessionPartner = {
       id: professions.length + 1,
@@ -150,7 +178,6 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
     )};
 
   const getProfessionsDataForSubmit = () => {
-    console.log("Профессии для отправки", professions);
     return professions.map((prof) => ({
       name: prof.name || '',
       location: prof.location || '',
@@ -177,21 +204,41 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
       prevProfessions.filter((profession) => profession.id !== id)
     );
   };
+  const handleDocumentChange = (selectedDocuments: any[]) => {
+    const updatedDocuments = selectedDocuments.map(docType => ({
+      docType: docType,
+      dateExp: '',
+      dateOfIssue: '',
+      numberDoc: '',
+      file: undefined,
+    }));
 
+    setDocumentEntries(updatedDocuments);
+  };
 
+  const handleStatusesChange = (selectWS: string[]) => {
+    const updatedWS = selectWS.map(name => ({
+      name: name,
+      date: new Date()
+    }));
 
+    setWorkStatuses(updatedWS);
+  };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     const professionsData = getProfessionsDataForSubmit();
-    const commentData = {
-      authorId: managerId,
-      author: managerId,
-      text: comment.text,
-      date: comment.date.toISOString(), 
-    };
+    const documentsData = getDocumentsDataForSubmit();
+    const workStatusesData = getSWforSubmit();
+
     const contractData = {
       typeC: contract.typeC,
       sum: contract.sum,
+    };
+    const commentData = {
+      authorId: managerId,
+      author: authorName,
+      text: comment.text,
+      date: comment.date.toISOString(),
     };
     const formData = new FormData(event.target);
   
@@ -199,7 +246,10 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
     formData.append('managerId', managerId);
     formData.append('professions', JSON.stringify(professionsData));
     formData.append('comment', JSON.stringify(commentData));
-    formData.append('contract', JSON.stringify(contractData));  
+    formData.append('contract', JSON.stringify(contractData));
+    formData.append('documents', JSON.stringify(documentsData));
+    formData.append('statusWork', JSON.stringify(workStatusesData));
+
     try {
       const response = await fetch('/api/partner', {
         method: 'POST',
@@ -216,6 +266,7 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
           type: 'success',
           id: uuidv4Original(),
         });
+        onSubmitSuccess()
       }
   
       if (data.error) {
@@ -242,6 +293,18 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
             <CardHeader className='pb-0'>
               <CardTitle>Личные данные</CardTitle>
             </CardHeader>
+             <CardHeader className='grid grid-cols-3 gap-2'>
+                                <CardTitle className="col-span-1">Документ</CardTitle>
+                                <div className="col-span-2">
+                                  <DocumentChoise onDocumentsChange={handleDocumentChange} />
+                                  <div className='w-full h-[2px] bg-gray-300 my-2 mr-5 rounded-md'></div>
+                                </div>
+            
+                                <CardTitle className="col-span-1">Готовность к работе</CardTitle>
+                                <div className="col-span-2">
+                                  <WorkUpChoise onStatusesChange={handleStatusesChange} />
+                                </div>
+                              </CardHeader>
             <CardContent className='mt-0 grid grid-cols-2 gap-2'>
               <div>
               <Label>ФИО</Label>
@@ -296,6 +359,7 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
               <Label>Сайт</Label>
               <Input placeholder="www.site.com" name='site'/>
               </div>
+              <div className='col-span-2 grid grid-cols-3 gap-4'>
             <AutocompleteInput 
               name='contractType'
               label="Тип контракта"
@@ -308,7 +372,26 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
               suggestions={suggestionsData.contractPrice} 
               placeholder="Введите цену контракта"
               onChange={(value) => handleInputChange('sum', value)}/>
+               <AutocompleteInput 
+              name='salaryWorker'
+              label="Минимальная зарплата работника"
+              suggestions={suggestionsData.contractPrice} 
+              placeholder="Минимальная зарплата работника"
+              onChange={(value) => handleInputChange('salaryWorker', value)}/>
+            </div>
             </CardContent>
+            <div className="flex-1  p-4">
+                     <Card>
+                       <CardContent>
+                         <CardTitle>Комментарий</CardTitle>
+                         <Textarea
+                           placeholder="Оставьте свой комментарий"
+                           className="mt-5"
+                           value={comment.text}
+                           onChange={handleCommentChange} />
+                       </CardContent>
+                     </Card>
+                           </div>
             <Button variant="outline" className='bg-green-900 text-white w-full' 
               onClick={handleButtonClick} type='button'> 
                 Добавить профессию</Button>
@@ -316,7 +399,7 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
         </div>
         </div>
         
-        <div className="flex-2  p-4">
+        {/* <div className="flex-2  p-4">
           <Card>
             <CardHeader>
               <CardTitle>Статус</CardTitle>
@@ -398,7 +481,7 @@ const AddpartnerForm = (onSubmitSuccess: any) => {
                 </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
     </div>
     <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

@@ -58,6 +58,7 @@ export const POST = async (req: Request, { params }: any) => {
     await candidate.save();
     console.log("candidate", candidate);
     const newTask1 = new Task({
+      isViewed: false,
       appointed: appointed,
       taskName: 'Потвердить данные из анкеты', 
       description: 'Проговорить анкету с кандидатом чтоб он потвердил данные', 
@@ -71,6 +72,7 @@ export const POST = async (req: Request, { params }: any) => {
     await newTask1.save(); 
     
     const newTask2 = new Task({
+      isViewed: false,
       appointed: appointed,
       taskName: 'Передать на собеседование по выбраной вакансии',
       description: 'Передать на собеседование по выбраной вакансии, или предложить другую подходящую, в противном случае вернуть рекрутеру', 
@@ -102,12 +104,10 @@ export const POST = async (req: Request, { params }: any) => {
     });
     console.log("EVENTLOG", eventLog)
     await eventLog.save();
-    if (id.manager) {
-      const manager = await Manager.findById(id.manager);
-      if (manager && manager.pushSubscription) {
-        const message = `Кандидат ${candidate.name} передан вам для дальнейшей работы.`;
-        await sendPushNotification(manager._id, message);
-      }
+    const manager = await Manager.findById(responsible);
+    if (manager) {
+      manager.tasks.push(newTask1._id, newTask2._id);
+      await manager.save();
     }
     return new Response(
       JSON.stringify({

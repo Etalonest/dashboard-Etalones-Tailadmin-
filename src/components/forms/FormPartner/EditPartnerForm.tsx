@@ -31,6 +31,7 @@ import Image from 'next/image';
 import { InputTransparent } from '../../inputs/inputTransparent';
 import { Popover, PopoverTrigger } from '@radix-ui/react-popover';
 import { PopoverContent } from '@/components/ui/popover';
+import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 
 const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   const { professions } = useProfessionContext();
@@ -69,8 +70,14 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   const [professionsPartner, setProfessionsPartner] = useState<ProfessionPartner[]>(
     partner?.professions || []  
   );  
+  const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>(partner?.statusWork || []);
 
 
+  useEffect(() => {
+      if (partner?.statusWork) {
+        setWorkStatuses(partner.statusWork);
+      }
+    },  [partner?.statusWork]);
    useEffect(() => {
       if (partner?.comment) { setCommentEntries(partner.comment); }
     }, [partner?.comment]);
@@ -96,6 +103,15 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       });
     }
   };
+
+  const handleStatusesChange = (selectWS: string[]) => {
+    const updatedWS = selectWS.map(name => ({
+       name: name,
+       date: new Date()
+     }));
+    
+     setWorkStatuses(updatedWS);
+   };
     const handleDocumentChange = (selectedDocuments: any[]) => {
       const updatedDocuments = selectedDocuments.map((docType, index) => ({
         docType: docType,
@@ -175,25 +191,28 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       )
     );
   };
-  
+  const getSWforSubmit = () => {
+    return workStatuses.map(status => ({
+      name: status.name,
+      date: status.date
+    }));
+  };
 
   const getCommentData = (formData: FormData, userName: string) => {
       const commentText = formData.get('comment');
     
-      if (commentText !== '') {
+      if (commentText) {
         const commentData = {
           author: userName,       
           text: commentText,      
           date: new Date().toISOString(),  
         };
-        console.log('Созданный объект комментария:', commentData); 
         return commentData; 
       }
     
       return null; 
     };
   const getProfessionsDataForSubmit = () => {
-    console.log("Профессии для отправки", professions);
     return professionsPartner.map((prof) => ({
       name: prof.name || '',
       location: prof.location || '',
@@ -267,12 +286,15 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
         }
     const formData = new FormData(event.target);
     const professionsData = getProfessionsDataForSubmit();
+    const workStatusesData = getSWforSubmit();
     const commentData = getCommentData(formData, userName);
     if (commentData) {
       formData.set('comment', JSON.stringify(commentData)); 
     }  
     formData.append('managerId', managerId);
     formData.append('professions', JSON.stringify(professionsData));
+    formData.append('workStatuses', JSON.stringify(workStatusesData));
+
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
         docType: doc.docType || '',
@@ -411,10 +433,10 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     <div>
                       <Label>Сумма контракта</Label>
                   <Input
-                    name='contractPrice'
+                    name='sum'
                     value={contract.sum}
                     placeholder="Введите цену контракта"
-                    onChange={(e) => handleChangeContract(e, 'contractPrice')} />
+                    onChange={(e) => handleChangeContract(e, 'sum')} />
                     </div>
                     <div>
                       <Label>Минимальная зарплата работника</Label>
@@ -464,6 +486,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 
 </CardContent>
       </Card>
+      
             <div className="p-2">
               {/* <Card>
                 <CardHeader className='grid grid-cols-3 gap-2'>
@@ -664,12 +687,97 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                   </CardTitle>       
                 </CardContent>
               </Card> */}
-            </div>
-        
-      {/* <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      <Button variant="outline" 
+                     <CardHeader className='grid grid-cols-3 gap-2'>
+                        <CardTitle className="col-span-1">Документ</CardTitle>
+                        <div className="col-span-2">
+                        <DocumentChoise 
+                        initialSelectedDocuments={documents}
+                        onDocumentsChange={handleDocumentChange} />
+                        <div className='w-full h-[2px] bg-gray-300 my-2 mr-5 rounded-md'></div>
+                        </div>
+                        <div className='w-full flex'>
+                          <CardTitle>Загруженые документы</CardTitle>
+                {documentEntries.map((doc: any, index: any) => (
+                  <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>
+                    <Drawer>
+                      <DrawerTrigger >
+                        <Card className='p-1'>
+                          <CardTitle>
+                            {doc?.docType}
+                          </CardTitle>
+                          <CardDescription className='p-1 text-gray-400 flex gap-1 items-center  w-max'>
+                            {doc?.file?.name || "Нет загруженого файла"} 
+                           <Download size={18} />
+                          </CardDescription>
+                        </Card>
+                      </DrawerTrigger>
+                      <DrawerContent className='text-black'>
+                        <DrawerHeader >
+                          <DrawerTitle>{doc?.docType}</DrawerTitle>
+                          <div className='flex justify-center items-center gap-2 '>
+                          <DrawerDescription className='text-gray-400'>{doc?.file?.name || "Нет загруженого документа"}</DrawerDescription>
+                          <div className="flex gap-2 items-center">
+                                <button onClick={() => downloadFile(doc?.file?._id, doc.file.name)} >
+                                <Download />
+                                </button>
+                              </div>
+                          </div>
+                        </DrawerHeader>
+                        <DrawerFooter >
+                          <div className='flex gap-2 items-center justify-center'>
+                          <div className="grid w-full max-w-sm  gap-1.5">
+                    <Input id="picture" type="file" 
+                    placeholder={doc?.file?.name}
+                    onChange={(e) => handleFileChange(e, index)} />
+                  </div>           
+                          </div>
+                          <DrawerClose className='absolute top-2 right-2'>
+                            <X size={18} color="red"/>
+                          </DrawerClose>
+                        </DrawerFooter>
+                      </DrawerContent>
+                    </Drawer>
+                  </div>
+                ))}
+                <Drawer>
+                  <DrawerTrigger>
+                <CirclePlus color='green' />
+                  </DrawerTrigger>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle>
+                    Добавить документ
+                      </DrawerTitle>
+                      <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter >
+                          <div className='flex gap-2 items-center justify-center'>
+                          <Button>Загрузить</Button>
+                          <Button>Скачать</Button>
+                          </div>
+                          <DrawerClose className='absolute top-2 right-2'>
+                           <X size={18} color="red"/>
+                          </DrawerClose>
+                        </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
+              </div>
+              <div className='col-span-3'>
+                        <CardTitle className="col-span-1">Готовность к работе</CardTitle>
+                        <div className="col-span-2">
+                        <WorkUpChoise  
+                        initialSelectedStatuses={workStatuses}
+                        onStatusesChange={handleStatusesChange}
+                        />
+                        </div>
+                        </div>
+                        </CardHeader>
+                    <Button variant="outline" 
                   onClick={handleButtonClick} type='button'>
                   Добавить профессию</Button>
+            </div>
+        
+      <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {professionsPartner.map((profession: any, index: any) => (
 
           <div key={index} className=" p-4 mb-4 ">
@@ -818,7 +926,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 
           </div>
         ))}
-      </div> */}
+      </div>
       <Button
         className='fixed top-4 right-4 bg-slate-100 border-2 border-green-800 text-green-800 hover:bg-slate-200 '
         type='submit'>Сохранить обновления</Button>

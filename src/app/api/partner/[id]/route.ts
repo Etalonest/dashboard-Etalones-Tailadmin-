@@ -63,19 +63,35 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const newSite = formData.get('site') ? formData.get('site') as string : oldPartner.site;
       const newLocation = formData.get('location') ? formData.get('location') as string : oldPartner.location;
       const newManager = formData.get('manager') ? formData.get('manager') : oldPartner.manager;
-      const newContractType = formData.get('typeC') ? formData.get('typeC') as string : oldPartner.typeC;
-      const newContractPrice = formData.get('sum') ? formData.get('sum') as string : oldPartner.sum;
-      const newContractSalary = formData.get('salaryWorker') ? formData.get('salaryWorker') as string : oldPartner.salaryWorker;
-      const commentData = formData.get('comment');
-      let newComment = [];
-      if (commentData) {
-        try {
-          newComment = JSON.parse(commentData as string);
-        } catch (error) {
-          console.error("Invalid JSON in comment field", error);
+      const commentRaw = formData.get('comment');
+    
+    const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
+      // Проверяем, является ли строка валидным JSON
+      try {
+        // Пытаемся распарсить как JSON (если это строка в формате JSON)
+        const parsedItem = JSON.parse(item);
+        // Если это объект, то считаем его правильным и возвращаем
+        if (parsedItem.author && parsedItem.text && parsedItem.date) {
+          return parsedItem;
+        } else {
+          // Если это не правильный объект, то создаем новый объект
+          return {
+            author: newManager, // Используем переданный ID менеджера
+            text: item,
+            date: new Date().toISOString(),
+          };
         }
+      } catch (e) {
+        // Если не JSON, то просто считаем это текстом и создаем объект с этим текстом
+        return {
+          author: newManager, // Используем переданный ID менеджера
+          text: item,
+          date: new Date().toISOString(),
+        };
       }
-
+    }) : [];
+      const contractRaw = formData.get("contract");
+      const contract = contractRaw ? JSON.parse(contractRaw as string) : {};
       let professionsData = [];
       const professionsDataField = formData.get('professions');
       if (professionsDataField) {
@@ -144,10 +160,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           }
         }
       }
-      const updatedContract = {
-        typeC: newContractType,
-        sum: newContractPrice,
-      };
+
       const updatedPartner = await Partner.findByIdAndUpdate(id, {
         $set: {
           name: newName,
@@ -162,11 +175,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           location: newLocation,
           manager: newManager,
           documents: documentsData,
-          contract: updatedContract,
+          contract,
+          comment,
           professions: professionsData,
-        },
-        $push: {
-          comment: newComment,
         },
         $addToSet: {
           documentsFile: { $each: documentsFileData },

@@ -53,9 +53,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const professionsData = JSON.parse(formData.get('professions') as string);
     const langueData = JSON.parse(formData.get('langue') as string)
     const drivePermisData = JSON.parse(formData.get('drivePermis') as string);
-    // const newComment = JSON.parse(formData.get('comment') as any);
+    const workStatusesData = JSON.parse(formData.get('workStatuses') as string);
+
     const commentData = formData.get('comment');
-let newComment = [];
+    let newComment = [];
 
 if (commentData) {
   try {
@@ -149,7 +150,7 @@ if (commentData) {
         professions: professionsData,
         langue: langueData,
         drivePermis: drivePermisData,
-        
+        statusWork: workStatusesData,
       },
       $push: {
         comment: newComment, 

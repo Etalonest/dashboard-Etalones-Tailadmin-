@@ -28,29 +28,29 @@ export const POST = async (req: Request) => {
 };
 
 
-export const sendPushNotification = async (managerId: string, message: string) => {
-    const manager = await Manager.findById(managerId);
-    if (!manager || !manager.pushSubscription) {
-      console.log('Менеджер не найден или подписка отсутствует');
-      return;
-    }
+// export const sendPushNotification = async (managerId: string, message: string) => {
+//     const manager = await Manager.findById(managerId);
+//     if (!manager || !manager.pushSubscription) {
+//       console.log('Менеджер не найден или подписка отсутствует');
+//       return;
+//     }
   
-    const pushSubscription = manager.pushSubscription;
+//     const pushSubscription = manager.pushSubscription;
   
-    const payload = JSON.stringify({ title: 'Новый кандидат', message });
+//     const payload = JSON.stringify({ title: 'Новый кандидат', message });
   
-    webPush.setVapidDetails(
-      'mailto:your_email@example.com',
-      process.env.VAPID_PUBLIC_KEY!,
-      process.env.VAPID_PRIVATE_KEY!
-    );
+//     webPush.setVapidDetails(
+//       'mailto:your_email@example.com',
+//       process.env.VAPID_PUBLIC_KEY!,
+//       process.env.VAPID_PRIVATE_KEY!
+//     );
   
-    try {
-      await webPush.sendNotification(pushSubscription, payload);
-      console.log('Уведомление отправлено');
-    } catch (error) {
-      console.error('Ошибка при отправке уведомления:', error);
-    }
-  };
+//     try {
+//       await webPush.sendNotification(pushSubscription, payload);
+//       console.log('Уведомление отправлено');
+//     } catch (error) {
+//       console.error('Ошибка при отправке уведомления:', error);
+//     }
+//   };
 
   

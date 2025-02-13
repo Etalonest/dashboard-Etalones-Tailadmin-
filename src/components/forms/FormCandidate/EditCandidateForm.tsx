@@ -213,7 +213,6 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   };
   const getCommentData = (formData: FormData, userName: string) => {
     const commentText = formData.get('comment');
-    console.log('Полученный комментарий из формы:', commentText); // Логируем комментарий до обработки
   
     if (commentText) {
       const commentData = {
@@ -221,7 +220,6 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
         text: commentText,      // Текст комментария
         date: new Date().toISOString(),  // Дата добавления комментария
       };
-      console.log('Созданный объект комментария:', commentData); // Логируем объект комментария
       return commentData; 
     }
   
@@ -322,7 +320,6 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
       });
       return;
     }
-  
     // Формируем FormData
     const formData = new FormData(event.target);
     const additionalPhonesData = getAdditionalPhonesDataForSubmit();

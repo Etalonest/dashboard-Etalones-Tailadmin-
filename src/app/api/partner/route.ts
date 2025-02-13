@@ -2,7 +2,6 @@ import { connectDB } from "@/src/lib/db";
 import EventLog from "@/src/models/EventLog";
 import Manager from "@/src/models/Manager";
 import Partner from "@/src/models/Partner";
-import { p } from "framer-motion/client";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
@@ -18,12 +17,44 @@ export const POST = async (request: Request) => {
       const companyName = formData.get("companyName");
       const numberDE = formData.get("numberDE");
       const location = formData.get("location");
+      const statusWorkRaw = formData.get('statusWork');
+      const statusWork = statusWorkRaw ? JSON.parse(statusWorkRaw as string) : [];
       const site = formData.get("site");    
       const manager = formData.get("managerId");
+
+      const documentsRaw = formData.get('documents');
+      const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
 
       const professionsRaw = formData.get("professions");
       const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
 console.log("professions", professions);
+const commentRaw = formData.get('comment');
+    
+    const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
+      // Проверяем, является ли строка валидным JSON
+      try {
+        // Пытаемся распарсить как JSON (если это строка в формате JSON)
+        const parsedItem = JSON.parse(item);
+        // Если это объект, то считаем его правильным и возвращаем
+        if (parsedItem.author && parsedItem.text && parsedItem.date) {
+          return parsedItem;
+        } else {
+          // Если это не правильный объект, то создаем новый объект
+          return {
+            author: manager, // Используем переданный ID менеджера
+            text: item,
+            date: new Date().toISOString(),
+          };
+        }
+      } catch (e) {
+        // Если не JSON, то просто считаем это текстом и создаем объект с этим текстом
+        return {
+          author: manager, // Используем переданный ID менеджера
+          text: item,
+          date: new Date().toISOString(),
+        };
+      }
+    }) : [];
       const contractRaw = formData.get("contract");
       const contract = contractRaw ? JSON.parse(contractRaw as string) : {};
       await connectDB();
@@ -52,7 +83,10 @@ console.log("professions", professions);
     email,
     companyName,
     numberDE,
+    documents,
+    statusWork,
     location,
+    comment,
     site,
     professions,
     contract,

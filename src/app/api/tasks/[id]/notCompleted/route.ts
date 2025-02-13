@@ -4,10 +4,11 @@ export const GET = async (request: Request, { params }: { params: { id: string }
   const { id } = params;
 
   try {
-    const tasks = await Task.find({ assignedTo: id }).populate(["assignedTo", "candidate","stage", "appointed"]);
+    const tasks = await Task.find({ assignedTo: id, isViewed: false })
+    .populate(["assignedTo", "candidate","stage", "appointed"]);
 
     if (tasks.length === 0) {
-      console.log("Нет задач для менеджера с ID:", id);
+      console.log("Нет не выполненых задач для менеджера с ID:", id);
       return new Response(
         JSON.stringify({ message: "Нет задач" }),
         { status: 200 }

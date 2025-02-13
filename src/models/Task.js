@@ -37,8 +37,12 @@ const TaskSchema = new Schema({
   },
   dueDate: {
     type: Date, // Дата, к которой нужно выполнить задачу
-  },  
-});
+  }, 
+  isViewed: {
+    type: Boolean,
+    default: false,
+  },
+}, { timestamps: true });
 
 const Task = models?.Task || model("Task", TaskSchema);
 export default Task;

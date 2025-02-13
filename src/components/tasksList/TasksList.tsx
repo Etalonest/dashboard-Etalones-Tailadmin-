@@ -4,12 +4,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Select from "../inputs/Select/Select";
-import { citizenshipOptions, taskStats } from "@/src/config/constants";
+import {  taskStats } from "@/src/config/constants";
 
 export default function TasksList() {
   const { data: session } = useSession();
   const managerId = session?.managerId;
-  console.log("managerId", managerId);
   const [tasks, setTasks] = useState<any[]>([]);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -31,7 +30,6 @@ export default function TasksList() {
     };
     fetchTasks();
   }, [managerId]);
-console.log("tasks", tasks);
   return (
     <div className="m-5">
       {/* Если есть сообщение (например, "Нет задач"), выводим его */}
