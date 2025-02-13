@@ -8,7 +8,6 @@ export const GET = async (request: any, { params }: { params: { id: string } }):
 console.log(`Получен запрос на получение документа с ID: ${id}`);
   // Находим документ по ID
   const document = await Document.findById(id);
-  console.log("DOCUMENT",document);
   if (!document) {
     return new NextResponse(
       JSON.stringify({ success: false, message: 'Document not found' }),

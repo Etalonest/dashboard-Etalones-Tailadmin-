@@ -10,7 +10,7 @@ interface PartnerI {
   sum: any;
   typeC: any;
   location: any;
-  contractType: any;
+  contract: any;
   viber: any;
   telegram: any;
   whatsapp: any;
@@ -63,35 +63,33 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       const newSite = formData.get('site') ? formData.get('site') as string : oldPartner.site;
       const newLocation = formData.get('location') ? formData.get('location') as string : oldPartner.location;
       const newManager = formData.get('manager') ? formData.get('manager') : oldPartner.manager;
-      const commentRaw = formData.get('comment');
+      const workStatusesData = JSON.parse(formData.get('workStatuses') as string);
+      const contractString = formData.get('contract') as string;
+      let contract;
+try {
+  contract = JSON.parse(contractString);
+} catch (error) {
+  console.error("Ошибка при парсинге contract:", error);
+  // Можно задать значения по умолчанию на случай ошибки
+  contract = {
+    typeC: "Почасовый",
+    sum: "22 EUR",
+    salaryWorker: "12 EUR/час"
+  };
+}
+
+      const commentData = formData.get('comment');
+      let newComment = [];
+  
+  if (commentData) {
+    try {
+      newComment = JSON.parse(commentData as string);
+    } catch (error) {
+      console.error("Invalid JSON in comment field", error);
+      // Обработка ошибки, например, установка пустого массива или сообщение об ошибке
+    }
+  }
     
-    const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
-      // Проверяем, является ли строка валидным JSON
-      try {
-        // Пытаемся распарсить как JSON (если это строка в формате JSON)
-        const parsedItem = JSON.parse(item);
-        // Если это объект, то считаем его правильным и возвращаем
-        if (parsedItem.author && parsedItem.text && parsedItem.date) {
-          return parsedItem;
-        } else {
-          // Если это не правильный объект, то создаем новый объект
-          return {
-            author: newManager, // Используем переданный ID менеджера
-            text: item,
-            date: new Date().toISOString(),
-          };
-        }
-      } catch (e) {
-        // Если не JSON, то просто считаем это текстом и создаем объект с этим текстом
-        return {
-          author: newManager, // Используем переданный ID менеджера
-          text: item,
-          date: new Date().toISOString(),
-        };
-      }
-    }) : [];
-      const contractRaw = formData.get("contract");
-      const contract = contractRaw ? JSON.parse(contractRaw as string) : {};
       let professionsData = [];
       const professionsDataField = formData.get('professions');
       if (professionsDataField) {
@@ -174,10 +172,13 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           site: newSite,
           location: newLocation,
           manager: newManager,
-          documents: documentsData,
-          contract,
-          comment,
+          documents: documentsData || oldPartner.documents,
+          contract: contract || oldPartner.contract,
+          statusWork: workStatusesData,
           professions: professionsData,
+        },
+        $push: {
+          comment: newComment, 
         },
         $addToSet: {
           documentsFile: { $each: documentsFileData },

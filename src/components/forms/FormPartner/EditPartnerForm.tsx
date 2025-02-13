@@ -294,7 +294,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     formData.append('managerId', managerId);
     formData.append('professions', JSON.stringify(professionsData));
     formData.append('workStatuses', JSON.stringify(workStatusesData));
-
+    formData.append('contract', JSON.stringify(contract));
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
         docType: doc.docType || '',
@@ -310,7 +310,17 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   
       return documentObj;
     });
-  
+    if (partner.documents && partner.documents.length > 0) {
+      partner.documents.forEach((oldDoc: any) => {
+        documentsData.push({
+          docType: oldDoc.docType,
+          dateExp: oldDoc.dateExp,
+          dateOfIssue: oldDoc.dateOfIssue,
+          numberDoc: oldDoc.numberDoc,
+          file: oldDoc.file, // Старая версия документа, если она есть
+        });
+      });
+    }
     formData.append('documents', JSON.stringify(documentsData));
   
     documentEntries.forEach((doc, index) => {
@@ -349,7 +359,6 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       console.error('Ошибка при добавлении кандидата:', error);
     }
   };
- console.log("DOCUMENTS", partner); 
   return (
     <div className='container mx-auto flex justify-center'>
     <form onSubmit={handleSubmit} >   
@@ -453,10 +462,6 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
             <Button type='button' variant="link" >Комментарии</Button>
           </PopoverTrigger>
           <PopoverContent>
-          <Textarea
-                    placeholder="Оставьте свой комментарий"
-                    className="my-5 "
-                    id="comment" name="comment"/>
   <ScrollArea className="max-h-50 rounded-md border">
   {commentEntries.map((comment, index) => (
   <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
@@ -482,6 +487,10 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
           </PopoverContent>
         </Popover>
         </CardHeader>
+        <Textarea
+                    placeholder="Оставьте свой комментарий"
+                    className="my-5 mx-auto w-[50%] "
+                    id="comment" name="comment"/>
 <CardContent className='mt-0 grid grid-cols-2 gap-2'>
 
 </CardContent>

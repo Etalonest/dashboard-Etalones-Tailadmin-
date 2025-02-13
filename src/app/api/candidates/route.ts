@@ -61,7 +61,6 @@ console.log("formData", formData);
     const funnel = formData.get('funnel') as any;
     const documentsRaw = formData.get('documents');
     const documents = documentsRaw ? JSON.parse(documentsRaw as string) : [];
-    console.log("documents", documents);
     const additionalPhones = JSON.parse(formData.get('additionalPhones') as string);
 
     const professionsRaw = formData.get('professions');
