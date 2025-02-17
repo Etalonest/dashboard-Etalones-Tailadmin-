@@ -5,6 +5,10 @@ import {Task} from './Task';
 import {Dialog} from './Dialog';
 import {Stage} from './Stage';
 const CandidateSchema = new Schema({
+  type: {
+    type: String,
+    default: 'candidate'
+  },
   private: { 
     type: Boolean, 
     default: true 

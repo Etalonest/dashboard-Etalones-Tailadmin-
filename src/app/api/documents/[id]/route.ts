@@ -104,3 +104,79 @@ export const POST = async (request:any) => {
       );
     }
   };
+// import { NextResponse } from 'next/server'
+// import { storage, db } from '@/src/lib/firebase'; // Путь к вашему firebase.js
+// import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+// import { collection, addDoc, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+
+// export const POST = async (request: any) => {
+//     try {
+//         console.log("Received request to create document");
+
+//         const data = await request.formData();
+//         const file = data.get('file');
+//         const candidateId = data.get('candidateId') as string;
+
+//         if (!file) {
+//             return new NextResponse(JSON.stringify({ success: false, message: 'File is required' }), { status: 400 });
+//         }
+
+//         const fileName = file.name;
+//         const fileType = file.type;
+//         const storageRef = ref(storage, `candidates/${candidateId}/${fileName}`); // Уникальное имя файла
+
+//         const uploadTask = uploadBytesResumable(storageRef, await file.arrayBuffer());
+
+//         uploadTask.on('state_changed',
+//             (snapshot) => {
+//                 // Observe state change events such as progress, pause, and resume
+//                 // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+//                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+//                 console.log('Upload is ' + progress + '% done');
+//                 switch (snapshot.state) {
+//                     case 'paused':
+//                         console.log('Upload is paused');
+//                         break;
+//                     case 'running':
+//                         console.log('Upload is running');
+//                         break;
+//                 }
+//             },
+//             (error) => {
+//                 // Handle unsuccessful uploads
+//                 console.error("Error uploading file:", error);
+//                 return new NextResponse(JSON.stringify({ success: false, message: 'Error uploading file', error: error.message }), { status: 500 });
+
+//             },
+//             () => {
+//                 // Handle successful uploads on complete
+//                 // Get the download URL
+//                 getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+//                     console.log('File available at', downloadURL);
+
+//                     // Добавляем запись в Firestore
+//                     await addDoc(collection(db, 'documents'), {
+//                         candidateId: candidateId,
+//                         fileName: fileName,
+//                         fileType: fileType,
+//                         downloadURL: downloadURL
+//                     });
+//                     console.log("Document saved successfully");
+
+//                     // Обновляем документ кандидата в Firestore
+//                     const candidateRef = doc(db, 'candidates', candidateId);
+//                     await updateDoc(candidateRef, {
+//                         documentsFile: arrayUnion({ fileName: fileName, downloadURL: downloadURL})
+//                     });
+
+//                     return new NextResponse(JSON.stringify({ success: true, message: 'Document created successfully', downloadURL: downloadURL }), { status: 201 });
+//                 });
+//             }
+//         );
+
+
+//     } catch (error: any) {
+//         console.error("Error in POST request:", error);
+//         return new NextResponse(JSON.stringify({ success: false, message: 'Error creating document', error: error.message }), { status: 500 });
+//     }
+// };

@@ -74,6 +74,9 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 
 
   useEffect(() => {
+    if (partner?.documents) { setDocumentEntries(partner.documents); }
+  }, [partner?.documents]);
+  useEffect(() => {
       if (partner?.statusWork) {
         setWorkStatuses(partner.statusWork);
       }
@@ -301,33 +304,65 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
         dateExp: doc.dateExp || '',
         dateOfIssue: doc.dateOfIssue || '',
         numberDoc: doc.numberDoc || '',
-        file: doc.file || null,
+        file: null, // Убираем файл из самого объекта
       };
-  
-      if (doc.file) {
-        documentObj.file = doc.file;
-      }
-  
+    
       return documentObj;
     });
-    if (partner.documents && partner.documents.length > 0) {
-      partner.documents.forEach((oldDoc: any) => {
-        documentsData.push({
-          docType: oldDoc.docType,
-          dateExp: oldDoc.dateExp,
-          dateOfIssue: oldDoc.dateOfIssue,
-          numberDoc: oldDoc.numberDoc,
-          file: oldDoc.file, // Старая версия документа, если она есть
-        });
-      });
-    }
+    // Планирую удалить след блок
+    // if (partner.documents && partner.documents.length > 0) {
+    //   partner.documents.forEach((oldDoc: any) => {
+    //     documentsData.push({
+    //       docType: oldDoc.docType,
+    //       dateExp: oldDoc.dateExp,
+    //       dateOfIssue: oldDoc.dateOfIssue,
+    //       numberDoc: oldDoc.numberDoc,
+    //       file: null, // Тоже убираем файл
+    //     });
+    //   });
+    // }
+    
     formData.append('documents', JSON.stringify(documentsData));
-  
+    
     documentEntries.forEach((doc, index) => {
       if (doc.file) {
         formData.append(`documents[${index}][file]`, doc.file  as Blob); 
       }
     });
+    
+    // const documentsData = documentEntries.map((doc, index) => {
+    //   const documentObj: any = {
+    //     docType: doc.docType || '',
+    //     dateExp: doc.dateExp || '',
+    //     dateOfIssue: doc.dateOfIssue || '',
+    //     numberDoc: doc.numberDoc || '',
+    //     file: doc.file || null,
+    //   };
+  
+    //   if (doc.file) {
+    //     documentObj.file = doc.file;
+    //   }
+  
+    //   return documentObj;
+    // });
+    // if (partner.documents && partner.documents.length > 0) {
+    //   partner.documents.forEach((oldDoc: any) => {
+    //     documentsData.push({
+    //       docType: oldDoc.docType,
+    //       dateExp: oldDoc.dateExp,
+    //       dateOfIssue: oldDoc.dateOfIssue,
+    //       numberDoc: oldDoc.numberDoc,
+    //       file: oldDoc.file, 
+    //     });
+    //   });
+    // }
+    // formData.append('documents', JSON.stringify(documentsData));
+  
+    // documentEntries.forEach((doc, index) => {
+    //   if (doc.file) {
+    //     formData.append(`documents[${index}][file]`, doc.file  as Blob); 
+    //   }
+    // });
     try {
       const response = await fetch(`/api/partner/${partner._id}`, {
         method: 'PUT',
@@ -361,52 +396,24 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   };
   return (
     <div className='container mx-auto flex justify-center'>
-    <form onSubmit={handleSubmit} >   
-      <Card>
-        <CardHeader className='grid grid-cols-3 gap-2'>
-        <Image src="/images/user/user-01.png" className='w-16 h-16 rounded-full' width={400} height={400} alt="user" />
+    <form onSubmit={handleSubmit} className='grid grid-cols-3 gap-2 px-5'>   
+      <Card className=''>
+        <CardHeader className=''>
+        {/* <Image src="/images/user/user-01.png" className='w-16 h-16 rounded-full' width={400} height={400} alt="user" /> */}
         <InputTransparent placeholder="Имя" name='name' value={selectName || ''}
           onChange={handleChangeName}/>
         <InputTransparent placeholder="Телефон" name='phone' value={selectPhone || ''}
           onChange={handleChangePhone}
         />
-        <Popover>
-          <PopoverTrigger>
-            <Button type='button' variant="link" >Соцсети</Button>
-          </PopoverTrigger>
-          <PopoverContent>
-          <div>
-                    <Label>Viber</Label>
-                    <Input placeholder="+495651322654" name='viber'
-                      value={selectViber || ''}
-                      onChange={handleChangeViber} />
-                  </div>
-                  <div>
-                    <Label>Whatsapp</Label>
-                    <Input placeholder="+495651322654" name='whatsapp'
-                      value={selectWhatsapp || ''}
-                      onChange={handleChangeWhatsapp} />
-                  </div>
-                  <div>
-                    <Label>Telegram</Label>
-                    <Input placeholder="+495651322654" name='telegram'
-                      value={selectTelegram || ''}
-                      onChange={handleChangeTelegram} />
-                  </div>
                   <div>
                     <Label>Почта</Label>
-                    <Input placeholder="mail@gmail.com" name='email'
+                    <InputTransparent placeholder="mail@gmail.com" name='email'
                       value={selectEmail || ''}
                       onChange={handleChangeEmail} />
                   </div>
-          </PopoverContent>
-        </Popover>
-        <Popover>
-          <PopoverTrigger>
-            <Button type='button' variant="link" >Фирма</Button>
-          </PopoverTrigger>
-          <PopoverContent>
-          <div>
+
+
+                  <div>
                     <Label>Название фирмы</Label>
                     <Input placeholder="GMBH gfgtg" name='companyName'
                       value={selectCompanyName || ''}
@@ -430,7 +437,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                       value={selectSite || ''}
                       onChange={handleChangeSite} />
                   </div>
-                  <div className='col-span-2 grid grid-cols-3 gap-2'>
+                  <div className=''>
                   <div>
                     <Label>Тип контракта</Label>
                   <Input
@@ -456,8 +463,8 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     onChange={(e) => handleChangeContract(e, 'salaryWorker')} />
                     </div>
                   </div>
-          </PopoverContent>
-        </Popover><Popover>
+
+        <Popover>
           <PopoverTrigger>
             <Button type='button' variant="link" >Комментарии</Button>
           </PopoverTrigger>
@@ -496,8 +503,8 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 </CardContent>
       </Card>
       
-            <div className="p-2">
-              {/* <Card>
+            {/* <div className="p-2">
+              <Card>
                 <CardHeader className='grid grid-cols-3 gap-2'>
                   <CardTitle className='col-span-3 flex justify-end items-center gap-2'><PencilLine/><span> {selectName}</span></CardTitle>
                   <DocumentChoise 
@@ -695,8 +702,11 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                   </div>
                   </CardTitle>       
                 </CardContent>
-              </Card> */}
-                     <CardHeader className='grid grid-cols-3 gap-2'>
+              </Card>
+                    
+            </div> */}
+            <div className='col-span-2'>
+            <CardHeader className='grid grid-cols-3 gap-2'>
                         <CardTitle className="col-span-1">Документ</CardTitle>
                         <div className="col-span-2">
                         <DocumentChoise 
@@ -784,9 +794,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                     <Button variant="outline" 
                   onClick={handleButtonClick} type='button'>
                   Добавить профессию</Button>
-            </div>
-        
-      <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="mt-8 w-full bg-gray-200 grid grid-cols-2  gap-4">
         {professionsPartner.map((profession: any, index: any) => (
 
           <div key={index} className=" p-4 mb-4 ">
@@ -939,7 +947,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       <Button
         className='fixed top-4 right-4 bg-slate-100 border-2 border-green-800 text-green-800 hover:bg-slate-200 '
         type='submit'>Сохранить обновления</Button>
-
+</div>
     </form>
 </div>
 

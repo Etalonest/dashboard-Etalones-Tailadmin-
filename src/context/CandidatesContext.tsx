@@ -25,7 +25,7 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setError(null);
 
     try {
-      const response = await fetch(`/api/candidate-by-manager/${managerId}`);
+      const response = await fetch(`/api/candidates/forAll`);
       const data = await response.json();
 
       if (response.ok) {

@@ -10,6 +10,12 @@ const VacanciesSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'VacancyImages'
       },
+    imageFB: {
+      type: String
+    },
+    homeImageFB: [{
+      type: String
+    }],
     homeImages:[{
         type: Schema.Types.ObjectId,
         ref: 'HomeImages'

@@ -54,7 +54,7 @@ const CandidatesInWork = () => {
     const fetchCandidates = async (startDate: Date | null, endDate: Date | null) => {
         try {
             const response = await fetch(
-                `/api/candidates/getAll?startDate=${startDate?.toISOString() || ""}&endDate=${endDate?.toISOString() || ""}`
+                `/api/candidates/toDate?startDate=${startDate?.toISOString() || ""}&endDate=${endDate?.toISOString() || ""}`
             );
             const data = await response.json();
             setCandidates(data.candidates); // Устанавливаем полученные данные в состояние

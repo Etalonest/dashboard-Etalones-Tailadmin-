@@ -138,7 +138,7 @@ import Image from "next/image";
 import SidebarItem from "@/src/components/Sidebar/SidebarItem";
 import ClickOutside from "@/src/components/ClickOutside";
 import useLocalStorage from "@/src/hooks/useLocalStorage";
-import { AlarmCheck, AlarmClockCheck, ArrowRight, ArrowUpRight, BookCheck, CalendarDays, ChartArea, History, Menu, Settings, Table, UserCircle } from "lucide-react";
+import { AlarmCheck, AlarmClockCheck, ArrowRight, ArrowUpRight, BookCheck, CalendarDays, ChartArea, History, Menu, Settings, Table, User, UserCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface SidebarProps {
@@ -155,13 +155,19 @@ const menuGroups = [
         label: "Информационная панель",
         route: "#",
         children: [{ label: "Графики", route: "/" }],
-        rolesAllowed: ["admin"], // доступно только для админа и менеджера
+        rolesAllowed: ["admin"], 
+      },
+      {
+        icon: <User />,
+        label: "Все кандидаты",
+        route: "/allCandidates",
+        rolesAllowed: ["admin", "manager", "recruiter"], 
       },
       {
         icon: <BookCheck />,
         label: "Результаты работы",
         route: "/funnel",
-        rolesAllowed: ["admin"], // доступно для админа, менеджера и рекрутера
+        rolesAllowed: ["admin"], 
       },
       {
         icon: <CalendarDays />,

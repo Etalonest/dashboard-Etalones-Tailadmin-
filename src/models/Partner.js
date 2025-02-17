@@ -2,6 +2,14 @@ import { Schema, model, models } from "mongoose";
 import {Document} from './Document';
 import {Vacancies} from './Vacancies';
 const PartnerSchema = new Schema({
+  type: {
+    type: String,
+    default: 'partner'
+  },
+  private: { 
+    type: Boolean, 
+    default: true 
+  },
   documentsFile: [{
     type: Schema.Types.ObjectId,
     ref: 'Document'
