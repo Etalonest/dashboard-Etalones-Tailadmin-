@@ -12,7 +12,6 @@ import { NotificationProvider } from "../context/NotificationContext";
 import Notifications from "../notification/Notifications";
 import { CandidateProvider } from "../context/CandidateContext";
 import { CandidatesProvider } from "../context/CandidatesContext";
-import { Toaster } from "@/components/ui/toaster"
 export default function RootLayout({
   children,
 }: Readonly<{
