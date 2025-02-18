@@ -216,8 +216,8 @@ const ProfileComponent = () => {
             </div>            
             </div>
         </div>
-      </div>
         <TabsAdmin />
+      </div>
     </div>
     </>
   );

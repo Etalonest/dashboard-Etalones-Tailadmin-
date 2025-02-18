@@ -130,8 +130,8 @@ export function TabsAdmin() {
         return <SalesmanTab />;
       case "candidate":
         return <CandidateTable />;
-      case "candidateIsInWork":
-        return <CandidatesInWork />;
+      // case "candidateIsInWork":
+      //   return <CandidatesInWork />;
       case "partner":
         return <PartnerTab />;
       case "recruiter":
@@ -168,7 +168,7 @@ export function TabsAdmin() {
     { value: "managers", label: "Менеджеры" },
     { value: "salles", label: "Продажники" },
     { value: "candidate", label: "Кандидаты" },
-    { value: "candidateIsInWork", label: "Кандидаты в работе" },
+    // { value: "candidateIsInWork", label: "Кандидаты в работе" },
     { value: "tasks", label: "Задачи" },
     { value: "partner", label: "Партнёры" },
     { value: "recruiter", label: "Рекрутеры" }
@@ -186,7 +186,7 @@ export function TabsAdmin() {
         formType={formType} 
       />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
-        <TabsList className="flex gap-2 flex-wrap w-full">
+        <TabsList className="flex gap-2 flex-wrap w-full mb-2">
           {visibleTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}

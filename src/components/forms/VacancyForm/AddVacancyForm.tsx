@@ -118,6 +118,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
 
       const data = await response.json();
       const message = data.message;
+      console.log("Metadata", data);
 
       if (data.success) {
         addNotification({
@@ -127,6 +128,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           id: uuidv4Original(),
         });
         onSubmitSuccess();
+        
       }
 
       if (data.error) {

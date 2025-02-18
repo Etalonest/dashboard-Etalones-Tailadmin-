@@ -218,23 +218,38 @@ const DropdownNotification = () => {
             </div>
 
             <ul className="flex h-auto flex-col overflow-y-auto">
-              {tasks.map((task) => (
-                <li key={task._id}>
+              {tasks.length > 0 ? (
+                tasks.map((task: any) => (
+                  <li key={task._id}>
+                    <Link
+                      className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+                      href="#"
+                      onClick={() => markTaskAsViewed(task._id)}
+                    >
+                      <p className="text-sm">
+                        <span className="text-black dark:text-white">
+                          {task.taskName}
+                        </span>{" "}
+                        Назначена задача для кандидата {task?.candidate?.name}.
+                      </p>
+                      <p className="text-xs">{new Date(task.dueDate).toLocaleDateString()}</p>
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <li>
                   <Link
                     className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
                     href="#"
-                    onClick={() => markTaskAsViewed(task._id)}
                   >
                     <p className="text-sm">
                       <span className="text-black dark:text-white">
-                        {task.taskName}
-                      </span>{" "}
-                      Назначена задача для кандидата {task?.candidate?.name}.
+                        У вас нет непрочитанных задач
+                      </span>
                     </p>
-                    <p className="text-xs">{new Date(task.dueDate).toLocaleDateString()}</p>
                   </Link>
                 </li>
-              ))}
+              )}
             </ul>
           </div>
         )}

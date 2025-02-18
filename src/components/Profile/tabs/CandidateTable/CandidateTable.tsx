@@ -52,8 +52,8 @@ export function CandidateTable() {
     const { candidates, isLoading, error } = useCandidates();
 
     return (
-        <div className="w-full">
-            <div className="flex items-center py-4">
+        <div className="w-full ье-">
+            {/* <div className="flex items-center py-4">
                 <Input placeholder="Filter emails..." className="max-w-sm" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -65,7 +65,7 @@ export function CandidateTable() {
                         <DropdownMenuCheckboxItem>column.id</DropdownMenuCheckboxItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-            </div>
+            </div> */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

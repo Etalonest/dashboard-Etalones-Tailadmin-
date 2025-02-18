@@ -133,7 +133,10 @@ export const POST = async (request: Request) => {
       console.log("EVENTLOG", eventLog)
       await eventLog.save();
     return new NextResponse(
-      JSON.stringify({ message: "Новая вакансия создана успешно", partner: newVacancy }),
+      JSON.stringify({ 
+        message: "Новая вакансия создана успешно",
+        success: true, 
+        partner: newVacancy }),
       { status: 201 }
     );
 

@@ -22,6 +22,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     InPoland: 'В Польше',
     InGermany: 'В Германии',
     OnlyInOwnCity: 'Только в своём городе',
+    Invitation: 'Отправленно приглашение',
   };
   const statusColorText: { [key: string]: string } = {
     Home: 'text-black',
@@ -31,6 +32,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     InPoland: 'text-black',
     InGermany: 'text-black',
     OnlyInOwnCity: 'text-black',
+    Invitation: 'text-black',
   };
   const statusColorMap: { [key: string]: string } = {
     Home: 'bg-yellow-100',
@@ -40,6 +42,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     InPoland: 'bg-green-200',
     InGermany: 'bg-green-200',
     OnlyInOwnCity: 'bg-yellow-100',
+    Invitation: 'bg-yellow-100',
   };
   // Эффект для синхронизации с initialSelectedStatuses
   useEffect(() => {

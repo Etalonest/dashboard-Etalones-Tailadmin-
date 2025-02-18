@@ -5,6 +5,7 @@ import Manager from '@/src/models/Manager';
 import Stage from '@/src/models/Stage';
 import Task from '@/src/models/Task';
 import EventLog from '@/src/models/EventLog';
+import { metadata } from 'framer-motion/client';
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -204,6 +205,7 @@ console.log("formData", formData);
         success: true,
         message: `Кандидат ${name} успешно создан`,
         candidate: newCandidate,
+        metadata: newCandidate._id.toString()
       }),
       { status: 201 }
     );

@@ -11,7 +11,7 @@ const CandidateSchema = new Schema({
   },
   private: { 
     type: Boolean, 
-    default: true 
+    default: false 
   },
   stages: {
     type: Schema.Types.ObjectId,
