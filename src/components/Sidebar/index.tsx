@@ -159,8 +159,15 @@ const menuGroups = [
       },
       {
         icon: <User />,
-        label: "Все кандидаты",
-        route: "/allCandidates",
+        label: "Кандидаты",
+        route: "#",
+        children:[
+          { label: "Все кандидаты", route: "/allCandidates" },
+          { label: "Ждут приглашение", route: "/allCandidates/inWork" },
+          { label: "Ждут работу", route: "/allCandidates/inPoland" },
+          { label: "На собеседовании", route: "/allCandidates/inGermany" },
+          { label: "На объекте", route: "/candidate/inWork" },
+        ],
         rolesAllowed: ["admin", "manager", "recruiter"], 
       },
       {

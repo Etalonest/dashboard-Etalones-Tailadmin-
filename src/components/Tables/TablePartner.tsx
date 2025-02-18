@@ -215,10 +215,10 @@ const TablePartner = () => {
   }, {} as Record<string, Partner[]>);
 
   // Пагинированный список партнёров
-  const currentPartners = Object.values(groupedPartners).flat().slice(
-    (currentPage - 1) * partnersPerPage,
-    currentPage * partnersPerPage
-  );
+  // const currentPartners = Object.values(groupedPartners).flat().slice(
+  //   (currentPage - 1) * partnersPerPage,
+  //   currentPage * partnersPerPage
+  // );
 
   useEffect(() => {
     if (partners && Array.isArray(partners)) {

@@ -49,7 +49,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const newAge = formData.get('ageNum') as string;
     const newCitizenship = formData.get('citizenship') as string;
     const newLocations = formData.get('locations') as string;
-    const newManager = formData.get('manager') as any;
+    const newManager = formData.get('managerId') as any;
     const professionsData = JSON.parse(formData.get('professions') as string);
     const langueData = JSON.parse(formData.get('langue') as string)
     const drivePermisData = JSON.parse(formData.get('drivePermis') as string);

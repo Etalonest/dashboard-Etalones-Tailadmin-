@@ -339,6 +339,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     formData.append('langue', JSON.stringify(languesData)); 
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('workStatuses', JSON.stringify(workStatusesData));
+    formData.append(managerId, JSON.stringify(managerId));
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
         docType: doc.docType || '',
