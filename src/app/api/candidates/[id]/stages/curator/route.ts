@@ -7,7 +7,6 @@ import Vacancies from '@/src/models/Vacancies';
 import Task from '@/src/models/Task';
 import Manager from '@/src/models/Manager';
 import EventLog from '@/src/models/EventLog';
-import { sendPushNotification } from '@/src/lib/pushNotifications'; 
 
 
 export const POST = async (req: Request, { params }: any) => {

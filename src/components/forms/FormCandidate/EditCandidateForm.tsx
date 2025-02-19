@@ -709,6 +709,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
         comments={comments}
         setComments={handleCommentsChange}
       /> */}
+      
         <Card className='p-4'>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>

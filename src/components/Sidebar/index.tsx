@@ -140,6 +140,7 @@ import ClickOutside from "@/src/components/ClickOutside";
 import useLocalStorage from "@/src/hooks/useLocalStorage";
 import { AlarmCheck, AlarmClockCheck, ArrowRight, ArrowUpRight, BookCheck, CalendarDays, ChartArea, History, Menu, Settings, Table, User, UserCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { label } from "framer-motion/client";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -163,8 +164,9 @@ const menuGroups = [
         route: "#",
         children:[
           { label: "Все кандидаты", route: "/allCandidates" },
-          { label: "Ждут приглашение", route: "/candidate/invitation" },
-          { label: "Ждут работу", route: "/candidate/checkWork" },
+          // { label: "Ждут работу", route: "/candidate/checkWork" },
+          { label: "От рекрутера", route: "/candidate/fromRecruiter"},
+          // { label: "Ждут приглашение", route: "/candidate/invitation" },
           { label: "На собеседовании", route: "/candidate/interview" },
           { label: "На объекте", route: "/candidate/inWork" },
         ],

@@ -37,7 +37,11 @@ const StageSchema = new Schema({
   },
   responsible: {
     type: Schema.Types.ObjectId,
-    ref: 'Manager', // Менеджер, ответственный за этап
+    ref: 'Manager', 
+  },
+  appointed: {
+    type: Schema.Types.ObjectId,
+    ref: 'Manager', 
   },
   startDate: {
     type: Date, // Дата начала этапа
