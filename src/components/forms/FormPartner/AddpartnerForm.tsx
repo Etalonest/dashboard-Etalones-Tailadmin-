@@ -22,7 +22,7 @@ import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 
 
-const AddpartnerForm = (onSubmitSuccess: any) => {
+const AddpartnerForm = ({onSubmitSuccess}: any) => {
   const { data: session } = useSession();
   const managerId = session?.managerId || '';
   const authorName = session?.user?.name || '';

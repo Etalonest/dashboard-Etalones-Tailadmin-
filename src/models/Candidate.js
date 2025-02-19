@@ -4,6 +4,7 @@ import {Partner} from './Partner';
 import {Task} from './Task';
 import {Dialog} from './Dialog';
 import {Stage} from './Stage';
+import { type } from "os";
 const CandidateSchema = new Schema({
   type: {
     type: String,
@@ -17,6 +18,45 @@ const CandidateSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Stage'
   },
+  invitation:{
+    checkbox: {
+      type: Boolean,
+      default: false
+    },
+    status:{
+      type: String
+    },
+    manager:{
+      type: Schema.Types.ObjectId,
+      ref: 'Manager'
+    },
+    candidate:{
+      type: Schema.Types.ObjectId,
+      ref: 'Candidate'
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    photoDocs:{
+      type: String
+    },
+    comment: [{
+      author: {
+        type: String
+      },
+      text: {
+        type: String
+      },
+      date: {
+        type: Date,
+        default: Date.now
+      }
+    }],
+    paid: {
+      type: Boolean,
+      default: false
+  }},
   dialogs: [{
     type: Schema.Types.ObjectId,
     ref: 'Dialog'
@@ -141,7 +181,8 @@ const CandidateSchema = new Schema({
       }],
       interviews: [
         {
-          type: Schema.Types.ObjectId, ref: 'Interview'
+          type: Schema.Types.ObjectId, 
+          ref: 'Interview'
         }
       ],
       comment: [{

@@ -207,7 +207,7 @@ console.log("formData", formData);
         candidate: newCandidate,
         metadata: newCandidate._id.toString()
       }),
-      { status: 201 }
+      { status: 200 }
     );
   } catch (error) {
     console.error('Ошибка при создании кандидата:', error);

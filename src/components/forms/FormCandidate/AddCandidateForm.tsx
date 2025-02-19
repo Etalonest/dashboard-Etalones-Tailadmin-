@@ -6,7 +6,7 @@ import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
 import { useSession } from 'next-auth/react';
 import { drivePermisData, citizenshipOptions, languesData, langueLevelData } from '@/src/config/constants'
-import { DocumentEntry, CommentEntry, Profession, Langue } from "../interfaces/FormCandidate.interface"
+import { DocumentEntry, CommentEntry, Profession, Langue, InvitationEntry } from "../interfaces/FormCandidate.interface"
 import { useProfessionContext } from "@/src/context/ProfessionContext";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import SuitableV from '../../SuitableV/SuitableV';
 
 
-const AddCandidateForm = (onSubmitSuccess: any) => {
+const AddCandidateForm = ({onSubmitSuccess}: any) => {
   const { data: session } = useSession();
   const managerId = session?.managerId || '';
   const authorName = session?.user?.name || '';
@@ -33,6 +33,7 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     text: '',
     date: new Date(),
   });
+  
   const [languesEntries, setLanguesEntries] = useState<Langue[]>([{
     name: '',
     level: ''
@@ -57,14 +58,7 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     return selectedDrive;
   };
 
-  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target;
-    setComment((prevComment) => ({
-      ...prevComment,
-      text: value,
-    }));
-  };
-
+  
   const addLangue = () => {
     setLanguesEntries([...languesEntries, { name: '', level: '' }]);
   };
@@ -212,6 +206,14 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
       console.error('Ошибка при поиске:', error);
     }
   };
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    setComment((prevComment) => ({
+      ...prevComment,
+      text: value,
+    }));
+  };
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
@@ -227,6 +229,7 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
       text: comment.text,
       date: comment.date.toISOString(),
     };
+    
     const formData = new FormData(event.target);
 
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
@@ -243,7 +246,7 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
     try {
       const response = await fetch('/api/candidates', {
         method: 'POST',
-        body: formData, // Используем formData, так как это содержит как текст, так и файлы
+        body: formData, 
       });
 
       const data = await response.json();
@@ -257,7 +260,7 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
           id: uuidv4Original(),
         });
         onSubmitSuccess();
-
+        console.log("DATA",data);
       }
 
       if (data.error) {
@@ -437,6 +440,8 @@ const AddCandidateForm = (onSubmitSuccess: any) => {
 
                 </Card>
               </div> 
+  
+              
               <div className="flex-1  p-4">
           <Card>
             <CardContent>

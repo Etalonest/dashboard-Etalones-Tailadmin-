@@ -17,7 +17,7 @@ export interface DriveOption {
   } 
 
   export interface CommentEntry {
-    authorId: any;
+    authorId: string,
     author?: string;
     text?: string;
     date: Date;
@@ -36,3 +36,15 @@ export interface DriveOption {
     name: string;
     level: string;
   }
+
+  export interface InvitationEntry {
+    status: string;
+    manager: string;
+    candidate: string;
+    date: Date;
+    photoDocs: string;
+    paid: boolean;
+    comment: CommentEntry[];
+  }
+
+ 

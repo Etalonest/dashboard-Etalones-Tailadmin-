@@ -6,7 +6,7 @@ import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
 import { useSession } from 'next-auth/react';
 import { drivePermisData, citizenshipOptions, langueLevelData, languesData } from '@/src/config/constants'
-import { DocumentEntry, Langue, CommentEntry } from "../interfaces/FormCandidate.interface"
+import { DocumentEntry, Langue, CommentEntry, InvitationEntry } from "../interfaces/FormCandidate.interface"
 
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
@@ -30,10 +30,16 @@ import {
 } from "@/components/ui/drawer"
 import { Textarea } from '@/components/ui/textarea';
 import Funnel from '../Funnel/Funnel';
+import Invitation from '../../Invitation/Invitation';
 const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
   const { professions } = useProfessionContext();
+  const [isInvited, setIsInvited] = useState(false);
+  const [status, setStatus] = useState('');
+  const [photoDocs, setPhotoDocs] = useState('');
+  const [paid, setPaid] = useState(false);
+  const [comments, setComments] = useState<{ author: string; text: string }[]>([]);
   const [funnelData, setFunnelData] = useState({});
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
   const [additionalPhones, setAdditionalPhones] = useState(candidate?.additionalPhones || []);
@@ -56,6 +62,15 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     handleChangeAge,
     handleChangeLocations,
   } = useCandidateData(candidate);
+  const [invitation, setInvitation] = useState({
+    status: '',
+    manager: '',
+    candidate: '',
+    date: new Date(),
+    photoDocs: '',
+    paid: false,
+    comment: '',  
+  });
   const managerId = session?.managerId ?? 'defaultManagerId';
   const userName = session?.user?.name ?? 'defaultManagerName';
   
@@ -93,6 +108,27 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
       setSelectLangues(candidate.langue);
     }
   }, [candidate?.langue]);
+  const handleInvitedChange = (checked: boolean) => {
+    setIsInvited(checked);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatus(value);
+  };
+
+  const handlePhotoDocsChange = (value: string) => {
+    setPhotoDocs(value);
+  };
+
+  const handlePaidChange = (checked: boolean) => {
+    setPaid(checked);
+  };
+
+  const handleCommentsChange = (index: number, newText: string) => {
+    const newComments = [...comments];
+    newComments[index].text = newText;
+    setComments(newComments);
+  };
 
   const handleDataChange = (updatedFunnelData: any) => {
     setFunnelData(updatedFunnelData); 
@@ -309,6 +345,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
       });
     }
   };
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     if (!candidate || !candidate._id) {
@@ -322,6 +359,15 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     }
     // Формируем FormData
     const formData = new FormData(event.target);
+    const invitationData = {
+      status: invitation.status,
+      manager: invitation.manager,
+      candidate: invitation.candidate,
+      date: invitation.date.toISOString(),
+      photoDocs: invitation.photoDocs,
+      paid: invitation.paid,
+      comment: invitation.comment,
+    };
     const additionalPhonesData = getAdditionalPhonesDataForSubmit();
     const driveData = getDriveDataForSubmit();
     const professionsData = getProfessionsDataForSubmit();
@@ -340,6 +386,8 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('workStatuses', JSON.stringify(workStatusesData));
     formData.append(managerId, JSON.stringify(managerId));
+    formData.append('invitation', JSON.stringify(invitationData));
+
     const documentsData = documentEntries.map((doc, index) => {
       const documentObj: any = {
         docType: doc.docType || '',
@@ -405,14 +453,16 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   };
   return (
     <div>
-    <h2 className="text-center text-black text-2xl font-semibold mb-2">Редактировать {name}</h2>
+    <h2 className="text-center text-black text-2xl font-semibold mb-2 ">Редактировать {name}</h2>
     <div className='container mx-auto flex'>
     <form onSubmit={handleSubmit} className='flex-1 '>
       <div className="p-2">
         <Card className='p-5'>
 
           <CardHeader className='grid grid-cols-3 gap-2'>
-          <CardTitle className="col-span-1">Документ</CardTitle>
+          <CardTitle className="col-span-1">
+            <p>Документ</p> 
+          </CardTitle>
           <div className="col-span-2">
           <DocumentChoise 
           initialSelectedDocuments={documents}
@@ -463,7 +513,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
       </Drawer>
     </div>
   ))}
-  <Drawer>
+  {/* <Drawer>
     <DrawerTrigger>
   <CirclePlus color='green' />
     </DrawerTrigger>
@@ -484,7 +534,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
             </DrawerClose>
           </DrawerFooter>
     </DrawerContent>
-  </Drawer>
+  </Drawer> */}
 </div>
 <div className='col-span-3'>
           <CardTitle className="col-span-1">Готовность к работе</CardTitle>
@@ -647,7 +697,18 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
           </CardContent>
 
         </Card>
-      
+        {/* <Invitation
+        isInvited={isInvited}
+        onInvitedChange={handleInvitedChange}
+        status={status}
+        setStatus={handleStatusChange}
+        photoDocs={photoDocs}
+        setPhotoDocs={handlePhotoDocsChange}
+        paid={paid}
+        setPaid={handlePaidChange}
+        comments={comments}
+        setComments={handleCommentsChange}
+      /> */}
         <Card className='p-4'>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
