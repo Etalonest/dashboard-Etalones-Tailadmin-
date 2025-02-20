@@ -183,14 +183,16 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
 
                                   </Card>
                                 <div className="flex flex-col items-start h-full">
-                                    <Link href={`/vacancy/${vacancy._id}`} passHref target="blank">
-                                        <Button className="w-full bg-slate-100 text-black hover:bg-slate-200 mt-8">Посмотреть вакансию</Button>
+                                    <Link href={`/vacancy/${vacancy._id}`} passHref target="blank"
+                                    className="p-2 rounded-md bg-slate-100 text-black hover:bg-slate-200 mt-8"
+                                    >
+                                           <p> Посмотреть вакансию</p>
                                     </Link>
                                     <Drawer>
                                         <DrawerTrigger>
-                                            <Button className="w-full bg-slate-100 text-black hover:bg-slate-200 mt-8" onClick={() => handleSelectVacancy(vacancy)}>
+                                            <div className="p-2 rounded-md bg-slate-100 text-black hover:bg-slate-200 mt-8" onClick={() => handleSelectVacancy(vacancy)}>
                                                 Передать куратору
-                                            </Button>
+                                            </div>
                                         </DrawerTrigger>
                                         <DrawerContent className="bg-black text-white h-[50%]">
                                             <form onSubmit={handleSubmit}>

@@ -48,7 +48,6 @@ export const POST = async (request: Request) => {
   try {
 
     const formData = await request.formData();
-console.log("formData", formData);
     const name = formData.get('name') as string;
     const phone = formData.get('phone') as string;
     const ageNum = formData.get('ageNum') as string;
@@ -71,25 +70,20 @@ console.log("formData", formData);
     const commentRaw = formData.get('comment');
     
     const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
-      // Проверяем, является ли строка валидным JSON
       try {
-        // Пытаемся распарсить как JSON (если это строка в формате JSON)
         const parsedItem = JSON.parse(item);
-        // Если это объект, то считаем его правильным и возвращаем
         if (parsedItem.author && parsedItem.text && parsedItem.date) {
           return parsedItem;
         } else {
-          // Если это не правильный объект, то создаем новый объект
           return {
-            author: managerId, // Используем переданный ID менеджера
+            author: managerId,
             text: item,
             date: new Date().toISOString(),
           };
         }
       } catch (e) {
-        // Если не JSON, то просто считаем это текстом и создаем объект с этим текстом
         return {
-          author: managerId, // Используем переданный ID менеджера
+          author: managerId, 
           text: item,
           date: new Date().toISOString(),
         };
@@ -109,7 +103,6 @@ console.log("formData", formData);
 
     await connectDB();
 
-    // Проверка, существует ли кандидат с таким номером телефона
     const existingCandidate = await Candidate.findOne({ phone });
     if (existingCandidate) {
       console.log('Кандидат с таким номером телефона уже существует:', existingCandidate);
@@ -125,7 +118,6 @@ console.log("formData", formData);
       );
     }
 
-    // Создаем нового кандидата
     const newCandidate = new Candidate({
       name,
       phone,

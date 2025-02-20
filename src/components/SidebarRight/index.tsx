@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 
 import AddCandidateForm from "@/src/components/forms/FormCandidate/AddCandidateForm";
 import EditCandidateForm from "@/src/components/forms/FormCandidate/EditCandidateForm";
@@ -101,7 +101,7 @@ useEffect(() => {
       case "editPartner":
         return <EditPartnerForm partner={partnerData} onSubmitSuccess={closeSidebar}/>; 
       case "viewPartner":
-        return <ViewPartnerForm partner={formData} />;  
+        return <ViewPartnerForm partner={partnerData} />;  
       case "addVacancy":
           return <AddVacancyForm  profession={selectedProfession} partner={selectedPartner} onSubmitSuccess={closeSidebar}/>;
       case "editVacancy":

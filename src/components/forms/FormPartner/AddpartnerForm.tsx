@@ -263,6 +263,7 @@ const AddpartnerForm = ({onSubmitSuccess}: any) => {
         addNotification({
           title: 'Успешно',
           content: message,
+          metadata: data.metadata,
           type: 'success',
           id: uuidv4Original(),
         });
@@ -530,7 +531,7 @@ const AddpartnerForm = ({onSubmitSuccess}: any) => {
                 <div className='grid grid-cols-2 gap-2'>
                 <AutocompleteInput 
               label="Зарплата"
-              suggestions={suggestionsData.sallary} 
+              suggestions={suggestionsData.salary} 
               placeholder="Зарплата работника"
               onChange={(value) => handleInputPChange(profession.id, 'salary', value)}/>
                 <AutocompleteInput 

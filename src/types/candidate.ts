@@ -20,7 +20,7 @@ export type Profession = {
   };
   
   // Тип для языков (если это поле также может быть описано по подобному принципу)
-  export type Language = {
+  export type Langue = {
     name: string;
     level: string;
   };
@@ -43,6 +43,7 @@ export type Profession = {
   
   // Основной тип для кандидата
   export type Candidate = {
+    avatar: any;
     stages: any;
     stage: any;
     ageNum: string;
@@ -57,14 +58,15 @@ export type Profession = {
     phone: string;
     age: string;
     leaving: string | null; // Если нет данных, то null
-    drivePermis: string;
+    drivePermis: string[];
     cardNumber: string;
     workHours: string;
     locations: string;
     professions: Profession[]; // Массив профессий
     documents: Document[]; // Массив документов
-    langue: Language; // Языковая информация
+    langue: Langue[]; 
     manager: {
+      phone: string;
       name: any;
       $oid: string; // ID менеджера
     };

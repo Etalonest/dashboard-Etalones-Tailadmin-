@@ -179,7 +179,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
   const candidate = await Candidate.findById(id)
     .populate(['manager', 'partners', 'tasks', 'documents','dialogs']) 
-    .lean() as CandidateDoc | null;
   if (!candidate) {
     return NextResponse.json({ message: "Candidate not found" }, { status: 404 });
   }

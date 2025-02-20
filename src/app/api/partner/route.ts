@@ -27,29 +27,22 @@ export const POST = async (request: Request) => {
 
       const professionsRaw = formData.get("professions");
       const professions = professionsRaw ? JSON.parse(professionsRaw as string) : [];
-console.log("professions", professions);
-const commentRaw = formData.get('comment');
-    
-    const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
-      // Проверяем, является ли строка валидным JSON
+      const commentRaw = formData.get('comment');
+      const comment = commentRaw ? (Array.isArray(commentRaw) ? commentRaw : [commentRaw]).map(item => {
       try {
-        // Пытаемся распарсить как JSON (если это строка в формате JSON)
         const parsedItem = JSON.parse(item);
-        // Если это объект, то считаем его правильным и возвращаем
         if (parsedItem.author && parsedItem.text && parsedItem.date) {
           return parsedItem;
         } else {
-          // Если это не правильный объект, то создаем новый объект
           return {
-            author: manager, // Используем переданный ID менеджера
+            author: manager, 
             text: item,
             date: new Date().toISOString(),
           };
         }
       } catch (e) {
-        // Если не JSON, то просто считаем это текстом и создаем объект с этим текстом
         return {
-          author: manager, // Используем переданный ID менеджера
+          author: manager, 
           text: item,
           date: new Date().toISOString(),
         };
@@ -120,10 +113,9 @@ const commentRaw = formData.get('comment');
         manager: manager,
         description: `Добавлен новый партнёр: ${newPartner.name}`,
       });
-      console.log("EVENTLOG", eventLog)
       await eventLog.save();
       return new NextResponse(
-        JSON.stringify({ message: "Новый партнёр создан успешно", partner: newPartner }),
+        JSON.stringify({ message: "Новый партнёр создан успешно", partner: newPartner, metadata: newPartner._id.toString(), success: true }),
         { status: 201 }
       );
   

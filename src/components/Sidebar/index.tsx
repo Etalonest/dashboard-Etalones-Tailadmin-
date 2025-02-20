@@ -165,7 +165,7 @@ const menuGroups = [
         children:[
           { label: "Все кандидаты", route: "/allCandidates" },
           // { label: "Ждут работу", route: "/candidate/checkWork" },
-          { label: "От рекрутера", route: "/candidate/fromRecruiter"},
+          { label: "От рекрутера", route: "/candidate/fromRecruiter", rolesAllowed: ["recruiter", "admin"] },
           // { label: "Ждут приглашение", route: "/candidate/invitation" },
           { label: "На собеседовании", route: "/candidate/interview" },
           { label: "На объекте", route: "/candidate/inWork" },

@@ -43,9 +43,9 @@ useEffect(() => {
                 <TableRow className="grid grid-cols-9 gap-2">
                     <TableHead className="font-bold">Рекрутер</TableHead>
                     <TableHead className="font-bold">Имя кандидата</TableHead>
+                    <TableHead className="font-bold">Вакансия</TableHead>
                     <TableHead className="font-bold col-span-4">Комментарий</TableHead>
                     <TableHead className="font-bold col-span-2">Дата</TableHead>
-                    <TableHead className="font-bold">Вакансия</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -57,6 +57,12 @@ useEffect(() => {
                         <TableCell className="font-bold">
                             {item.candidate?.name}
                         </TableCell>
+                        <TableCell className="font-bold">
+                            {item.vacancy?.title}
+                            <Badge>
+                                {item.vacancy?.location}
+                            </Badge>
+                        </TableCell>
                         <TableCell className="font-bold col-span-4">
                             {item.comment}
                         </TableCell>
@@ -66,12 +72,7 @@ useEffect(() => {
                   day: '2-digit', month: 'long', year: '2-digit'
                 })}`}</Badge>
                         </TableCell>
-                        <TableCell className="font-bold">
-                            {item.vacancy?.title}
-                            <Badge>
-                                {item.vacancy?.location}
-                            </Badge>
-                        </TableCell>
+                        
                     </TableRow>
                 ))}
             </TableBody>

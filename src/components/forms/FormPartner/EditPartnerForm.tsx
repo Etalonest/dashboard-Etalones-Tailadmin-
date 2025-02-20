@@ -309,19 +309,7 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
     
       return documentObj;
     });
-    // Планирую удалить след блок
-    // if (partner.documents && partner.documents.length > 0) {
-    //   partner.documents.forEach((oldDoc: any) => {
-    //     documentsData.push({
-    //       docType: oldDoc.docType,
-    //       dateExp: oldDoc.dateExp,
-    //       dateOfIssue: oldDoc.dateOfIssue,
-    //       numberDoc: oldDoc.numberDoc,
-    //       file: null, // Тоже убираем файл
-    //     });
-    //   });
-    // }
-    
+        
     formData.append('documents', JSON.stringify(documentsData));
     
     documentEntries.forEach((doc, index) => {
@@ -330,39 +318,6 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
       }
     });
     
-    // const documentsData = documentEntries.map((doc, index) => {
-    //   const documentObj: any = {
-    //     docType: doc.docType || '',
-    //     dateExp: doc.dateExp || '',
-    //     dateOfIssue: doc.dateOfIssue || '',
-    //     numberDoc: doc.numberDoc || '',
-    //     file: doc.file || null,
-    //   };
-  
-    //   if (doc.file) {
-    //     documentObj.file = doc.file;
-    //   }
-  
-    //   return documentObj;
-    // });
-    // if (partner.documents && partner.documents.length > 0) {
-    //   partner.documents.forEach((oldDoc: any) => {
-    //     documentsData.push({
-    //       docType: oldDoc.docType,
-    //       dateExp: oldDoc.dateExp,
-    //       dateOfIssue: oldDoc.dateOfIssue,
-    //       numberDoc: oldDoc.numberDoc,
-    //       file: oldDoc.file, 
-    //     });
-    //   });
-    // }
-    // formData.append('documents', JSON.stringify(documentsData));
-  
-    // documentEntries.forEach((doc, index) => {
-    //   if (doc.file) {
-    //     formData.append(`documents[${index}][file]`, doc.file  as Blob); 
-    //   }
-    // });
     try {
       const response = await fetch(`/api/partner/${partner._id}`, {
         method: 'PUT',
@@ -867,10 +822,10 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
                 <div className='grid grid-cols-2 gap-2'>
                   <AutocompleteInput
                     label="Зарплата"
-                    suggestions={suggestionsData.sallary}
+                    suggestions={suggestionsData.salary}
                     placeholder="Зарплата работника"
                     value={profession?.salary || ''}
-                    onChange={(value) => handleInputPChange(index, 'sallary', value)} />
+                    onChange={(value) => handleInputPChange(index, 'salary', value)} />
                   <AutocompleteInput
                     label="Цена проживания"
                     suggestions={suggestionsData.homePrice}

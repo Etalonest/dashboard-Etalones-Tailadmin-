@@ -12,6 +12,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     // Ищем партнёров, у которых указан данный менеджер
     const partners = await Partner.find({ manager: id })
+    .populate('manager')
     .populate({
       path: 'documents',
       options: { sort: { updatedAt: -1 } },

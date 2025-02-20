@@ -1,5 +1,10 @@
+import { Manager } from "./manager";
+
 // Тип для профессии партнёра
 export type Profession = {
+    workHours: string;
+    salary: string;
+    location: string;
     pDocs: any;
     id: string;              // Идентификатор профессии
     name: string;            // Название профессии
@@ -81,6 +86,7 @@ export type Profession = {
  }
   // Основной тип для партнёра
   export type Partner = {
+    avatar: any;
     id: string;
     _id: string;               // ID партнёра
     professions: Profession[];  // Массив профессий партнёра
@@ -95,7 +101,7 @@ export type Profession = {
     };
     numberDE: string;          // Номер DE
     location: string;          // Локация партнёра
-    manager: string;           // ID менеджера партнёра
+    manager: Manager;           // ID менеджера партнёра
     candidates: string[];      // Массив ID кандидатов
     contract: Contract;        // Контракт партнёра
     status: string;            // Статус партнёра

@@ -166,6 +166,10 @@ export async function GET(request: Request, { params }: any) {
         options: { sort: { updatedAt: -1 } },
         populate: [
           {
+            path: 'manager',
+            select: 'name phone '
+          },
+          {
             path: 'documents',
             populate: {
               path: 'file',
@@ -183,6 +187,10 @@ export async function GET(request: Request, { params }: any) {
         path: 'partners',
         options: { sort: { updatedAt: -1 } },
         populate: [
+          {
+            path: 'manager',
+            select: 'name phone '
+          },
           {
             path: 'documents',
             populate: {

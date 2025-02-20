@@ -274,12 +274,10 @@ const TablePartner = () => {
       <div className="flex flex-col">
         {Object.keys(groupedPartners).map((status, index) => (
           <div key={index}>
-            {/* Заголовок для каждого статуса */}
             <h5 className="text-lg font-medium text-black dark:text-white mt-6">
               {status}
             </h5>
 
-            {/* Таблица для партнёров с этим статусом */}
             <div className="grid grid-cols-4 rounded-sm bg-gray-2">
               <div className="p-2.5 xl:p-5">Имя</div>
               <div className="p-2.5 text-start xl:p-5">Профессии</div>
@@ -291,7 +289,7 @@ const TablePartner = () => {
               <div className="grid grid-cols-4" key={partnerIndex}>
                 <div className="flex items-center gap-3 p-2.5 xl:p-5">
                   <div className="flex-shrink-0">
-                    <Eye />
+                    <Eye onClick={() => toggleSidebar("viewPartner", partner)} />
                     <UserCog onClick={() => toggleSidebar("editPartner", partner)} />
                   </div>
                   <div>

@@ -8,8 +8,7 @@ import Loader from "@/src/components/common/Loader";
 
 const TableCandidate = () => {
   const { manager } = useManager(); 
-  console.log("manager", manager);
-  const [loading, setLoading] = useState<boolean>(!manager); // Загружаем, если менеджер ещё не получен
+  const [loading, setLoading] = useState<boolean>(!manager); 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);

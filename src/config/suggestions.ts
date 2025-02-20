@@ -55,7 +55,7 @@ export const suggestionsData = {
         'Чтение чертежей',
         'Владение электроинструментом'
     ],
-    sallary: [
+    salary: [
       '10 EUR/час',
       '2500 EUR/месяц',
       '100 EUR/день',
