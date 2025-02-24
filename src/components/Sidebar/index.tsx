@@ -149,7 +149,7 @@ interface SidebarProps {
 
 const menuGroups = [
   {
-    name: "MENU",
+    name: "Меню",
     menuItems: [
       {
         icon: <ChartArea />,

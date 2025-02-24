@@ -46,7 +46,10 @@ export const POST = async (request: Request) => {
     const grafik = formData.get("grafik");
     const managerId = formData.get("managerId");
     const partnerId = formData.get("partnerId"); 
-
+    const imageFB = formData.get("imageUrl");
+    const homeImageFB = formData.get("homeImageUrl");
+    const homeImageUrls = homeImageFB ? JSON.parse(homeImageFB as string) : [];
+    const homeImages = Array.isArray(homeImageUrls) ? homeImageUrls : [homeImageUrls];
     const languesRaw = formData.get('langue');
     const langues = languesRaw ? JSON.parse(languesRaw as string) : [];
     const documentsRaw = formData.get('documents');
@@ -54,9 +57,11 @@ export const POST = async (request: Request) => {
     const drivePermisRaw = formData.get('drivePermis');
     const drivePermis = drivePermisRaw ? JSON.parse(drivePermisRaw as string) : [];     
 
+
     await connectDB();
 
     const body = {
+      imageFB,
       title,
       place,
       skills,
@@ -70,6 +75,7 @@ export const POST = async (request: Request) => {
       drivePermis,
       langues,
       documents,
+      homeImageFB: homeImages,
       manager: managerId,
       partner: partnerId, 
     };

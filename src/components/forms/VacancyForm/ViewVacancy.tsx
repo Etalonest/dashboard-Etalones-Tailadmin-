@@ -109,7 +109,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                                 ))}</Card>
                             </div>
                         </div>
-                        <Image src={imagesCarousel[1]}
+                        <Image src={vacancyH?.imageFB || "/images/logo/logo-red.png"}
                             alt={""} width={350} height={200}
                             className="rounded-md max-h-max" />
                     </div>
@@ -140,20 +140,20 @@ const ViewVacancy = ({ vacancy }: any) => {
       className="w-full"
     >
       <CarouselContent className="-ml-4 flex">
-      {imagesCarousel.map((image, index) => (
-                        <CarouselItem key={index} className=" flex-shrink-0 md:w-1/4 pl-4 sm:w-1/2">
-                          <div className="p-1">
-                            <Image
-                              src={image}
-                              alt={`Image ${index + 1}`}
-                              width={350}
-                              height={200}
-                              className="rounded-md max-h-max mx-auto"
-                            />
-                          </div>
-                        </CarouselItem>
-                      ))}
-      </CarouselContent>
+            {vacancyH?.homeImageFB?.map((image: string, index: number) => (
+                <CarouselItem key={index} className="flex-shrink-0 md:w-1/4 pl-4 sm:w-1/2">
+                    <div className="p-1">
+                        <Image
+                            src={image}
+                            alt={`Image ${index + 1}`}
+                            width={350}
+                            height={200}
+                            className="rounded-md max-h-max mx-auto"
+                        />
+                    </div>
+                </CarouselItem>
+            ))}
+        </CarouselContent>
       <CarouselPrevious type='button' className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
         &lt;
       </CarouselPrevious>

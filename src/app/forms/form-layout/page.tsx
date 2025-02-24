@@ -1,14 +1,7 @@
 import Breadcrumb from "@/src/components/Breadcrumbs/Breadcrumb";
 
-import { Metadata } from "next";
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Next.js Form Layout | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Form Layout page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-};
 
 const FormLayout = () => {
   return (
@@ -21,7 +14,7 @@ const FormLayout = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Contact Form
+                Контактная форма
               </h3>
             </div>
             <form action="#">
@@ -29,7 +22,7 @@ const FormLayout = () => {
                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                   <div className="w-full xl:w-1/2">
                     <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                      First name
+                      Фамилия
                     </label>
                     <input
                       type="text"
@@ -40,7 +33,7 @@ const FormLayout = () => {
 
                   <div className="w-full xl:w-1/2">
                     <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                      Last name
+                      Имя
                     </label>
                     <input
                       type="text"
@@ -52,7 +45,7 @@ const FormLayout = () => {
 
                 <div className="mb-4.5">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Email <span className="text-meta-1">*</span>
+                    Почта <span className="text-meta-1">*</span>
                   </label>
                   <input
                     type="email"
@@ -75,7 +68,7 @@ const FormLayout = () => {
 
                 <div className="mb-6">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Message
+                    Сообщение
                   </label>
                   <textarea
                     rows={6}
@@ -85,7 +78,7 @@ const FormLayout = () => {
                 </div>
 
                 <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                  Send Message
+                  Отправить сообщение
                 </button>
               </div>
             </form>
@@ -97,14 +90,14 @@ const FormLayout = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Sign In Form
+                Форма входа
               </h3>
             </div>
             <form action="#">
               <div className="p-6.5">
                 <div className="mb-4.5">
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Email
+                    Почта
                   </label>
                   <input
                     type="email"
@@ -115,7 +108,7 @@ const FormLayout = () => {
 
                 <div>
                   <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                    Password
+                    Пароль
                   </label>
                   <input
                     type="password"
@@ -152,19 +145,19 @@ const FormLayout = () => {
                         </span>
                       </div>
                     </div>
-                    <p>Remember me</p>
+                    <p>Запомнить меня</p>
                   </label>
 
                   <Link
                     href="#"
                     className="text-sm text-primary hover:underline"
                   >
-                    Forget password?
+                    Забыли пароль?
                   </Link>
                 </div>
 
                 <button className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-                  Sign In
+                  Войти
                 </button>
               </div>
             </form>

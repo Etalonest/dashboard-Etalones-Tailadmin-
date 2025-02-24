@@ -16,7 +16,8 @@ import { useSession } from "next-auth/react";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
 import { Vacancy } from "@/src/types/partner";
-import { p } from "framer-motion/client";
+import FirebaseImageUpload from "../../UploadForm/UploadForm";
+import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseImagesUpload";
 
 interface AddVacancyFormProps {
   profession: any;  // Получаем профессию
@@ -37,7 +38,12 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
 
-
+  const handleImageUpload = (imageUrl: string) => {
+    setSelectedImage(imageUrl);  // Set the URL of the uploaded image
+  };
+  const handleImagesUpload = (urls: string[]) => {
+    setImagesCarousel(urls); // Обновляем состояние с новыми URL-ами изображений
+  };
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -59,20 +65,21 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
       const newImages: string[] = [];
       Array.from(files).forEach((file) => {
         const reader = new FileReader();
-
+  
         reader.onloadend = () => {
           if (reader.result) {
-            newImages.push(reader.result as string);
+            newImages.push(reader.result as string);  // Сохраняем ссылки на изображения
             if (newImages.length === files.length) {
-              setImagesCarousel((prevImages) => [...prevImages, ...newImages]);
+              setImagesCarousel((prevImages) => [...prevImages, ...newImages]);  // Обновляем карусель
             }
           }
         };
-
-        reader.readAsDataURL(file);
+  
+        reader.readAsDataURL(file);  // Преобразуем в base64, если требуется
       });
     }
   };
+  
 
   useEffect(() => {
     if (imagesCarousel.length > 0) {
@@ -104,8 +111,10 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
     const driveData = getDriveDataForSubmit();
     const languesData = getLanguesDataForSubmit();
     const docsData = getDocsDataForSubmit();
+    formData.append('imageUrl', selectedImage || '');
     formData.append('partnerId', partnerId);
     formData.append('managerId', managerId);
+    formData.append('homeImageUrl', JSON.stringify(imagesCarousel)); 
     formData.append('drivePermis', JSON.stringify(driveData));
     formData.append('langue', JSON.stringify(languesData));
     formData.append('documents', JSON.stringify(docsData));
@@ -128,7 +137,6 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           id: uuidv4Original(),
         });
         onSubmitSuccess();
-        
       }
 
       if (data.error) {
@@ -237,20 +245,31 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
             </div>
           </div>
           <div className="flex justify-start flex-col gap-2">
-           <div className="grid grid-cols-3 gap-2">
+           {/* <div className="grid grid-cols-3 gap-2">
             <Label>Главное изображение:</Label>
            <Input type="file" name="image" className="col-span-2" 
            onChange={handleImageChange}/>
            </div>
             <Image src={selectedImage || "/images/logo/logo-red.png"}
              alt={""} width={450} height={300} 
-             className="rounded-md max-h-max" />
-         
+             className="rounded-md max-h-max" /> */}
+                   <div className="flex justify-start flex-col gap-2">
+            <FirebaseImageUpload onImageUpload={handleImageUpload} city={profession?.location} jobTitle={profession?.name} />
+            {selectedImage && (
+              <Image src={selectedImage} alt="Selected Image" width={450} height={300} className="rounded-md" />
+            )}
+          </div>
+
           <div className="flex justify-start flex-col gap-2">
             <div className="grid grid-cols-3 gap-2">
-            <Label>Фото жилья:</Label>
-            <Input type="file" multiple name="homeImages" className="col-span-2" 
-            onChange={handleImageCarouselChange}/>
+            {/* <Input type="file" multiple name="homeImages" className="col-span-2" 
+            onChange={handleImageCarouselChange}/> */}
+            <FirebaseImagesUpload
+              city={profession?.location} 
+              jobTitle={profession?.name}  
+              onImagesUpload={handleImagesUpload}  
+            />
+
             </div>
             <Carousel 
   orientation="horizontal"
@@ -262,18 +281,19 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
 >
   <CarouselContent className="-ml-4 flex">
   {imagesCarousel.map((image, index) => (
-                    <CarouselItem key={index} className="w-full flex-shrink-0 pl-4">
-                      <div className="p-1">
-                        <Image
-                          src={image}
-                          alt={`Image ${index + 1}`}
-                          width={350}
-                          height={200}
-                          className="rounded-md max-h-max mx-auto"
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
+  <CarouselItem key={index} className="w-full flex-shrink-0 pl-4">
+    <div className="p-1">
+      <Image
+        src={image}
+        alt={`Image ${index + 1}`}
+        width={350}
+        height={200}
+        className="rounded-md max-h-max mx-auto"
+      />
+    </div>
+  </CarouselItem>
+))}
+
   </CarouselContent>
   <CarouselPrevious type='button' className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
     &lt;

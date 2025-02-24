@@ -8,8 +8,7 @@ export default function Page() {
   return (
     <DefaultLayout>
         <AllCandidatesProvider>
-{/* <CandidatesInWork /> */}
-<UploadForm />
+<CandidatesInWork />
     </AllCandidatesProvider>
     </DefaultLayout>
   );

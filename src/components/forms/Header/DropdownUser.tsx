@@ -141,7 +141,7 @@ const DropdownUser = () => {
                     className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
                   >
                     <UserRound />
-                    My Profile
+                    Профиль
                   </Link>
                 </li>
                 <li>
@@ -150,7 +150,7 @@ const DropdownUser = () => {
                     className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
                   >
                     <NotebookTabs />
-                    My Contacts
+                    Контакты
                   </Link>
                 </li>
                 <li>
@@ -159,7 +159,7 @@ const DropdownUser = () => {
                     className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
                   >
                     <Settings />
-                    Account Settings
+                    Настройки акаунта
                   </Link>
                 </li>
                 <li>
@@ -168,7 +168,7 @@ const DropdownUser = () => {
                     className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
                   >
                     <LogOut />
-                    Sign Out
+                    Выйти
                   </button>
                 </li>
               </ul>
@@ -179,7 +179,7 @@ const DropdownUser = () => {
       ) : (
         // Если сессия отсутствует, показываем кнопку для входа
         <Link href="/auth/signin" className="flex items-center gap-4">
-          <span className="text-sm font-medium text-black dark:text-white">Sign In</span>
+          <span className="text-sm font-medium text-black dark:text-white">Вход</span>
         </Link>
       )}
     </ClickOutside>

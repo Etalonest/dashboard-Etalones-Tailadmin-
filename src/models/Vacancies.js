@@ -4,7 +4,6 @@ import {HomeImages} from './HomeImages';
 import {Partner} from './Partner';
 // import {Interview} from './Interview';
 import {Candidate} from './Candidate';
-import { type } from "os";
 const VacanciesSchema = new Schema({
     image: {
         type: Schema.Types.ObjectId,
