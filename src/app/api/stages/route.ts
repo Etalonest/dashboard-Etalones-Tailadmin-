@@ -5,11 +5,11 @@ import Stage from "@/src/models/Stage";
 export const GET = async (request: Request) => {
   try {
     await connectDB();
-    const stages = await Stage.find({})
+    const stages = await Stage.find({stage: 'curator'})
     .sort({ 'createdAt': -1 })
     .populate({
       path: 'candidate',
-      select: 'name', 
+      select: ['name','phone','ageNum','locations','citizenship', 'professions', 'documents','langue', 'drivePermis'], 
     })
     .populate({
       path: 'responsible',
@@ -20,8 +20,21 @@ export const GET = async (request: Request) => {
         select: 'name',
     })
     .populate({
-        path: 'vacancy',
-        select: ['title', 'location'],
+      path: 'vacancy',
+      select: ['title', 'location', 'salary', 'homePrice', 'documents', 'tasks'],
+      populate: {
+        path: 'partner',  
+        select: 'companyName',
+      }
+    })
+    
+    // .populate({
+    //     path: 'vacancy',
+    //     select: ['title', 'location', 'salary', 'homePrice', 'documents'],
+    // })
+    .populate({
+      path: 'tasks',
+      select: ['taskName','description','status'],
     })
     return new Response(JSON.stringify(stages), { status: 200 });
   } catch (error) {

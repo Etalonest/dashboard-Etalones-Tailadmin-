@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 import {Vacancies} from './Vacancies';
 import {Manager} from './Manager';
+import {Candidate} from './Candidate';
 
 const InterviewSchema = new Schema({
   status: {
@@ -22,6 +23,10 @@ const InterviewSchema = new Schema({
   comment: {
     type: String
   },
+  candidate: {
+    type: Schema.Types.ObjectId,
+    ref: 'Candidate'
+  }
 },
 { timestamps: true });
 

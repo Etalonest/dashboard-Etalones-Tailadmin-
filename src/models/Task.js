@@ -17,7 +17,7 @@ const TaskSchema = new Schema({
     type: String, // Описание задачи
   },
   status: {
-    type: String, // Статус задачи (например, "in-progress", "completed")
+    type: String, 
   },
   stage: {
     type: Schema.Types.ObjectId,

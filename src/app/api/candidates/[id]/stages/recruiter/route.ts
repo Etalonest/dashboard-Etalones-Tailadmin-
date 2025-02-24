@@ -6,13 +6,11 @@ import Candidate from '@/src/models/Candidate';
 
 export async function POST(req : any, { params }: any) {
   try {
-    const { candidateId } = params; // Получаем ID кандидата из URL
+    const { candidateId } = params; 
     const { status, responsible, comment, vacancy } = await req.json(); 
 
-    // Подключаемся к базе данных
     await connectDB();
 
-    // Проверяем, существует ли кандидат
     const candidate = await Candidate.findById(candidateId);
     if (!candidate) {
       return new Response(
@@ -21,21 +19,19 @@ export async function POST(req : any, { params }: any) {
       );
     }
 
-    // Создаем новый этап для кандидата
     const newStage = new Stage({
-      stage: 'recruiter', // Указываем этап
-      status: status, // Статус
-      candidate: candidateId, // ID кандидата
-      responsible: responsible, // Ответственный
-      comment: comment, // Комментарий
-      vacancy: vacancy, // Вакансия
+      stage: 'recruiter', 
+      status: status, 
+      candidate: candidateId, 
+      responsible: responsible, 
+      comment: comment, 
+      vacancy: vacancy, 
     });
  
-    // Сохраняем этап в базе данных
     await newStage.save();
 
-    // Обновляем кандидата, добавляем ссылку на новый этап
-    candidate.lastStage = newStage._id;
+    candidate.stages = newStage._id;
+    candidate.status = 'Рекрутируется'; 
     await candidate.save();
 console.log("candidate", candidate);
     return new Response(

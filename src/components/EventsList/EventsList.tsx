@@ -27,7 +27,7 @@ export default function EventsList() {
         const data = await response.json();
         console.log(data);  // для дебага: посмотри, что пришло с сервера
 
-        // Если нужно сортировать по дате или любому другому полю:
+        // Сортируем события по дате в убывающем порядке
         const sortedData = data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
         setEventHistory(sortedData);  // Сохраняем отсортированные события
@@ -41,28 +41,50 @@ export default function EventsList() {
     fetchEvents();
   }, []);
 
+  // Функция для группировки событий по дате
+  const groupEventsByDate = (events: any[]) => {
+    return events.reduce((acc, event) => {
+      const date = new Date(event.createdAt);
+      const dateString = date.toLocaleDateString("en-GB"); // Форматируем как "DD/MM/YYYY"
+      
+      if (!acc[dateString]) {
+        acc[dateString] = [];
+      }
+      acc[dateString].push(event);
+      return acc;
+    }, {});
+  };
+
+  // Группируем события по дате
+  const groupedEvents = groupEventsByDate(eventHistory);
+
   return (
     <div className="mt-5">
       {loading ? (
         <p>Загрузка...</p>
       ) : (
         <div>
-          {eventHistory.length > 0 ? (
-            eventHistory.map((event) => (
-              <div key={event._id} className="flex flex-col gap-2 justify-center items-start">
-                <div className="w-full border-b border-slate-400 pb-2"></div>
-                <div className="flex items-center gap-5 self-end">
-                  <span className="text-sm">{new Date(event.createdAt).toLocaleString()}</span>
-                  <span className="text-md">{event?.manager?.name}</span>
-                </div>
-                <div className="flex gap-5">
-                  <Badge className="bg-green-300">{event.eventType}</Badge>
-                  <span className="text-slate-400">
-                    <Link href={`/candidate/${event?.relatedId?._id}`} target="blank">
-                      {event.description} <span>{event?.appointed?.name}</span>
-                    </Link>
-                  </span>
-                </div>
+          {Object.keys(groupedEvents).length > 0 ? (
+            Object.keys(groupedEvents).map((date) => (
+              <div key={date} className="mb-5">
+                <h2 className="text-lg font-bold">{date}</h2> {/* Отображаем дату */}
+                {groupedEvents[date].map((event: any) => (
+                  <div key={event._id} className="flex flex-col gap-2 justify-center items-start">
+                    <div className="w-full border-b border-slate-400 pb-2"></div>
+                    <div className="flex items-center gap-5 self-end">
+                      <span className="text-sm">{new Date(event.createdAt).toLocaleString()}</span>
+                      <span className="text-md">{event?.manager?.name}</span>
+                    </div>
+                    <div className="flex gap-5">
+                      <Badge className="bg-green-300">{event.eventType}</Badge>
+                      <span className="text-slate-400">
+                        <Link href={`/candidate/${event?.relatedId?._id}`} target="blank">
+                          {event.description} <span>{event?.appointed?.name}</span>
+                        </Link>
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             ))
           ) : (

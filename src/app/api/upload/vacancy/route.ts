@@ -1,4 +1,4 @@
-// src/app/api/upload/route.ts
+// src/app/api/upload/vacancy/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/src/lib/firebase'; // Импортируйте ваш firebase конфиг
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 

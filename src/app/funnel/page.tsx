@@ -3,6 +3,7 @@ import  CandidatesInWork  from "@/src/components/CandidatesInWork/CandidatesInWo
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout"
 import { AllCandidatesProvider } from "@/src/context/AllCandidatesContext";
 import UploadForm from "@/src/components/UploadForm/UploadForm";
+
 export default function Page() {
   return (
     <DefaultLayout>
