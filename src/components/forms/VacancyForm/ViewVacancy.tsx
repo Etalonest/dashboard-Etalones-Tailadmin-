@@ -205,6 +205,7 @@ const ViewVacancy = ({ vacancy }: any) => {
 </div>
                 </CardFooter>
             </Card>
+          
         </div>
     );
 };

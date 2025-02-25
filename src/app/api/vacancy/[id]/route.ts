@@ -152,8 +152,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
     await connectDB();
   
     const vacancy = await Vacancies.findById(id)
-      .populate(["image", "homeImages", "partner", "manager"])
-      .lean() as any | null;
+      .populate(["partner", "manager",])
+      console.log("Вакансия",vacancy);
     if (!vacancy) {
       return NextResponse.json({ message: "Vacancy not found" }, { status: 404 });
     }

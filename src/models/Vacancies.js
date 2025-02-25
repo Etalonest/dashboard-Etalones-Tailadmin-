@@ -2,7 +2,6 @@ import { Schema, model, models } from "mongoose";
 import {VacancyImages} from './VacancyImages';
 import {HomeImages} from './HomeImages';
 import {Partner} from './Partner';
-// import {Interview} from './Interview';
 import {Candidate} from './Candidate';
 const VacanciesSchema = new Schema({
     image: {
@@ -102,7 +101,7 @@ const VacanciesSchema = new Schema({
         type: String,
 
       }],
-      iterviews: [{
+      interviews: [{
         type: Schema.Types.ObjectId,
         ref: 'Candidate'
       }],
