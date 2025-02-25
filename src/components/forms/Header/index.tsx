@@ -4,7 +4,7 @@ import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
-import Search from "../../Search/Search";
+import Search from "@/src/components/Search/Search";
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
