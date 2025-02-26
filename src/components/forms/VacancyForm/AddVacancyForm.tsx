@@ -59,26 +59,26 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
       console.log("Selected Image", selectedImage);
     }
   }, [selectedImage]);
-  const handleImageCarouselChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newImages: string[] = [];
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
+  // const handleImageCarouselChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = event.target.files;
+  //   if (files) {
+  //     const newImages: string[] = [];
+  //     Array.from(files).forEach((file) => {
+  //       const reader = new FileReader();
   
-        reader.onloadend = () => {
-          if (reader.result) {
-            newImages.push(reader.result as string);  // Сохраняем ссылки на изображения
-            if (newImages.length === files.length) {
-              setImagesCarousel((prevImages) => [...prevImages, ...newImages]);  // Обновляем карусель
-            }
-          }
-        };
+  //       reader.onloadend = () => {
+  //         if (reader.result) {
+  //           newImages.push(reader.result as string);  // Сохраняем ссылки на изображения
+  //           if (newImages.length === files.length) {
+  //             setImagesCarousel((prevImages) => [...prevImages, ...newImages]);  // Обновляем карусель
+  //           }
+  //         }
+  //       };
   
-        reader.readAsDataURL(file);  // Преобразуем в base64, если требуется
-      });
-    }
-  };
+  //       reader.readAsDataURL(file);  // Преобразуем в base64, если требуется
+  //     });
+  //   }
+  // };
   
 
   useEffect(() => {
@@ -221,7 +221,10 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
               <Label>Потенциал объекта:</Label>
               <Input type="text" name="workHours" defaultValue={profession?.workHours} />
             </div>
-           
+            <div>
+              <Label>График:</Label>
+              <Textarea  name="grafik" className="h-full"   />
+            </div>
             <Button className="absolute top-4 right-4 bg-green-800 text-white">Добавить вакансию</Button>
 
           </div>

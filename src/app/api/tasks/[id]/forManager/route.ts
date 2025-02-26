@@ -4,7 +4,12 @@ export const GET = async (request: Request, { params }: { params: { id: string }
   const { id } = params;
 
   try {
-    const tasks = await Task.find({ assignedTo: id }).populate(["assignedTo", "candidate","stage", "appointed"]);
+    const tasks = await Task.find({ 
+      assignedTo: id,
+      status: { $ne: "выполнена" } // Исключаем задачи со статусом "выполнена"
+    })
+    .sort({ createdAt: -1 }) // Сортировка по дате создания (от самых новых)
+    .populate(["assignedTo", "candidate", "stage", "appointed"]);
 
     if (tasks.length === 0) {
       console.log("Нет задач для менеджера с ID:", id);
@@ -23,3 +28,4 @@ export const GET = async (request: Request, { params }: { params: { id: string }
     );
   }
 };
+

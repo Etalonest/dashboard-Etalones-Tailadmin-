@@ -15,6 +15,8 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
+import FirebaseImageUpload from "../../UploadForm/UploadForm";
+import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseImagesUpload";
 
 
 
@@ -50,6 +52,12 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
       setImagesCarousel(images);
     }
   }, [vacancyH]);
+  const handleImageUpload = (imageUrl: string) => {
+    setSelectedImage(imageUrl);  // Set the URL of the uploaded image
+  };
+  const handleImagesUpload = (urls: string[]) => {
+    setImagesCarousel(urls); // Обновляем состояние с новыми URL-ами изображений
+  };
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -230,11 +238,12 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
           <div className="flex justify-start flex-col gap-2">
            <div className="grid grid-cols-3 gap-2">
             <Label>Главное изображение:</Label>
-           <Input type="file" name="image" className="col-span-2" 
-           onChange={handleImageChange}/>
+           {/* <Input type="file" name="image" className="col-span-2" 
+           onChange={handleImageChange}/> */}
            </div>
-           <figure>
-  {selectedImage ? (
+           <div className="flex justify-start flex-col gap-2">
+            <FirebaseImageUpload onImageUpload={handleImageUpload} city={vacancyH?.location} jobTitle={vacancyH?.name} />
+            {selectedImage ? (
     <Image
       src={selectedImage} 
       alt={vacancyH?.image?.name || "Uploaded file"} 
@@ -256,19 +265,72 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
       height={400}
     />
   )}
-</figure>
-
-
-            {/* <Image src={selectedImage || "/images/logo/logo-red.png"}
-             alt={""} width={450} height={300} 
-             className="rounded-md max-h-max" /> */}
-         
+          </div>    
           <div className="flex justify-start flex-col gap-2">
-            <div className="grid grid-cols-3 gap-2">
-            <Label>Фото жилья:</Label>
-            <Input type="file" multiple name="homeImages" className="col-span-2" 
-            onChange={handleImageCarouselChange}/>
+  <FirebaseImagesUpload
+      city={vacancyH?.location} 
+      jobTitle={vacancyH?.name}  
+      onImagesUpload={handleImagesUpload}  
+  />
+  
+  {/* Если есть новые картинки в imagesCarousel, отображаем их */}
+  <Carousel 
+    orientation="horizontal"
+    opts={{
+      align: "center", 
+      loop: true,     
+    }}
+    className="w-full"
+  >
+    <CarouselContent className="-ml-4 flex">
+      {imagesCarousel.length > 0 ? (
+        // Если есть новые изображения в imagesCarousel, показываем их
+        imagesCarousel.map((image: string, index: number) => (
+          <CarouselItem key={index} className="flex-shrink-0 md:w-1/4 pl-4 sm:w-1/2">
+            <div className="p-1">
+              <Image
+                src={image}
+                alt={`New Image ${index + 1}`}
+                width={350}
+                height={200}
+                className="rounded-md max-h-max mx-auto"
+              />
             </div>
+          </CarouselItem>
+        ))
+      ) : (
+        // Если новых изображений нет, показываем старые изображения
+        vacancyH?.homeImageFB?.map((image: string, index: number) => (
+          <CarouselItem key={index} className="flex-shrink-0 md:w-1/4 pl-4 sm:w-1/2">
+            <div className="p-1">
+              <Image
+                src={image}
+                alt={`Old Image ${index + 1}`}
+                width={350}
+                height={200}
+                className="rounded-md max-h-max mx-auto"
+              />
+            </div>
+          </CarouselItem>
+        ))
+      )}
+    </CarouselContent>
+    <CarouselPrevious type="button" className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
+      &lt;
+    </CarouselPrevious>
+    <CarouselNext type="button" className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
+      &gt;
+    </CarouselNext>
+  </Carousel>
+</div>
+     
+          {/* <div className="flex justify-start flex-col gap-2">
+          <FirebaseImagesUpload
+              city={vacancyH?.location} 
+              jobTitle={vacancyH?.name}  
+              onImagesUpload={handleImagesUpload}  
+            />
+           
             <Carousel 
   orientation="horizontal"
   opts={{
@@ -300,7 +362,7 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
   </CarouselNext>
 </Carousel>
 
-          </div>
+          </div> */}
           </div>
         </form>
       </CardContent>
