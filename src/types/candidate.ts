@@ -1,4 +1,3 @@
-import { Part } from "formidable";
 import { Partner } from "./partner";
 
 // Тип для профессии
@@ -43,6 +42,7 @@ export type Profession = {
   
   // Основной тип для кандидата
   export type Candidate = {
+    statusWork: any;
     avatar: any;
     stages: any;
     stage: any;

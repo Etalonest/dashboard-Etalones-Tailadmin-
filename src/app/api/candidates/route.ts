@@ -5,7 +5,6 @@ import Manager from '@/src/models/Manager';
 import Stage from '@/src/models/Stage';
 import Task from '@/src/models/Task';
 import EventLog from '@/src/models/EventLog';
-import { metadata } from 'framer-motion/client';
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -156,11 +155,12 @@ export const POST = async (request: Request) => {
     const newTask1 = new Task({
       taskName: 'Анкетирование', // Название задачи
       description: 'Провести анкетирование кандидата', // Описание
-      status: 'in-progress', // Статус задачи
+      status: 'не выполнена', // Статус задачи
       stage: newStage._id, // Связь с этапом
       candidate: newCandidate._id, // Связь с кандидатом
       assignedTo: managerId, // Менеджер, ответственный за задачу
       dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 1 день)
+      appointed: managerId
     });
     
     await newTask1.save(); // Сохраняем задачу 1
@@ -169,11 +169,13 @@ export const POST = async (request: Request) => {
     const newTask2 = new Task({
       taskName: 'Подбор вакансии', // Название задачи
       description: 'Выбрать вакансии для кандидата', // Описание
-      status: 'in-progress', // Статус задачи
+      status: 'не выполнена', // Статус задачи
       stage: newStage._id, // Связь с этапом
       candidate: newCandidate._id, // Связь с кандидатом
       assignedTo: managerId, // Менеджер, ответственный за задачу
       dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 2 дня)
+      appointed: managerId
+
     });
     
     await newTask2.save();

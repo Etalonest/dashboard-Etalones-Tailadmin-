@@ -138,7 +138,7 @@ import Image from "next/image";
 import SidebarItem from "@/src/components/Sidebar/SidebarItem";
 import ClickOutside from "@/src/components/ClickOutside";
 import useLocalStorage from "@/src/hooks/useLocalStorage";
-import { AlarmCheck, AlarmClockCheck, ArrowRight, ArrowUpRight, BookCheck, CalendarDays, ChartArea, History, Menu, NotebookText, Settings, Table, User, UserCircle } from "lucide-react";
+import { AlarmCheck, AlarmClockCheck, ArrowRight, ArrowUpRight, BookCheck, CalendarDays, Camera, ChartArea, History, Menu, NotebookText, Settings, Table, User, UserCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { label } from "framer-motion/client";
 
@@ -213,11 +213,11 @@ const menuGroups = [
         label: "Задачи",
         route: "/tasks",
         rolesAllowed: ["admin", "manager", "recruiter"],
-        children:[
-          { label: "Все задачи", route: "/tasks" },
-          { label: "Выполненые задачи", route: "/task/completed", rolesAllowed: [ "admin"] },
-          { label: "Не выполненые задачи", route: "/task/notCompleted", rolesAllowed: ["admin"] },
-          { label: "Отменённые задачи", route: "/task/canceled" },
+        children: [
+          { label: 'Все задачи', route: '/tasks' },
+          { label: 'Выполненные задачи', route: '/tasks?status=выполнена', rolesAllowed: ['admin'] },
+          { label: 'Не выполненные задачи', route: '/tasks?status=не выполнена', rolesAllowed: ['admin'] },
+          { label: 'Отменённые задачи', route: '/tasks?status=отменено' },
         ], 
       },
       {
@@ -225,6 +225,12 @@ const menuGroups = [
         label: "Таблицы",
         route: "/tables",
         rolesAllowed: ["admin", "manager", "recruiter"], // доступно для админа и менеджера
+      },
+      {
+        icon: <Camera />,
+        label: "Контент",
+        route: "/content",
+        rolesAllowed: ["admin", "manager", "recruiter"], // доступно только для админа
       },
       {
         icon: <Settings />,

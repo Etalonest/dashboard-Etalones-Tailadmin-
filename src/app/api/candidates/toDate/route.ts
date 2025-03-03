@@ -35,18 +35,26 @@ export const GET = async (request: NextRequest) => {
 
     // Получаем кандидатов за период
     const candidates = await Candidate.find(filter)
-      .sort({ 'updatedAt': -1 }) // Сортировка по дате обновления (если необходимо)
-      .populate([
-        'manager', 
-        'documents', 
-        {
-          path: 'stages', 
-          populate: {
-            path: 'tasks', // Заполняем задачи, связанные с этапом
-            model: 'Task' // Убедитесь, что указали модель для задач
+    .sort({ 'updatedAt': -1 })
+    .populate([
+      'manager',
+      'documents',
+      {
+        path: 'stages',
+        populate: [
+          {
+            path: 'tasks',
+            model: 'Task',
+          },
+          {
+            path: 'responsible',  // Путь к полю responsible внутри stages
+            model: 'Manager',     // Указываем модель Manager, так как responsible ссылается на Manager
           }
-        }
-      ]);
+        ],
+      },
+    ]);
+  
+  
 
     return new NextResponse(JSON.stringify({ candidates }), { status: 200 });
   } catch (error) {

@@ -1,8 +1,8 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import { listFilesInFolder, uploadFile, deleteFile } from './FirebaseService'; // Импортируем ваши функции
 import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader } from '@/components/ui/card';
 import { CircleX, SquareChevronLeft } from 'lucide-react';
 
 interface FileData {
@@ -89,7 +89,7 @@ const FileManager = () => {
       }
     }
 
-    return breadcrumbs.length > 0 ? [ ...breadcrumbs] : ['Root'];
+    return breadcrumbs.length > 0 ? [ ...breadcrumbs] : ['Путь к папке'];
   };
 
   // Функция для выхода в родительскую папку
@@ -100,13 +100,12 @@ const FileManager = () => {
 
   return (
     <div>
-      <h2>File Manager</h2>
-      <div>
+      {/* <div>
         <Input type="file" onChange={handleFileUpload} />
-      </div>
+      </div> */}
       <div>
         {loading ? (
-          <p>Loading...</p>
+          <p>Загружаем...</p>
         ) : (
           <>
             <div className='flex  items-center gap-2'>
@@ -122,24 +121,24 @@ const FileManager = () => {
             </div>
 
             <div>
-              <h4>Folders:</h4>
-              <ul>
+              <h4>Папки:</h4>
+              <div className='grid grid-cols-4 gap-2'>
                 {folders.length > 0 ? (
                   folders.map((folderPath) => (
-                    <li key={folderPath}>
-                      <button onClick={() => handleFolderChange(folderPath)}>
+                    <Card key={folderPath} className='w-[33%]'>
+                      <button onClick={() => handleFolderChange(folderPath)} className='flex justify-center items-center w-full my-5'>
                         {folderPath}
                       </button>
-                    </li>
+                    </Card>
                   ))
                 ) : (
-                  <p>No folders available.</p>
+                  <p>Нет папок в этой папке.</p>
                 )}
-              </ul>
+              </div>
             </div>
 
             <div>
-              <h4>Files:</h4>
+              <h4>Файлы:</h4>
               <div className='grid grid-cols-3 gap-2'>
   {files.length > 0 ? (
     files.map((file) => (
@@ -159,7 +158,7 @@ const FileManager = () => {
       </Card>
     ))
   ) : (
-    <p>No files available in this folder.</p>
+    <p>Нет файлов в этой папке.</p>
   )}
 </div>
 
