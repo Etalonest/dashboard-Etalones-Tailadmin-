@@ -10,7 +10,7 @@ import { Candidate } from "@/src/types/candidate";
 import { useSession } from "next-auth/react";
 export default function FromRecruiter() {
   const { data } = useSession()
-  const managerId = data?.managerId || 'defaultManagerId';
+  const managerRole = data?.managerRole || 'guest';
   const [stageData, setStageData] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [formType, setFormType] = useState<"viewCandidate" | null>(null);
@@ -18,6 +18,7 @@ export default function FromRecruiter() {
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
 
   useEffect(() => {
+    if (managerRole === 'manager') {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/stages', {
@@ -52,7 +53,7 @@ export default function FromRecruiter() {
     };
 
     fetchData();
-  }, []);
+  }}, []);
 
   const toggleSidebar = (type: "viewCandidate", candidate?: Candidate) => {
     setFormType(type);

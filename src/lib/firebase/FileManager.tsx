@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { listFilesInFolder, uploadFile } from './FirebaseService'; // Импортируем функцию uploadFile
-import { getDownloadURL, StorageReference } from 'firebase/storage';
+import { listFilesInFolder, uploadFile, deleteFile } from './FirebaseService'; // Импортируем ваши функции
+import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { CircleX, SquareChevronLeft } from 'lucide-react';
 
 interface FileData {
   name: string;
@@ -18,19 +21,11 @@ const FileManager = () => {
     const fetchFilesAndFolders = async () => {
       setLoading(true);
       try {
-        // listFilesInFolder теперь возвращает объект с полями items и prefixes
+        // Используем функцию listFilesInFolder из FirebaseService
         const { items, prefixes } = await listFilesInFolder(selectedFolder);
 
-        // Используем Promise.all, чтобы получить все URL файлов асинхронно
-        const filesData = await Promise.all(
-          items.map(async (fileRef: any) => {
-            const url = await getDownloadURL(fileRef); // Дожидаемся получения URL
-            return { name: fileRef.name, fullPath: fileRef.fullPath, url }; // Возвращаем объект с данными о файле
-          })
-        );
-
-        setFiles(filesData); // Устанавливаем полученные данные о файлах
-        setFolders(prefixes); // Устанавливаем папки из prefixes
+        setFiles(items); // Ставим файлы
+        setFolders(prefixes); // Ставим папки
       } catch (error) {
         console.error('Error fetching files:', error);
       } finally {
@@ -51,8 +46,9 @@ const FileManager = () => {
     const file = event.target.files?.[0]; // Получаем объект File
     if (file) {
       try {
-        await uploadFile(file, selectedFolder);  // Загружаем файл в текущую папку
-        alert('File uploaded successfully!');
+        // Загружаем файл в текущую папку
+        const downloadURL = await uploadFile(file, selectedFolder);
+        alert('File uploaded successfully! URL: ' + downloadURL);
       } catch (error) {
         console.error('Error uploading file:', error);
         alert('Error uploading file');
@@ -62,18 +58,69 @@ const FileManager = () => {
     }
   };
 
+  // Функция для удаления файла
+  const handleDeleteFile = async (filePath: string) => {
+    try {
+      await deleteFile(filePath); // Вызываем функцию удаления из Firebase
+      // После удаления удаляем файл из списка
+      setFiles((prevFiles) => prevFiles.filter((file) => file.fullPath !== filePath));
+      alert('File deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('Error deleting file');
+    }
+  };
+
+  // Функция для создания хлебных крошек
+  const getBreadcrumbs = () => {
+    const pathParts = selectedFolder.split('/').filter((part) => part); // Разбиваем путь на части
+    const breadcrumbs = [];
+
+    let currentPath = '';
+    for (let i = 0; i < pathParts.length; i++) {
+      currentPath += '/' + pathParts[i];
+      breadcrumbs.push(
+        <span key={currentPath} style={{ cursor: 'pointer', color: 'blue' }} onClick={() => setSelectedFolder(currentPath)}>
+          {pathParts[i]}
+        </span>
+      );
+      if (i < pathParts.length - 1) {
+        breadcrumbs.push(' / '); // Добавляем разделитель между крошками
+      }
+    }
+
+    return breadcrumbs.length > 0 ? [ ...breadcrumbs] : ['Root'];
+  };
+
+  // Функция для выхода в родительскую папку
+  const handleGoBack = () => {
+    const parentFolder = selectedFolder.substring(0, selectedFolder.lastIndexOf('/'));
+    setSelectedFolder(parentFolder || ''); // Если мы в корне, очищаем путь
+  };
+
   return (
     <div>
       <h2>File Manager</h2>
       <div>
-        <input type="file" onChange={handleFileUpload} />
+        <Input type="file" onChange={handleFileUpload} />
       </div>
       <div>
-        <h3>Files in {selectedFolder || 'Root'}</h3>
         {loading ? (
           <p>Loading...</p>
         ) : (
           <>
+            <div className='flex  items-center gap-2'>
+            {selectedFolder && selectedFolder !== '' && (
+                <button onClick={handleGoBack} style={{ marginTop: '10px' }}>
+                 <SquareChevronLeft/>
+                </button>
+              )}
+              <div>
+                {getBreadcrumbs()}
+              </div>
+              
+            </div>
+
             <div>
               <h4>Folders:</h4>
               <ul>
@@ -90,20 +137,32 @@ const FileManager = () => {
                 )}
               </ul>
             </div>
+
             <div>
               <h4>Files:</h4>
-              <ul>
-                {files.length > 0 ? (
-                  files.map((file) => (
-                    <li key={file.fullPath}>
-                      <img src={file.url} alt={file.name} width={100} />
-                      <p>{file.name}</p>
-                    </li>
-                  ))
-                ) : (
-                  <p>No files available in this folder.</p>
-                )}
-              </ul>
+              <div className='grid grid-cols-3 gap-2'>
+  {files.length > 0 ? (
+    files.map((file) => (
+      <Card key={file.fullPath} className='relative'>
+        <CardHeader >
+          <p className='truncate w-20' title={file.name}>{file.name}</p> 
+          <button onClick={() => handleDeleteFile(file.fullPath)} className='absolute right-2 top-2'>
+            <CircleX color='red' />
+          </button>
+        </CardHeader>
+        <Image 
+          src={file.url} 
+          alt={file.name} 
+          width={380} 
+          height={380} 
+        />
+      </Card>
+    ))
+  ) : (
+    <p>No files available in this folder.</p>
+  )}
+</div>
+
             </div>
           </>
         )}
