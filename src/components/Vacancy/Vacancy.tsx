@@ -86,10 +86,8 @@ const Vacancy = () => {
       return;
     }
 
-    // Логируем ID вакансии
     console.log("Vacancy ID from profession:", vacancyId);
 
-    // Запрашиваем вакансию по ID
     const vacancy = await fetchVacancy(vacancyId);
 
     if (!vacancy) {
@@ -109,10 +107,8 @@ const Vacancy = () => {
       return;
     }
 
-    // Логируем ID вакансии
     console.log("Vacancy ID from profession:", vacancyId);
 
-    // Запрашиваем вакансию по ID
     const vacancy = await fetchVacancy(vacancyId);
 
     if (!vacancy) {

@@ -11,7 +11,7 @@ import ViewPartnerForm from "@/src/components/forms/FormPartner/ViewParnterForm"
 import AddVacancyForm from "../forms/VacancyForm/AddVacancyForm";
 import EditVacancyForm from "../forms/VacancyForm/EditVacancyForm";
 import { Candidate } from "@/src/types/candidate";
-import { Partner, Vacancy } from "@/src/types/partner";
+import { Partner } from "@/src/types/partner";
 import FormCreateManager from "@/src/components/forms/FormCreateManager/FormCreateManager";
 import { ProfessionPartner } from "@/src/types/professionParnter";
 import ViewVacancy from "../forms/VacancyForm/ViewVacancy";
@@ -22,7 +22,7 @@ interface SidebarProps {
   setSidebarROpen: (arg: boolean) => void;
   selectedCandidate?: Candidate | null;
   selectedPartner?: Partner | null;
-  selectedVacancy?: Vacancy | null;
+  selectedVacancy?: VacancyType | null;
   selectedProfession?: ProfessionPartner | null;
   formType?: "addCandidate" | "editCandidate" | "viewCandidate" | "addVacancy" | "editVacancy" | "viewVacancy" | "createManager" | "addPartner" | "viewPartner" | "editPartner" |null;
 }
@@ -39,7 +39,7 @@ const SidebarRight = ({
   const [formData, setFormData] = useState<Candidate | null>(null);
   const [partnerData, setPartnerData] = useState<Partner | null>(null);
   const [vacancyData, setVacancyData] = useState<VacancyType | null>(null);
-  const [professionData, setProfessionData] = useState<any | null>(null);
+  // const [professionData, setProfessionData] = useState<any | null>(null);
   
 useEffect(() => {
     if (selectedVacancy) {
@@ -47,17 +47,7 @@ useEffect(() => {
       setVacancyData(selectedVacancy);
     }
   }, [selectedVacancy]);
-  useEffect(() => {
-    if (selectedPartner) {
-      console.log("selectedPartner updated:", selectedPartner);
-      setPartnerData(selectedPartner);
-      
-      // Если партнер есть, извлекаем профессию для вакансии (например, первую профессию)
-      if (selectedPartner.professions && selectedPartner.professions.length > 0) {
-        setProfessionData(selectedPartner.professions[0]); // Пример, если берем первую профессию
-      }
-    }
-  }, [selectedPartner]);
+
   useEffect(() => {
     if (selectedPartner) {
       console.log("selectedPartner updated:", selectedPartner);
@@ -65,7 +55,6 @@ useEffect(() => {
     }
   }, [selectedPartner]);
 
-  // Логируем selectedCandidate для отладки
   useEffect(() => {
     console.log("selectedCandidate updated:", selectedCandidate);
     if (selectedCandidate) {
@@ -79,8 +68,9 @@ useEffect(() => {
         setFormData(null); 
       }
     }
-  }, [sidebarROpen, formType]); // Зависимость от состояния сайдбара и типа формы
+  }, [sidebarROpen, formType]); 
   const closeSidebar = () => {
+    
     setSidebarROpen(false);
     if (formType !== "viewCandidate" && formType !== "viewPartner") {
       setFormData(null); 
@@ -93,7 +83,7 @@ useEffect(() => {
       case "editCandidate":
         return <EditCandidateForm candidate={formData}  onSubmitSuccess={closeSidebar}/>;
       case "viewCandidate":
-        return <ViewCandidateForm candidate={formData} onSubmitSuccess={closeSidebar}/>;
+        return <ViewCandidateForm candidate={formData} />;
       case "createManager":
         return <FormCreateManager onSubmitSuccess={closeSidebar}/>;
       case "addPartner":

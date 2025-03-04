@@ -1,5 +1,10 @@
+import { InterviewType } from "./interview";
 export type VacancyType = {
+    imageFB: any;
+    homeImagesFB: any[];
     homeImages: any[];
+    manager: any;
+    interview: InterviewType[]
     image: any;
     documents: any[];
     urgently: boolean;
@@ -31,7 +36,7 @@ export type VacancyType = {
     getStart: Date;
     pDocs: string[];
     candidates: string[]; 
-    interview: string[];
+    interviews: InterviewType[];
   };
 
   

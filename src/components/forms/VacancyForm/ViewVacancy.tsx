@@ -10,18 +10,10 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import Image from "next/image";
-import { Key, useEffect } from "react";
+import { useEffect } from "react";
 import { Blocks, ChevronRight, CircleCheck, HandCoins, HousePlus, MapPinned, Minus } from "lucide-react";
 import { Label } from "@radix-ui/react-dropdown-menu";
-
-const imagesCarousel = [
-"/images/cards/cards-04.png",
-"/images/cards/cards-05.png",
-"/images/cards/cards-06.png",
-"/images/cards/cards-04.png",
-"/images/cards/cards-05.png",
-"/images/cards/cards-06.png",
-];    
+  
 const ViewVacancy = ({ vacancy }: any) => {
     const vacancyH = vacancy?.vacancy;
     console.log("vacancyH", vacancyH);

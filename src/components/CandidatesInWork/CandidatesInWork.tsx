@@ -95,7 +95,7 @@ const CandidatesInWork = () => {
                                     {candidate.comment.map((comment: any, index: number) => (
                                       <div key={index}>
                                         <span className="text-xs text-muted-foreground">
-                                          {comment.author}: {comment.text}
+                                          {comment?.author?.name}: {comment?.text}
                                         </span>
                                       </div>
                                     ))}

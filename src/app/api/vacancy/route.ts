@@ -6,20 +6,22 @@ import Manager from "@/src/models/Manager";
 import EventLog from "@/src/models/EventLog";
 
 export const GET = async (req: Request) => {
-  const url = new URL(req.url);
-  const professionNames = url.searchParams.get('professionNames');
-  if (!professionNames) {
-    return new NextResponse("Параметр professionNames обязателен", { status: 400 });
-  }
-
-  const professionList = professionNames.split(","); 
-
   try {
     await connectDB();
 
-    const vacancies = await Vacancies.find({
-      title: { $in: professionList }  
-    }).sort({ title: 1 }).populate('manager');
+    const vacancies = await Vacancies.find().sort({ title: 1 })
+    .populate({
+      path: 'manager',
+      select: 'name',
+    }) 
+    .populate({
+      path: 'interviews',
+      select: 'name',
+    })
+    .populate({
+      path: 'candidates',
+      select: 'name',
+    })
 
     return new NextResponse(JSON.stringify(vacancies), { status: 200 });
   } catch (error: any) {

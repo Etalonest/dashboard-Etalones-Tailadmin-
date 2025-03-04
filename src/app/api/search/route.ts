@@ -21,6 +21,8 @@ export const GET = async (request: NextRequest) => {
       $or: [
         { name: { $regex: query, $options: 'i' } },
         { phone: { $regex: query, $options: 'i' } },
+        { 'professions.name': { $regex: query, $options: 'i' } } 
+
       ]
     }).populate(['manager', 'stages']);
 
@@ -29,6 +31,7 @@ export const GET = async (request: NextRequest) => {
       $or: [
         { name: { $regex: query, $options: 'i' } },
         { phone: { $regex: query, $options: 'i' } },
+        { 'professions.name': { $regex: query, $options: 'i' } }
       ]
     }).populate(['manager']); // Если у партнёров есть такие же связи, как у кандидатов
 

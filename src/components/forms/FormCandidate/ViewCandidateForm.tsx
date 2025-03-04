@@ -6,7 +6,7 @@ import { Candidate } from '@/src/types/candidate';
 import { p } from 'framer-motion/client';
 
 
-const ViewCandidateForm = ({ candidate, onSubmitSuccess }: { candidate: Candidate | null, onSubmitSuccess: any }) => {
+const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null, }) => {
 
   if (!candidate) {
     return <p>Нет данных о кандидате</p>;

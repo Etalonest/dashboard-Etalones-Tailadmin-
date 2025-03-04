@@ -4,7 +4,7 @@ import Candidate from '@/src/models/Candidate';
 
 export const GET = async (request: NextRequest) => {
   try {
-    await connectDB(); // Подключение к базе данных
+    await connectDB(); 
 
     const { searchParams } = new URL(request.url);
 
@@ -47,8 +47,8 @@ export const GET = async (request: NextRequest) => {
             model: 'Task',
           },
           {
-            path: 'responsible',  // Путь к полю responsible внутри stages
-            model: 'Manager',     // Указываем модель Manager, так как responsible ссылается на Manager
+            path: 'responsible',  
+            model: 'Manager',     
           }
         ],
       },

@@ -50,6 +50,9 @@ export type Profession = {
     };
   };
  export type Vacancy = {
+   interviews: any[];
+   imageFB: string;
+   manager: any;
   homeImages: any[];
     image: any;
     documents: any[];

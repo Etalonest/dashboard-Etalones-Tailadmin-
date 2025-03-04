@@ -1,74 +1,77 @@
+'use client'
 import React, { useState, useEffect } from "react";
-import SearchResults from "./SearchResultsTable";
+import SearchResultsTable from "./SearchResultsTable"; 
+import SidebarRight from "../SidebarRight"; 
 
-// Тип для результата поиска
 interface SearchResult {
   id: string;
   name: string;
   phone: string;
+  profession?: string;
   type: "candidate" | "partner";
   private?: boolean;
 }
 
 const Search = () => {
-  const [inputValue, setInputValue] = useState<string>(""); // локальный стейт для управления значением в input
-  const [results, setResults] = useState<SearchResult[]>([]); // стейт для хранения результатов поиска
-  const [isLoading, setIsLoading] = useState<boolean>(false); // стейт для загрузки данных
-  const [debouncedValue, setDebouncedValue] = useState<string>(""); // стейт для дебаунса
+  const [inputValue, setInputValue] = useState<string>(""); 
+  const [results, setResults] = useState<any[]>([]); 
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const [debouncedValue, setDebouncedValue] = useState<string>(""); 
+  const [sidebarOpen, setSidebarOpen] = useState(false); 
+  const [selectedCandidate, setSelectedCandidate] = useState<any | null>(null); 
+  const [selectedPartner, setSelectedPartner] = useState<any | null>(null);
+  const [formType, setFormType] = useState<"viewCandidate" | "viewPartner" | null>(null); 
 
-  // Обработка изменения текста в поле поиска
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  // Дебаунс: отложенное обновление состояния поиска
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedValue(inputValue); // Обновляем значение для дебаунса
-    }, 500); // задержка 500 мс
+      setDebouncedValue(inputValue); 
+    }, 500); 
 
     return () => {
       clearTimeout(timer);
     };
   }, [inputValue]);
 
-  // Основной useEffect для обработки запроса к API
   useEffect(() => {
     if (debouncedValue.trim() === "") {
-      setResults([]); // Если строка поиска пуста, очищаем результаты
+      setResults([]); 
       return;
     }
 
     setIsLoading(true);
 
-    fetch(`/api/search?query=${debouncedValue}`)
+    const queryParams = new URLSearchParams({ query: debouncedValue.trim() }).toString();
+
+    fetch(`/api/search?${queryParams}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Полученные данные:", data); // Логируем данные для отладки
-
-        // Проверяем, существует ли поле candidates и является ли оно массивом
-        const candidates = Array.isArray(data.results) ? data.results.filter((result: any) => result.type === "candidate") : [];
-        const partners = Array.isArray(data.results) ? data.results.filter((result: any) => result.type === "partner") : [];
-
-        console.log("Кандидаты:", candidates); // Логируем кандидатов
-        console.log("Партнеры:", partners);   // Логируем партнеров
-
-        // Выводим оба массива в стейт
-        setResults([...candidates, ...partners]); // Объединяем их по порядку
+        setResults(data.results || []); 
       })
       .catch((error) => {
         console.error("Ошибка при получении результатов поиска:", error);
-        setResults([]); // Очистить результаты в случае ошибки
+        setResults([]); 
       })
       .finally(() => {
         setIsLoading(false);
       });
-  }, [debouncedValue]); // Запускаем эффект, когда изменяется debouncedValue
+  }, [debouncedValue]);
 
-  // Логирование результатов поиска
-  useEffect(() => {
-    console.log("Результаты поиска:", results);
-  }, [results]);
+  const handleSelectResult = (result: SearchResult) => {
+    if (result.type === "candidate") {
+      setSelectedCandidate(result);  
+      setFormType("viewCandidate");  
+    } else if (result.type === "partner") {
+      setSelectedPartner(result);    
+      setFormType("viewPartner");    
+    }
+    setSidebarOpen(true);
+  };
+  
+  
 
   return (
     <div className="relative w-full">
@@ -77,7 +80,7 @@ const Search = () => {
           type="text"
           value={inputValue}
           onChange={handleChange}
-          placeholder={isLoading ? "Загрузка..." : "Поиск по имени или телефону..."}
+          placeholder={isLoading ? "Загрузка..." : "Поиск..."}
           className="w-full bg-transparent pl-9 pr-4 font-medium focus:outline-none xl:w-125"
         />
       </div>
@@ -87,9 +90,18 @@ const Search = () => {
           className="absolute w-max max-h-60 overflow-y-auto bg-white border border-gray-200 shadow-lg z-10"
           style={{ top: "100%", left: 0 }}
         >
-          <SearchResults results={results} />
+          <SearchResultsTable results={results} onSelectResult={handleSelectResult} />
         </div>
       )}
+
+          <SidebarRight
+          sidebarROpen={sidebarOpen}
+          setSidebarROpen={setSidebarOpen}
+          selectedCandidate={formType === "viewCandidate" ? selectedCandidate : null} 
+          selectedPartner={formType === "viewPartner" ? selectedPartner : null} 
+          formType={formType} 
+        />
+
     </div>
   );
 };

@@ -175,7 +175,6 @@ export default function AllTasks() {
     fetchTasks();
   }, [fetchTasks]);
 
-  // Функция для обновления статуса задачи
   const handleStatusChange = async (taskId: string, newStatus: string) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
@@ -185,7 +184,6 @@ export default function AllTasks() {
       });
 
       if (response.ok) {
-        // Обновить статус задачи в состоянии
         setTasks(prevTasks =>
           prevTasks.map(task =>
             task._id === taskId ? { ...task, status: newStatus } : task
