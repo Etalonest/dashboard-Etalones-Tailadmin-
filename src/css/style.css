@@ -7,11 +7,14 @@
 @layer base {
     body {
         @apply relative z-1 bg-whiten font-satoshi text-base font-normal text-body;
+        overflow-x: hidden;
     }
   :root {
         --radius: 0.5rem;
     }
 }
+
+
 
 @layer components {
 }

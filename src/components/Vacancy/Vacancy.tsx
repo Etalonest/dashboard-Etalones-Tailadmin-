@@ -1,5 +1,5 @@
 'use client'
-import { Eye, Plus, Settings, UserRoundPlus } from "lucide-react";
+import { Eye, Plus, Settings } from "lucide-react";
 import { Partner } from '@/src/types/partner';
 import { useState, useEffect, useCallback, } from 'react';
 import SidebarRight from '@/src/components/SidebarRight';
@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ProfessionPartner } from "@/src/types/professionParnter";
 import { VacancyType } from "@/src/types/vacancy";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const Vacancy = () => {
 
   const { data: session } = useSession();
@@ -23,10 +24,20 @@ const Vacancy = () => {
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [selectedProfession, setSelectedProfession] = useState<ProfessionPartner | null>(null);
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]); // для выбранных групп
+
   const currentPartners = filteredPartners.slice(
     (currentPage - 1) * partnersPerPage,
     currentPage * partnersPerPage
   );
+  const groupedPartners = filteredPartners.reduce((acc, partner) => {
+    const status = partner.status || "Без статуса";
+    if (!acc[status]) {
+      acc[status] = [];
+    }
+    acc[status].push(partner);
+    return acc;
+  }, {} as Record<string, Partner[]>);
   const fetchVacancy = async (vacancyId: string) => {
     try {
       const response = await fetch(`/api/vacancy/${vacancyId}`);
@@ -121,7 +132,13 @@ const Vacancy = () => {
     toggleSidebar("viewVacancy", partner, profession, vacancy);
   };
 
-
+  const handleGroupChange = (group: string, checked: boolean) => {
+    if (checked) {
+      setSelectedGroups((prev) => [...prev, group]);
+    } else {
+      setSelectedGroups((prev) => prev.filter((g) => g !== group));
+    }
+  };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
@@ -139,6 +156,24 @@ const Vacancy = () => {
           selectedProfession={selectedProfession}
           selectedVacancy={selectedVacancy}
         />
+         <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="px-4 py-2 border rounded-md">Группировать по статусу</button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Выберите статус</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {Object.keys(groupedPartners).map((status) => (
+              <DropdownMenuCheckboxItem
+                key={status}
+                checked={selectedGroups.includes(status)}
+                onCheckedChange={(checked: boolean) => handleGroupChange(status, checked)}
+              >
+                {status}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <input
           type="text"
           value={searchQuery}
@@ -150,8 +185,8 @@ const Vacancy = () => {
 
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead >Заказчик</TableHead>
+          <TableRow className="grid grid-cols-5 gap-2">
+            <TableHead>Заказчик</TableHead>
             <TableHead>Свободные места</TableHead>
             <TableHead className="text-right">На собеседовании</TableHead>
             <TableHead className="text-right">Документы</TableHead>
@@ -159,11 +194,13 @@ const Vacancy = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {managerId && currentPartners.map((partner, index) => (
-            <TableRow
+        {Object.keys(groupedPartners).filter(status => selectedGroups.includes(status)).map((status) => (
+            <div
               // className={`grid grid-cols-3 sm:grid-cols-5 ${'border-b border-stroke dark:border-strokedark'}`}
-              key={index}
+              key={status}
             >
+                            {groupedPartners[status].map((partner, index) => (
+                              <TableRow key={index} className="grid grid-cols-5 gap-2">
               <TableCell>
                 <div className="flex ">
                   <p className="hidden text-black dark:text-white sm:block">{partner.companyName || 'Не указано'}</p>
@@ -215,8 +252,9 @@ const Vacancy = () => {
 
                 </div>
               </TableCell>
-
-            </TableRow>
+              </TableRow>
+                            ))}
+            </div>
           ))}
         </TableBody>
       </Table>
