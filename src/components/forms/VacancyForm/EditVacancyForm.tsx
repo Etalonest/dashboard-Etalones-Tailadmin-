@@ -32,13 +32,19 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
   const [selectedImage, setSelectedImage] = useState(vacancyH?.image || '');
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
+
+  const [published, setPublished] = useState(vacancyH?.published || false);
+  const [urgently, setUrgently] = useState(vacancyH?.urgently || false);
+  const [last, setLast] = useState(vacancyH?.last || false);
+  
+
   useEffect(() => {
     if (vacancyH) {
       setDrivePermis(vacancyH.drivePermis || []);
       setLangues(vacancyH.langues || []);
       setDocuments(vacancyH.documents || []);
       setSelectedImage(vacancyH.image || '');
-      setImagesCarousel(vacancyH.images || []); // Пример для изображения
+      setImagesCarousel(vacancyH.images || []); 
     }
   }, [vacancyH]);
   useEffect(() => {
@@ -84,6 +90,19 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
   const handleDocumentsChange = (selected: string[]) => {
     setDocuments(selected);
   };
+
+  const handlePublishedChange = (checked: boolean) => {
+    setPublished(checked);  // Обновляем состояние на true/false
+  };
+  
+  const handleUrgentlyChange = (checked: boolean) => {
+    setUrgently(checked);
+  };
+  
+  const handleLastChange = (checked: boolean) => {
+    setLast(checked);
+  };
+  
   const getDriveDataForSubmit = () => {
     return drivePermis;
   };
@@ -105,6 +124,10 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
     formData.append('drivePermis', JSON.stringify(driveData)); 
     formData.append('langue', JSON.stringify(languesData));
     formData.append('documents', JSON.stringify(documentsData));
+
+    formData.append('published', JSON.stringify(published));
+    formData.append('urgently', JSON.stringify(urgently));
+    formData.append('last', JSON.stringify(last));
 
     try {
       const response = await fetch(`/api/vacancy/${vacancyH?._id}`, {
@@ -138,6 +161,7 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
     }
   };
 
+  
   return (
     <Card className="m-4">
       <CardHeader>
@@ -146,15 +170,20 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
           <div className="flex gap-2">
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Вакансия на сайте</Label>
-            <Checkbox checked={true}/>
+            <Checkbox 
+            checked={published} 
+            onCheckedChange={handlePublishedChange} 
+            />
             </div>
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Нужен срочно человек</Label>
-            <Checkbox checked={true}/>
+            <Checkbox checked={urgently} 
+            onCheckedChange={handleUrgentlyChange} />
             </div>
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Одно место</Label>
-            <Checkbox checked={true}/>
+            <Checkbox checked={last} 
+            onCheckedChange={handleLastChange}  />
             </div>
           </div>
         </CardTitle>

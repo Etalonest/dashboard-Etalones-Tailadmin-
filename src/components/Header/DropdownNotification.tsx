@@ -74,12 +74,12 @@ const DropdownNotification = () => {
 
   return (
     <>
-      {/* <SidebarRight 
+      <SidebarRight 
         sidebarROpen={sidebarOpen} 
         setSidebarROpen={setSidebarOpen} 
         formType={formType} 
         selectedCandidate={selectedCandidate} 
-      /> */}
+      />
       <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
         <li>
           <Link

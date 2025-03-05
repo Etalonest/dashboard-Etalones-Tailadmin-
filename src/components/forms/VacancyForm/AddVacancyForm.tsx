@@ -38,6 +38,10 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
 
+  const [published, setPublished] = useState(false);
+  const [urgently, setUrgently] = useState(false);
+  const [last, setLast] = useState(false);
+
   const handleImageUpload = (imageUrl: string) => {
     setSelectedImage(imageUrl);  // Set the URL of the uploaded image
   };
@@ -95,6 +99,17 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
   
   const handleDocsChange = (selectedDocs: string[]) => {
     setSelectDocs(selectedDocs);
+  };
+  const handlePublishedChange = (checked: boolean) => {
+    setPublished(checked);  // Обновляем состояние на true/false
+  };
+  
+  const handleUrgentlyChange = (checked: boolean) => {
+    setUrgently(checked);
+  };
+  
+  const handleLastChange = (checked: boolean) => {
+    setLast(checked);
   };
   const getDriveDataForSubmit = () => {
     return selectedDrive;
@@ -159,15 +174,20 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           <div className="flex gap-2">
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Вакансия на сайте</Label>
-            <Checkbox checked={true}/>
+            <Checkbox 
+            checked={published} 
+            onCheckedChange={handlePublishedChange} 
+            />
             </div>
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Нужен срочно человек</Label>
-            <Checkbox checked={true}/>
+            <Checkbox checked={urgently} 
+            onCheckedChange={handleUrgentlyChange} />
             </div>
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Одно место</Label>
-            <Checkbox checked={true}/>
+            <Checkbox checked={last} 
+            onCheckedChange={handleLastChange}  />
             </div>
           </div>
         </CardTitle>

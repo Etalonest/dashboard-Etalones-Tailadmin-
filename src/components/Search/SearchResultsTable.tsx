@@ -1,24 +1,25 @@
 
-
-// Тип для результата поиска
 interface SearchResult {
-  id: string;  // Уникальный идентификатор для каждого результата
+  id: string;  
   name: string;
   phone: string;
-  type: "candidate" | "partner"; // Тип результата (кандидат или партнёр)
+  type: "candidate" | "partner"; 
   profession?: string; // Профессия (если имеется)
 }
 
 interface SearchResultsProps {
   results: SearchResult[]; // Передаем массив результатов поиска
   onSelectResult: (result: SearchResult) => void; // Обработчик для выбора кандидата/партнёра
+  isSearching: boolean; // Флаг, показывающий, идет ли поиск
 }
 
-const SearchResultsTable: React.FC<SearchResultsProps> = ({ results, onSelectResult }) => {
+const SearchResultsTable: React.FC<SearchResultsProps> = ({ results, onSelectResult, isSearching }) => {
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      {results.length === 0 ? (
-        <p className="text-center p-4 text-sm text-gray-500">Результаты не найдены</p>
+      {isSearching ? (
+        <p className="text-center p-4 text-sm text-gray-500">Поиск...</p> // Пока идет поиск
+      ) : results.length === 0 ? (
+        <p className="text-center p-4 text-sm text-gray-500">Ничего не найдено</p> // Если нет результатов
       ) : (
         results.map((result, index) => (
           <div
