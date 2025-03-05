@@ -20,6 +20,15 @@ export const drivePermisData = [
     { label: "Код 95", value: "Код 95" },
     { label: "Есть своё авто", value: "Есть своё авто" },
   ];
+  export const statusDataPartner = [
+    { value: 'Не смогли поговорить', label: 'Не смогли поговорить' },
+    { value: 'Думает над предложением', label: 'Думает над предложением' },
+    { value: 'Начнёт работу позже', label: 'Начнёт работу позже' },
+    { value: 'Контракт на подписи', label: 'Контракт на подписи' },
+    { value: 'Ждёт людей', label: 'Ждёт людей' },
+    { value: 'Люди на объекте', label: 'Люди на объекте' },
+    { value: 'В ЧС', label: 'В ЧС' },
+  ];
   export const statusData = [
     { value: 'Не обработан', label: 'Не обработан' },
     { value: 'Нет месседжеров', label: 'Нет месседжеров' },

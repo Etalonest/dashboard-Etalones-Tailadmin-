@@ -74,14 +74,12 @@ const VacanciesSchema = new Schema({
       },
       published: {
         type: Boolean,
-    
       },
       urgently: {
         type: Boolean,
       },
       last: {
         type: Boolean,
-    
       },
       manager: {
         type: Schema.Types.ObjectId,

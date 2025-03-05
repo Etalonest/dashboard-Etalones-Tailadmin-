@@ -11,7 +11,7 @@ import { useState } from 'react';
 import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
-import { drivePermisData, languesData } from '@/src/config/constants';
+import { drivePermisData, languesData, taskStats } from '@/src/config/constants';
 import { X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { CommentEntry, DocumentEntry } from '../interfaces/FormCandidate.interface';
@@ -20,6 +20,7 @@ import { Contract } from '@/src/components/forms/interfaces/FormCandidate.interf
 import { Textarea } from '@/components/ui/textarea';
 import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
+import Select  from '@/src/components/inputs/Select/Select';
 
 
 const AddpartnerForm = ({onSubmitSuccess}: any) => {
@@ -292,7 +293,20 @@ const AddpartnerForm = ({onSubmitSuccess}: any) => {
         <div className="flex-1  p-4">
           <Card>
             <CardHeader className='pb-0'>
-              <CardTitle>Личные данные</CardTitle>
+              <CardTitle className='flex justify-between'>
+              <p>Личные данные</p> 
+              <div>
+                <Label>
+                Статус
+                </Label>
+                <Select
+                    id='status'
+                    name="status"
+                    placeholder="Статус выполнения"
+                    options={taskStats}
+                    />
+              </div>
+              </CardTitle>
             </CardHeader>
              <CardHeader className='grid grid-cols-3 gap-2'>
                                 <CardTitle className="col-span-1">Документ</CardTitle>
@@ -399,90 +413,6 @@ const AddpartnerForm = ({onSubmitSuccess}: any) => {
           </Card>
         </div>
         </div>
-        
-        {/* <div className="flex-2  p-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Статус</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="flex flex-col space-y-1.5">
-                  <Card><CardTitle className='flex justify-start m-2'>1. Не обработан</CardTitle></Card>
-                  <Card>
-                    <CardTitle className='flex justify-start m-2'>2. Первый диалог</CardTitle>
-                    <CardContent className='flex items-center justify-around'>
-
-                      <Button variant="outline" className='bg-red-500 text-white'>Не сложился</Button>
-                      <Button variant="outline" className='bg-green-900 text-white'>Сложился</Button>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardTitle className='flex justify-start m-2'>3. В процесе договорённости</CardTitle>
-                    <CardContent className='flex flex-col gap-2 items-start justify-around'>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Цена контракта согласована
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Цена жилья согласована
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Даты выплат согласованы
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Контракт подписан
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Точное место для прибытия кандидата согласовано
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Готов принимать людей
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >  Передан куратору
-                        </label>
-                      </div>
-
-                    </CardContent>
-                  </Card>
-
-                </div>
-            </CardContent>
-          </Card>
-        </div> */}
       </div>
     </div>
     <div className="mt-8 w-full bg-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

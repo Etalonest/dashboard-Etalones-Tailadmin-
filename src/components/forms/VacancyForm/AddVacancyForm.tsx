@@ -63,28 +63,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
       console.log("Selected Image", selectedImage);
     }
   }, [selectedImage]);
-  // const handleImageCarouselChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const files = event.target.files;
-  //   if (files) {
-  //     const newImages: string[] = [];
-  //     Array.from(files).forEach((file) => {
-  //       const reader = new FileReader();
   
-  //       reader.onloadend = () => {
-  //         if (reader.result) {
-  //           newImages.push(reader.result as string);  // Сохраняем ссылки на изображения
-  //           if (newImages.length === files.length) {
-  //             setImagesCarousel((prevImages) => [...prevImages, ...newImages]);  // Обновляем карусель
-  //           }
-  //         }
-  //       };
-  
-  //       reader.readAsDataURL(file);  // Преобразуем в base64, если требуется
-  //     });
-  //   }
-  // };
-  
-
   useEffect(() => {
     if (imagesCarousel.length > 0) {
       console.log("Selected Image Carousel (base64)", imagesCarousel);
