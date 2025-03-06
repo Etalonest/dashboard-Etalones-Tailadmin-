@@ -23,12 +23,10 @@ const FirebaseImagesUpload = ({ city, jobTitle, onImagesUpload }: FirebaseImages
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Отправляем файл на процессор для обработки
         const formData = new FormData();
         formData.append("file", file);
 
         try {
-          // Отправляем файл на сервер для обработки
           const processImageResponse = await fetch('/api/processImage', {
             method: 'POST',
             body: formData,

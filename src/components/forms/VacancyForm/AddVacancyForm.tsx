@@ -43,7 +43,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
   const [last, setLast] = useState(false);
 
   const handleImageUpload = (imageUrl: string) => {
-    setSelectedImage(imageUrl);  // Set the URL of the uploaded image
+    setSelectedImage(imageUrl);  
   };
   const handleImagesUpload = (urls: string[]) => {
     setImagesCarousel(urls); // Обновляем состояние с новыми URL-ами изображений

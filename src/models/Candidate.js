@@ -4,7 +4,6 @@ import {Partner} from './Partner';
 import {Task} from './Task';
 import {Dialog} from './Dialog';
 import {Stage} from './Stage';
-import { type } from "os";
 const CandidateSchema = new Schema({
   type: {
     type: String,
@@ -25,6 +24,10 @@ const CandidateSchema = new Schema({
     },
     status:{
       type: String
+    },
+    recruiter:{
+      type: Schema.Types.ObjectId,
+      ref: 'Manager'
     },
     manager:{
       type: Schema.Types.ObjectId,

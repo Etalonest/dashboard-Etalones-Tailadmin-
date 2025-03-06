@@ -52,19 +52,65 @@ export const POST = async (request: Request) => {
       const contract = contractRaw ? JSON.parse(contractRaw as string) : {};
       await connectDB();
 
-      const existingPartner = await Partner.findOne({ phone });
-    if (existingPartner) {
+      const existingPartnerByPhone = await Partner.findOne({ phone });
+    if (existingPartnerByPhone) {
       return new NextResponse(
         JSON.stringify({
           error: true,
-          message: `Партнёр с таким номером уже существует ${existingPartner.name}`,
+          message: `Партнёр с таким номером уже существует ${existingPartnerByPhone.name}`,
           metadata: {
-            partnerId: existingPartner._id.toString(), 
+            partnerId: existingPartnerByPhone._id.toString(),
           },
         }),
         { status: 400 }
       );
     }
+
+    // Проверяем наличие партнёра с таким же email
+    const existingPartnerByEmail = await Partner.findOne({ email });
+    if (existingPartnerByEmail) {
+      return new NextResponse(
+        JSON.stringify({
+          error: true,
+          message: `Партнёр с таким email уже существует: ${existingPartnerByEmail.name}`,
+          metadata: {
+            partnerId: existingPartnerByEmail._id.toString(),
+          },
+        }),
+        { status: 400 }
+      );
+    }
+
+    // Проверяем наличие партнёра с таким же названием компании
+    const existingPartnerByCompanyName = await Partner.findOne({ companyName });
+    if (existingPartnerByCompanyName) {
+      return new NextResponse(
+        JSON.stringify({
+          error: true,
+          message: `Партнёр с таким названием компании уже существует: ${existingPartnerByCompanyName.name}`,
+          metadata: {
+            partnerId: existingPartnerByCompanyName._id.toString(),
+          },
+        }),
+        { status: 400 }
+      );
+    }
+
+    // Проверяем наличие партнёра с таким же номером DE
+    const existingPartnerByNumberDE = await Partner.findOne({ numberDE });
+    if (existingPartnerByNumberDE) {
+      return new NextResponse(
+        JSON.stringify({
+          error: true,
+          message: `Партнёр с таким номером DE уже существует: ${existingPartnerByNumberDE.name}`,
+          metadata: {
+            partnerId: existingPartnerByNumberDE._id.toString(),
+          },
+        }),
+        { status: 400 }
+      );
+    }
+
    
 
   const body = {

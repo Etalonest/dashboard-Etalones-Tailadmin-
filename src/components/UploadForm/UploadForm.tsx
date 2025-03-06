@@ -201,7 +201,7 @@ const FirebaseImageUpload = ({ city, jobTitle, onImageUpload }: FirebaseImageUpl
         onChange={handleImageChange}
         className="mt-2 p-2 border border-gray-300 rounded-md"
       />
-      {loading && <p>Uploading...</p>}
+      {loading && <p>Загрузка...</p>}
       {error && <p className="text-red-600">{error}</p>}
     </div>
   );

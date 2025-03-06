@@ -11,7 +11,7 @@ import { useState } from 'react';
 import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
-import { drivePermisData, languesData, taskStats } from '@/src/config/constants';
+import { drivePermisData, languesData, statusDataPartner, taskStats } from '@/src/config/constants';
 import { X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { CommentEntry, DocumentEntry } from '../interfaces/FormCandidate.interface';
@@ -246,7 +246,9 @@ const AddpartnerForm = ({onSubmitSuccess}: any) => {
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
     formData.append('professions', JSON.stringify(professionsData));
-    formData.append('comment', JSON.stringify(commentData));
+    if (commentData.text) {
+      formData.append('comment', JSON.stringify([commentData]));
+    }    
     formData.append('contract', JSON.stringify(contractData));
     formData.append('documents', JSON.stringify(documentsData));
     formData.append('statusWork', JSON.stringify(workStatusesData));
@@ -303,7 +305,7 @@ const AddpartnerForm = ({onSubmitSuccess}: any) => {
                     id='status'
                     name="status"
                     placeholder="Статус выполнения"
-                    options={taskStats}
+                    options={statusDataPartner}
                     />
               </div>
               </CardTitle>
