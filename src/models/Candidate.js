@@ -25,10 +25,6 @@ const CandidateSchema = new Schema({
     status:{
       type: String
     },
-    recruiter:{
-      type: Schema.Types.ObjectId,
-      ref: 'Manager'
-    },
     manager:{
       type: Schema.Types.ObjectId,
       ref: 'Manager'
@@ -154,6 +150,10 @@ const CandidateSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Manager',
         required: false
+      },
+      recruiter:{
+        type: Schema.Types.ObjectId,
+        ref: 'Manager'
       },
       comment: [{
         author: {

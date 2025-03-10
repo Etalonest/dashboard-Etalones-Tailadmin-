@@ -38,6 +38,10 @@ const ManagerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Candidate'
       }],
+      candidatesFromRecruiter: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Candidate'
+      }],
       partners: [{
         type: Schema.Types.ObjectId,
         ref: 'Partner'

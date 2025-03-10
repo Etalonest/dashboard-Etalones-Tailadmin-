@@ -25,6 +25,7 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
     const [vacanciesCache, setVacanciesCache] = useState<any[]>([]); 
     const [selectedVacancy, setSelectedVacancy] = useState<any | null>(null); // Состояние для выбранной вакансии
     const [comment, setComment] = useState<string>(''); // Для комментария
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
         if (!selectedProfessions || selectedProfessions.length === 0) return;
@@ -87,12 +88,13 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
         try {
             const response = await fetch(`/api/candidates/${candidate._id}/stages/curator`, {
                 method: 'POST',
-                body: formData, // Отправляем formData
+                body: formData, 
             });
     
             const data = await response.json();
             if (data.message) {
                 alert('Кандидат успешно передан куратору!');
+                setIsDrawerOpen(false);
             } else {
                 alert('Ошибка при передаче кандидата.');
             }
@@ -188,7 +190,7 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
                                     >
                                            <p> Посмотреть вакансию</p>
                                     </Link>
-                                    <Drawer>
+                                    <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                                         <DrawerTrigger>
                                             <div className="p-2 rounded-md bg-slate-100 text-black hover:bg-slate-200 mt-8" onClick={() => handleSelectVacancy(vacancy)}>
                                                 Передать куратору

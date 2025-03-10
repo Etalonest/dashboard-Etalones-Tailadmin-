@@ -9,6 +9,7 @@ import Manager from '@/src/models/Manager';
 import EventLog from '@/src/models/EventLog';
 
 
+
 export const POST = async (req: Request, { params }: any) => {
   const { id } = params;
 try {
@@ -21,7 +22,7 @@ try {
   const comment = formData.get('comment') as string;
   const vacancy = formData.get('vacancy') as string;
   const appointed = formData.get('appointed') as string;
-
+  
   await connectDB();
 
   const candidate = await Candidate.findById(id);
@@ -54,9 +55,13 @@ try {
   console.log("newStage", newStage);
 
   candidate.stages = newStage._id;
+  candidate.manager = responsible;  
+  candidate.recruiter = appointed;
   await candidate.save();
-
   console.log("candidate", candidate);
+
+  
+
   const newTask1 = new Task({
     isViewed: false,
     appointed: appointed,
@@ -102,7 +107,7 @@ try {
   if (id.manager) {
     const manager = await Manager.findById(id.manager);
     if (manager) {
-      await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: id._id } });
+      await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidatesFromRecruiter: id._id } });
     }
   }
 
@@ -125,6 +130,7 @@ try {
   const manager = await Manager.findById(responsible);
   if (manager) {
     manager.tasks.push(newTask1._id, newTask2._id);
+    manager.candidatesFromRecruiter.push(candidate._id);
     await manager.save();
   }
 
