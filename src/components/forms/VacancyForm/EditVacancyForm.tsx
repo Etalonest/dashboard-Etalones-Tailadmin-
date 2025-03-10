@@ -121,6 +121,9 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
 
     // Добавляем только те поля, которые отсутствуют в оригинальном formData
     formData.append('managerId', managerId);
+    formData.append('homeImageUrl', JSON.stringify(imagesCarousel)); 
+    formData.append('imageUrl', selectedImage || '');
+
     formData.append('drivePermis', JSON.stringify(driveData)); 
     formData.append('langue', JSON.stringify(languesData));
     formData.append('documents', JSON.stringify(documentsData));
@@ -353,45 +356,7 @@ const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
   </Carousel>
 </div>
      
-          {/* <div className="flex justify-start flex-col gap-2">
-          <FirebaseImagesUpload
-              city={vacancyH?.location} 
-              jobTitle={vacancyH?.name}  
-              onImagesUpload={handleImagesUpload}  
-            />
-           
-            <Carousel 
-  orientation="horizontal"
-  opts={{
-    align: "center", 
-    loop: true,     
-  }}
-  className="w-full"
->
-  <CarouselContent className="-ml-4 flex">
-              {vacancyH?.homeImageFB?.map((image: string, index: number) => (
-                  <CarouselItem key={index} className="flex-shrink-0 md:w-1/4 pl-4 sm:w-1/2">
-                      <div className="p-1">
-                          <Image
-                              src={image}
-                              alt={`Image ${index + 1}`}
-                              width={350}
-                              height={200}
-                              className="rounded-md max-h-max mx-auto"
-                          />
-                      </div>
-                  </CarouselItem>
-              ))}
-          </CarouselContent>
-  <CarouselPrevious type='button' className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
-    &lt;
-  </CarouselPrevious>
-  <CarouselNext type="button" className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
-    &gt;
-  </CarouselNext>
-</Carousel>
-
-          </div> */}
+        
           </div>
         </form>
       </CardContent>

@@ -469,7 +469,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
           onDocumentsChange={handleDocumentChange} />
           <div className='w-full h-[2px] bg-gray-300 my-2 mr-5 rounded-md'></div>
           </div>
-          <div className='w-full flex'>
+          <div className='flex flex-wrap justify-center col-span-4'>
             <CardTitle>Загруженые документы</CardTitle>
   {documentEntries.map((doc: any, index: any) => (
     <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>

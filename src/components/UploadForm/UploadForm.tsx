@@ -178,7 +178,7 @@ const FirebaseImageUpload = ({ city, jobTitle, onImageUpload }: FirebaseImageUpl
         const processedImageBlob = await processImageResponse.blob();
 
         // Теперь, когда изображение обработано, загружаем его в Firebase
-        const storageRef = ref(storage, `vacancies/${city}-${jobTitle}/${file.name}`);
+        const storageRef = ref(storage, `vacancies/${city}-${jobTitle}/main/${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, processedImageBlob);
 
         await uploadTask;

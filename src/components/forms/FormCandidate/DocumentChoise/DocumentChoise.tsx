@@ -21,6 +21,8 @@ export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChang
     Pessel: 'Пессель',
     EUPassport: 'Паспорт ЕС',
     Par24: 'Параграф 24',
+    Bio: 'Биометрия Украина',
+    VNJ: 'ВНЖ ЕС',
   };
 
   // Хэндлер для обработки кликов по кнопкам
@@ -103,6 +105,23 @@ export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChang
       >
         Параграф 24
       </Button>
+      <Button
+        type="button"
+        variant="outline"
+        className={`hover:bg-gray-300 text-black ${selectedDocuments.includes("Биометрия Украина") ? "bg-green-800 text-white" : ""}`}
+        onClick={() => handleButtonClick("Биометрия Украина")}
+      >
+        Биометрия Украина
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        className={`hover:bg-gray-300 text-black ${selectedDocuments.includes("ВНЖ ЕС") ? "bg-green-800 text-white" : ""}`}
+        onClick={() => handleButtonClick("ВНЖ ЕС")}
+      >
+        ВНЖ ЕС
+      </Button>
+      
     </div>
   );
 };
