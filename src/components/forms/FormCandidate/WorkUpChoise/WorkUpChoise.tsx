@@ -80,7 +80,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
   };
 
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-wrap gap-1 h-max">
       {Object.entries(statusesNamesMap).map(([statusKey, statusName]) => (
         <Button
           key={statusKey}

@@ -1,5 +1,5 @@
 import { useProfessionContext } from "@/src/context/ProfessionContext";
-import { expiriences } from "@/src/config/constants";
+import { expiriences, statusCandidate, documents } from "@/src/config/constants";
 import { Label } from "@/components/ui/label";
 
 export const ProfessionSelect = ({ onProfessionChange, professionId, professionsVal }: any) => {
@@ -22,7 +22,7 @@ export const ProfessionSelect = ({ onProfessionChange, professionId, professions
                     id="profession" name="profession" 
                     onChange={handleSelectChange}
                   >
-                    <option value={''}>Без профессии</option>
+                    <option value={''}></option>
                     {professions.map((profession: any) => (
             <option key={profession.name} value={profession.name}>
               {profession.name}
@@ -65,3 +65,71 @@ export const ExpirienceSelect = ({ onProfessionChange, professionId }: any) => {
    </div>
     )
 }
+
+export const StatusSelect = ({ onStatusChange }: any) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedStatus = e.target.value;  
+    if (typeof onStatusChange === "function") {
+      // Передаем выбранный статус в родительский компонент
+      onStatusChange(selectedStatus);  
+    } else {
+      console.error("onStatusChange не является функцией");
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex flex-col space-y-1.5">
+        <label htmlFor="status">
+          <Label>Статус</Label>
+          <select 
+            className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+            id="status" name="status" 
+            onChange={handleSelectChange}
+          >
+            <option value={''}></option>
+            {statusCandidate.map((status: any) => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+    </div>
+  );
+};
+
+export const DocumentsSelect = ({ onDocumentChange }: any) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedDocument = e.target.value;  
+    if (typeof onDocumentChange === "function") {
+      // Передаем выбранный документ в родительский компонент
+      onDocumentChange(selectedDocument);  
+    } else {
+      console.error("onDocumentChange не является функцией");
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex flex-col space-y-1.5">
+        <label htmlFor="document">
+          <Label>Документ</Label>
+          <select 
+            className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+            id="document" name="document" 
+            onChange={handleSelectChange}
+          >
+            <option value={''}>Выберите документ</option>
+            {documents.map((document: any) => (
+              <option key={document.value} value={document.value}>
+                {document.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+    </div>
+  );
+};
