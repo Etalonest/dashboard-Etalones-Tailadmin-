@@ -15,19 +15,19 @@ const SearchPage = () => {
      <Tabs defaultValue="candidate" >
      <TabsList className="grid w-full grid-cols-6 bg-slate-200">
         <TabsTrigger value="candidate" className="col-span-2">Кандидат</TabsTrigger>
-        <TabsTrigger value="partner" className="col-span-2">Партнёр</TabsTrigger>
-        <TabsTrigger value="vacancy" className="col-span-2">Вакансия</TabsTrigger>
+        {/* <TabsTrigger value="partner" className="col-span-2">Партнёр</TabsTrigger> */}
+        {/* <TabsTrigger value="vacancy" className="col-span-2">Вакансия</TabsTrigger> */}
 
       </TabsList>
       <TabsContent value="candidate">
 <SearchCandidates/>
       </TabsContent>
-      <TabsContent value="partner">
+      {/* <TabsContent value="partner">
         <p>Partner</p>
       </TabsContent>
       <TabsContent value="vacancy">
         <p>Vacancy</p>
-      </TabsContent>
+      </TabsContent> */}
      </Tabs>
     </div>
   );

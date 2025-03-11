@@ -34,6 +34,14 @@ export const drivePermisData = [
     { value: 'Нет подходящей вакансии', label: 'Нет подходящей вакансии' },
     { value: 'Ждёт работу', label: 'Ждёт работу' },
   ];
+  export const managers = [
+    { value: '67c5a26d8a65ed38b35dc259', label: 'Анна Ч' },
+    { value: '670cff4a55e14b4ae6052afe', label: 'Анна М' },
+    { value: '67adb320eb4ee49207f2880c', label: 'Александр' },
+    { value: '661ce21e0cc0e9a8e9261975', label: 'Иван' },
+    { value: '6697891852bb24240be4ec27', label: 'Родион' },
+    { value: '664af24f4edc695e88c2fe4e', label: 'Татьяна' },
+  ]
   export const documents = [
     { value: 'Виза', label: 'Виза' },
     { value: 'Приглашение', label: 'Приглашение' },

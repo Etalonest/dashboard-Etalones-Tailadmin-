@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-dropdown-menu';
-import { DocumentsSelect, ProfessionSelect, StatusSelect } from '@/src/components/Select/Select';
+import { DocumentsSelect, ProfessionSelect, StatusSelect, ManagerSelect } from '@/src/components/Select/Select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const SearchCandidates = () => {
@@ -20,10 +20,13 @@ const SearchCandidates = () => {
   // Состояние для хранения результатов поиска
   const [candidates, setCandidates] = useState<any[]>([]); 
   const [error, setError] = useState<string | null>(null); // Для ошибок
+  const [isLoading, setIsLoading] = useState(false); // Для отслеживания загрузки
 
   // Функция для отправки запроса
   const handleSearch = async () => {
     try {
+      setIsLoading(true); // Включаем загрузку
+
       // Строим параметры для запроса
       const params = new URLSearchParams({
         name,
@@ -54,6 +57,8 @@ const SearchCandidates = () => {
       console.error('Ошибка поиска:', error);
       setError('Произошла ошибка при поиске кандидатов');
       setCandidates([]); // Очищаем результаты в случае ошибки
+    } finally {
+      setIsLoading(false); // Отключаем загрузку
     }
   };
 
@@ -80,17 +85,16 @@ const SearchCandidates = () => {
           <DocumentsSelect onDocumentChange={setDocument} />
         </div>
         <div className="col-span-1">
-          <Label>По менеджеру</Label>
-          <Input value={manager} onChange={(e) => setManager(e.target.value)} />
+          <ManagerSelect onManagerChange={setManager} />
         </div>
-        <div className="col-span-1">
+        {/* <div className="col-span-1">
           <Label>По партнёру</Label>
           <Input value={partner} onChange={(e) => setPartner(e.target.value)} />
         </div>
         <div className="col-span-1">
           <Label>По локации</Label>
           <Input value={location} onChange={(e) => setLocation(e.target.value)} />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex justify-center my-4">
@@ -102,6 +106,9 @@ const SearchCandidates = () => {
         </Button>
       </div>
 
+      {/* Отображение текста "Поиск..." или индикатора загрузки */}
+      {isLoading && <div className="text-center my-4">Поиск...</div>}
+
       {/* Отображение ошибки, если она есть */}
       {error && <div className="text-red-600 text-center">{error}</div>}
 
@@ -110,8 +117,8 @@ const SearchCandidates = () => {
         <div className="mt-4">
           <h2 className="text-xl font-semibold mb-2">Результаты поиска</h2>
           <Table>
-            {candidates.map((candidate, index) => (
-              <><TableHeader key={index} className="border-b py-2">
+              <><TableHeader  className="border-b py-2">
+              <TableHead><strong>Добавлен</strong> </TableHead>
                     <TableHead><strong>Имя</strong> </TableHead>
                     <TableHead><strong>Телефон:</strong> </TableHead>
                     <TableHead><strong>Профессия:</strong> </TableHead>
@@ -119,17 +126,21 @@ const SearchCandidates = () => {
                     <TableHead><strong>Документы:</strong> </TableHead>
                 </TableHeader>
                 <TableBody>
-                <TableRow>
+            {candidates.map((candidate, index) => (
+                <TableRow key={index}>
+                    <TableCell>{new Date(candidate.createdAt)
+        .toLocaleString()
+        .slice(0, 10)}</TableCell>
                     <TableCell>
                 {candidate.name}
                 </TableCell>
                 <TableCell>{candidate.phone}</TableCell>
-                <TableCell>{candidate.profession}</TableCell>
-                <TableCell>{candidate.status}</TableCell>
-                <TableCell>{candidate.documents.join(', ')}</TableCell>
+                <TableCell>{candidate.professions.map((profession: { name: any; }) => profession.name).join(', ')}</TableCell>
+                <TableCell>{candidate.status}{candidate?.statusWork?.map((status: { name: any; }) => status.name).join(', ')}</TableCell>
+                <TableCell>{candidate.documents.map((document: { docType: any; }) => document.docType).join(', ')}</TableCell>
                 </TableRow>
-                </TableBody></>
             ))}
+                </TableBody></>
           </Table>
         </div>
       ) : (
