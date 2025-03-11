@@ -121,7 +121,7 @@ export const DocumentsSelect = ({ onDocumentChange }: any) => {
             id="document" name="document" 
             onChange={handleSelectChange}
           >
-            <option value={''}>Выберите документ</option>
+            <option value={''}></option>
             {documents.map((document: any) => (
               <option key={document.value} value={document.value}>
                 {document.label}
@@ -154,7 +154,7 @@ export const ManagerSelect = ({ onManagerChange }: any) => {
             id="manager" name="manager" 
             onChange={handleSelectChange}
           >
-            <option value={''}>Выберите менеджера</option>
+            <option value={''}></option>
             {managers.map((manager: any) => (
               <option key={manager.value} value={manager.value}>
                 {manager.label}

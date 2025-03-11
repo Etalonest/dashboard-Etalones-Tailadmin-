@@ -58,7 +58,9 @@ if (phone) {
 
     // Выполнение запроса
     const candidates = await Candidate.find(filter).sort({ createdAt: -1 })
-    .populate('dialogs')
+    .populate({
+        path:'dialogs',
+    })
     return new NextResponse(JSON.stringify({ candidates }), { status: 200 });
   } catch (error) {
     console.error("Error in fetching:", error);

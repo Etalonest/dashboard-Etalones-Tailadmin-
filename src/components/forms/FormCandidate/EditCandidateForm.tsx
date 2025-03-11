@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { CirclePlus, Download, ImageDown, Save, X } from 'lucide-react';
+import { CirclePlus, Download, ImageDown, Save, Scroll, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
@@ -31,6 +31,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import Funnel from '../Funnel/Funnel';
 import Invitation from '../../Invitation/Invitation';
+import { ScrollArea } from '@/components/ui/scroll-area';
 const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   const { data: session } = useSession();
   const { addNotification } = useNotifications();
@@ -713,6 +714,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
         <Card className='p-4'>
 <CardContent>
   <CardTitle>Комментарий</CardTitle>
+  <ScrollArea className='h-50'>
   {commentEntries.map((comment, index) => (
   <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
     <Badge>
@@ -733,7 +735,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     <span className='absolute right-2'>Автор: {comment.author}</span>
   </div>
 ))}
-
+</ScrollArea>
   <Textarea
     placeholder="Оставьте свой комментарий"
     className="mt-5"

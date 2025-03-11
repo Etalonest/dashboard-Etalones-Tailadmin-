@@ -23,6 +23,9 @@ const DialogSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Partner',
   },
+  comment: {
+    type: String,
+  },
 });
 
 const Dialog = models?.Dialog || model("Dialog", DialogSchema);
