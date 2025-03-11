@@ -34,7 +34,6 @@ export function CallHistory({ candidate }: CallHistoryProps) {
   
   const candidateId = candidate?._id;
 
-  // Обработчик для записи нового звонка
   const handleCall = async (status: 'Дозвонился' | 'Не дозвонился') => {
     const newRecord = {
       candidateId,
@@ -74,8 +73,8 @@ export function CallHistory({ candidate }: CallHistoryProps) {
   return (
     <div>
       <CardTitle className="flex justify-between m-2">
-        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white">{totalCalls}<Phone size={16}/> </Badge> 
-        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white" >{answeredPercentage.toFixed(2)}%</Badge>
+        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white p-2">{totalCalls}<Phone size={16}/> </Badge> 
+        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white p-2" >{answeredPercentage.toFixed(2)}%</Badge>
       </CardTitle>
       
       <CardContent className="flex flex-col gap-4">
@@ -86,7 +85,7 @@ export function CallHistory({ candidate }: CallHistoryProps) {
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`bg-green-800 hover:bg-green-500 text-white ${isLastCallAnswered ? 'bg-green-500' : ''}`}
+                  className={`p-2 bg-green-800 hover:bg-green-500 text-white ${isLastCallAnswered ? 'bg-green-500' : ''}`}
                   onClick={() => handleCall('Дозвонился')}
                 >
                   Дозвонился
@@ -117,7 +116,7 @@ export function CallHistory({ candidate }: CallHistoryProps) {
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`bg-red-800 hover:bg-red-500 text-white ${isLastCallMissed ? 'bg-red-500' : ''}`}
+                  className={`p-2 bg-red-800 hover:bg-red-500 text-white ${isLastCallMissed ? 'bg-red-500' : ''}`}
                   onClick={() => handleCall('Не дозвонился')}
                 >
                   Не дозвонился

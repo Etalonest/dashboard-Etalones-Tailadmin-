@@ -5,6 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-dropdown-menu';
 import { DocumentsSelect, ProfessionSelect, StatusSelect, ManagerSelect } from '@/src/components/Select/Select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
+import { Eye, UserCog } from 'lucide-react';
+import { Candidate } from '@/src/types/candidate';
+import SidebarRight from '../SidebarRight';
 
 const SearchCandidates = () => {
   // Состояния для всех полей
@@ -17,6 +21,10 @@ const SearchCandidates = () => {
   const [partner, setPartner] = useState('');
   const [location, setLocation] = useState('');
 
+  
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);
+    const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   // Состояние для хранения результатов поиска
   const [candidates, setCandidates] = useState<any[]>([]); 
   const [error, setError] = useState<string | null>(null); // Для ошибок
@@ -61,9 +69,19 @@ const SearchCandidates = () => {
       setIsLoading(false); // Отключаем загрузку
     }
   };
-
+const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
+    setFormType(type);             
+    setSelectedCandidate(candidate || null); 
+    setSidebarOpen(prevState => !prevState);  
+  };
   return (
     <div>
+        <SidebarRight 
+          sidebarROpen={sidebarOpen} 
+          setSidebarROpen={setSidebarOpen} 
+          formType={formType} 
+          selectedCandidate={selectedCandidate} 
+        />
       <h1 className="text-center text-2xl font-semibold mb-2">Поиск кандидатов</h1>
       <div className="grid grid-cols-4 gap-4">
         <div className="col-span-1">
@@ -124,6 +142,7 @@ const SearchCandidates = () => {
                     <TableHead><strong>Профессия:</strong> </TableHead>
                     <TableHead><strong>Статус:</strong> </TableHead>
                     <TableHead><strong>Документы:</strong> </TableHead>
+                    <TableHead><strong>Диалоги:</strong> </TableHead>
                 </TableHeader>
                 <TableBody>
             {candidates.map((candidate, index) => (
@@ -132,12 +151,19 @@ const SearchCandidates = () => {
         .toLocaleString()
         .slice(0, 10)}</TableCell>
                     <TableCell>
-                {candidate.name}
+                        <p>{candidate.name}</p>
+                        <div className="flex gap-2">
+                <Eye size={18} onClick={() => toggleSidebar("viewCandidate", candidate)} />
+                <UserCog size={18} onClick={() => toggleSidebar("editCandidate", candidate)} />
+              </div>
                 </TableCell>
                 <TableCell>{candidate.phone}</TableCell>
                 <TableCell>{candidate.professions.map((profession: { name: any; }) => profession.name).join(', ')}</TableCell>
                 <TableCell>{candidate.status}{candidate?.statusWork?.map((status: { name: any; }) => status.name).join(', ')}</TableCell>
                 <TableCell>{candidate.documents.map((document: { docType: any; }) => document.docType).join(', ')}</TableCell>
+                <TableCell>
+                    <CallHistory candidate={candidate} />
+                </TableCell>
                 </TableRow>
             ))}
                 </TableBody></>
