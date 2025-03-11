@@ -57,8 +57,8 @@ if (phone) {
     if (location) filter.locations = { $regex: location, $options: "i" };
 
     // Выполнение запроса
-    const candidates = await Candidate.find(filter).sort({ createdAt: -1 });
-
+    const candidates = await Candidate.find(filter).sort({ createdAt: -1 })
+    .populate('dialogs')
     return new NextResponse(JSON.stringify({ candidates }), { status: 200 });
   } catch (error) {
     console.error("Error in fetching:", error);

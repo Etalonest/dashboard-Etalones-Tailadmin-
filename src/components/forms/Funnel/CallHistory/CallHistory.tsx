@@ -1,4 +1,3 @@
-
 'use client'
 import { v4 as uuidv4Original } from 'uuid';
 import { useSession } from 'next-auth/react';
@@ -13,6 +12,8 @@ import {
 } from "@/components/ui/tooltip"
 import { Badge } from '@/components/ui/badge';
 import { Phone } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
 interface CallHistoryProps {
   candidate: any;
 }
@@ -29,11 +30,22 @@ export function CallHistory({ candidate }: CallHistoryProps) {
   const answeredPercentage = totalCalls > 0 ? (successfulCalls / totalCalls) * 100 : 0;
 
   const lastCall = dialogs[dialogs.length - 1];
-  const isLastCallAnswered = lastCall?.text === 'Дозвонился';
-  const isLastCallMissed = lastCall?.text === 'Не дозвонился';
   
   const candidateId = candidate?._id;
 
+  // Состояние для последнего звонка
+  const [currentCallStatus, setCurrentCallStatus] = useState<string | null>(null);
+  const [currentCallDate, setCurrentCallDate] = useState<string | null>(null);
+
+  // Эффект для загрузки последнего звонка после монтирования компонента
+  useEffect(() => {
+    if (lastCall) {
+      setCurrentCallStatus(lastCall.text);
+      setCurrentCallDate(lastCall.date);
+    }
+  }, [lastCall]);
+
+  // Обработчик звонка
   const handleCall = async (status: 'Дозвонился' | 'Не дозвонился') => {
     const newRecord = {
       candidateId,
@@ -57,24 +69,31 @@ export function CallHistory({ candidate }: CallHistoryProps) {
 
       const data = await response.json();
       if(data.message === 'Звонок успешно записан'){
+        // Обновляем состояние локально, чтобы сразу отобразить изменения
+        setCurrentCallStatus(status);
+        setCurrentCallDate(new Date().toLocaleString());
+        
+        // Уведомление о том, что звонок был успешно записан
         addNotification({
           title: "Записано",
           type: "success",
           id: uuidv4Original(),
         });
-     }
+      }
     } catch (error) {
       console.error('Ошибка при отправке данных на сервер:', error);
     }
   };
 
-  
-
   return (
     <div>
       <CardTitle className="flex justify-between m-2">
-        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white p-2">{totalCalls}<Phone size={16}/> </Badge> 
-        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white p-2" >{answeredPercentage.toFixed(2)}%</Badge>
+        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white p-2">
+          {totalCalls}<Phone size={16}/> 
+        </Badge> 
+        <Badge className="text-green-800 bg-slate-100 text-sm hover:text-white p-2">
+          {answeredPercentage.toFixed(2)}%
+        </Badge>
       </CardTitle>
       
       <CardContent className="flex flex-col gap-4">
@@ -85,27 +104,26 @@ export function CallHistory({ candidate }: CallHistoryProps) {
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`p-2 bg-green-800 hover:bg-green-500 text-white ${isLastCallAnswered ? 'bg-green-500' : ''}`}
+                  className={`p-2 bg-green-800 hover:bg-green-500 text-white ${currentCallStatus === 'Дозвонился' ? 'bg-green-500' : ''}`}
                   onClick={() => handleCall('Дозвонился')}
                 >
                   Дозвонился
                 </Button>
               </TooltipTrigger>
               <TooltipContent side='bottom' className='flex gap-2 pt-0'>
-              <p>
-  {lastCall ? 
-    new Date(lastCall?.date).toLocaleString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }) 
-    : 'Нет данных о звонке'
-  }
-</p>-
-<span>{lastCall?.author}</span>
-
+                <p>
+                  {currentCallDate ? 
+                    new Date(currentCallDate).toLocaleString('ru-RU', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }) 
+                    : 'Нет данных о звонке'
+                  }
+                </p>
+                <span>{author}</span>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -116,27 +134,26 @@ export function CallHistory({ candidate }: CallHistoryProps) {
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`p-2 bg-red-800 hover:bg-red-500 text-white ${isLastCallMissed ? 'bg-red-500' : ''}`}
+                  className={`p-2 bg-red-800 hover:bg-red-500 text-white ${currentCallStatus === 'Не дозвонился' ? 'bg-red-500' : ''}`}
                   onClick={() => handleCall('Не дозвонился')}
                 >
                   Не дозвонился
                 </Button>
               </TooltipTrigger>
               <TooltipContent side='bottom' className='flex gap-2 pt-0'>
-              <p>
-  {lastNoSuccessfulCall ? 
-    new Date(lastNoSuccessfulCall?.date).toLocaleString('ru-RU', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }) 
-    : 'Нет данных о звонке'
-  }
-</p>
-<span>{lastNoSuccessfulCall?.author}</span>
-
+                <p>
+                  {lastNoSuccessfulCall ? 
+                    new Date(lastNoSuccessfulCall?.date).toLocaleString('ru-RU', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }) 
+                    : 'Нет данных о звонке'
+                  }
+                </p>
+                <span>{lastNoSuccessfulCall?.author}</span>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
