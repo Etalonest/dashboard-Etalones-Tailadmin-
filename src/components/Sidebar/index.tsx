@@ -137,7 +137,7 @@ import Image from "next/image";
 import SidebarItem from "@/src/components/Sidebar/SidebarItem";
 import ClickOutside from "@/src/components/ClickOutside";
 import useLocalStorage from "@/src/hooks/useLocalStorage";
-import {  AlarmClockCheck, ArrowRight, BookCheck, CalendarDays, Camera, ChartArea, History, Menu, NotebookText, Settings, Table, User, UserCircle } from "lucide-react";
+import {  AlarmClockCheck, ArrowRight, BookCheck, CalendarDays, Camera, ChartArea, History, Menu, NotebookText, Search, Settings, Table, User, UserCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface SidebarProps {
@@ -155,6 +155,12 @@ const menuGroups = [
         route: "#",
         children: [{ label: "Графики", route: "/" }],
         rolesAllowed: ["admin"], 
+      },
+      {
+        icon: <Search />,
+        label: "Поиск",
+        route: "/search",
+        rolesAllowed: ["admin", "manager", "recruiter"],
       },
       {
         icon: <User />,
