@@ -61,6 +61,10 @@ if (phone) {
     .populate({
         path:'dialogs',
     })
+    .populate({
+        path: 'manager',
+        select: 'name',
+    })
     return new NextResponse(JSON.stringify({ candidates }), { status: 200 });
   } catch (error) {
     console.error("Error in fetching:", error);

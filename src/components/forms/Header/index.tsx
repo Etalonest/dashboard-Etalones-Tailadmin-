@@ -59,12 +59,12 @@ const Header = (props: {
 
           <Link className="block flex-shrink-0 lg:hidden" href="/">
           <p className="text-xxl">Etalones</p>
-            {/* <Image
+            <Image
               width={32}
               height={32}
               src={"/images/logo/logo-icon.svg"}
               alt="Logo"
-            /> */}
+            />
           </Link>
         </div>
 

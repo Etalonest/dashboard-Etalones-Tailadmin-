@@ -2,13 +2,17 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import SidebarRight from "../SidebarRight";
 import { Candidate } from "@/src/types/candidate";
 import { useSession } from "next-auth/react";
-import { div } from "framer-motion/client";
+
 
 export default function FromRecruiter() {
   const { data } = useSession();
@@ -94,6 +98,9 @@ export default function FromRecruiter() {
     return <div>Ошибка: {error}</div>;
   }
 
+  
+  console.log("CANDIDATE##1", selectedCandidate)
+
   return (
     <div className="container">
       {/* Сайдбар */}
@@ -112,8 +119,8 @@ export default function FromRecruiter() {
             <TableHead className="font-bold ">Рекрутер</TableHead>
             <TableHead className="font-bold col-span-2">Имя кандидата</TableHead>
             <TableHead className="font-bold col-span-2">Профессия</TableHead>
-            <TableHead className="font-bold ">Вакансия</TableHead>
-            <TableHead className="font-bold col-span-3 ">Комментарий</TableHead>
+            <TableHead className="font-bold col-span-2">Вакансия</TableHead>
+            <TableHead className="font-bold col-span-4 ">Задачи</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -133,9 +140,16 @@ export default function FromRecruiter() {
                   {item?.recruiter?.name }
                 </TableCell>
 
-                <TableCell className="font-bold col-span-2" onClick={() => toggleSidebar("viewCandidate", item.candidate)}>
-                  {item.name}
+                    <HoverCard>
+                <TableCell className="font-bold col-span-2" onClick={() => toggleSidebar("viewCandidate", item)}>
+                      <HoverCardTrigger  asChild>
+                  <p className="text-md font-bold text-black cursor-pointer">{item.name}</p>
+                      </HoverCardTrigger >
+                      <HoverCardContent  className="bg-white px-2 py-1 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 backdrop-blur-sm">
+                        <p className="text-md font-bold">{item.stages?.comment}</p>
+                      </HoverCardContent >
                 </TableCell>
+                    </HoverCard>
 
                 <TableCell className="font-bold col-span-2 cursor-pointer" >
                   {item.professions.map((profession: any, index: number) => (
@@ -144,57 +158,30 @@ export default function FromRecruiter() {
                     </div>
                   ))}
                 </TableCell>
-
-                <TableCell className="font-bold">
+                  <TableCell className="col-span-2">
+                    <p className="text-md font-bold">{item.stages?.vacancy?.title}</p>
+                    <p className="text-md ">{item.stages?.vacancy?.partner?.companyName} - {item.stages?.vacancy?.partner?.name}</p>
+                  </TableCell>
                   <HoverCard>
-                    <HoverCardTrigger>
-                      <p>{item.stages?.vacancy?.title}</p>
-                    </HoverCardTrigger>
-                    <HoverCardContent>
-                      {/* <div>Партнёр: {item.vacancy?.partner?.companyName}</div>
-                      <div><span>Город:</span> {item.vacancy?.location}</div>
-                      <div><span>Зарплата:</span> {item.vacancy?.salary}</div>
-                      <div><span>Проживание:</span> {item.vacancy?.homePrice}</div> */}
-                    </HoverCardContent>
-                  </HoverCard>
-                </TableCell>
+              <TableCell className="col-span-4 flex flex-col gap-2">
+                {item.stages?.tasks.map((task: any, index: number) => (
+                  <><div className="flex gap-2">
+                    <Checkbox
+                    checked={completedTasks.includes(task._id) || task.status === 'выполнена'}
+                    onCheckedChange={() => handleCheckboxChange(task._id, task.status)}
+                    />
+                  <HoverCardTrigger asChild key={index}> 
+                    <p className="text-md font-bold text-black cursor-pointer">{task.taskName}</p>
+                  </HoverCardTrigger>
+                  </div>
+                  <HoverCardContent className="bg-white px-2 py-1 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 backdrop-blur-sm">
+                      <p className="text-md font-bold">{task.dueDate}</p>
+                      <p className="text-md ">{task.status}</p>
+                    </HoverCardContent></> ))}
+              </TableCell>
+                </HoverCard>
 
-                {/* <TableCell className="text-sm col-span-2 flex flex-col">
-                  <HoverCard>
-                    <HoverCardTrigger>
-                      <p className="text-sm font-bold cursor-pointer">Комментарий</p>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-80">
-                      {item.comment}
-                    </HoverCardContent>
-                  </HoverCard>
-                  <HoverCard>
-                    <HoverCardTrigger>
-                      <p className="text-sm font-bold cursor-pointer relative">Задачи</p>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-max flex flex-col">
-                      {item.tasks.map((task: any, index: number) => (
-                        <div key={task._id} className="flex flex-row items-center gap-2">
-                          <Checkbox
-                            checked={completedTasks.includes(task._id) || task.status === 'выполнена'}
-                            onCheckedChange={() => handleCheckboxChange(task._id, task.status)}
-                          />
-                          {index + 1}. {task.taskName}
-                          <span>({task.description})</span>
-                        </div>
-                      ))}
-                    </HoverCardContent>
-                  </HoverCard>
-                </TableCell> */}
-
-                {/* <TableCell className="text-sm">
-                  {item.responsible?.name}
-                </TableCell> */}
-
-                {/* <TableCell className="text-sm col-span-3">
-                  {item?.comment}
-                </TableCell> */}
-              </TableRow>
+                </TableRow>
              
             ))
           )}

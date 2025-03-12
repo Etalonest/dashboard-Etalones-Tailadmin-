@@ -40,7 +40,6 @@ const SidebarRight = ({
   const [partnerData, setPartnerData] = useState<Partner | null>(null);
   const [vacancyData, setVacancyData] = useState<VacancyType | null>(null);
   // const [professionData, setProfessionData] = useState<any | null>(null);
-  
 useEffect(() => {
     if (selectedVacancy) {
       console.log("selectedVacancy updated:", selectedVacancy);

@@ -3,7 +3,7 @@ import {Candidate} from './Candidate';
 import {Partner} from './Partner';
 import {Manager} from './Manager';
 import {Stage} from './Stage';
-
+import {Vacancies} from './Vacancies';
 
 const TaskSchema = new Schema({
   appointed: {
@@ -42,6 +42,10 @@ const TaskSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  vacancy:{
+    type: Schema.Types.ObjectId,
+    ref: 'Vacancies',
+  }
 }, { timestamps: true });
 
 const Task = models?.Task || model("Task", TaskSchema);

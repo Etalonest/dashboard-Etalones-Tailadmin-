@@ -6,17 +6,12 @@ import React, { useEffect, useState } from 'react';
 import SidebarRight from '../SidebarRight';
 import { VacancyType } from '@/src/types/vacancy';
 
-
 export const VacancyAll: React.FC = () => {
   const [vacancies, setVacancies] = useState<VacancyType[]>([]); 
   const [sidebarOpen, setSidebarOpen] = useState(false); 
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null); 
   const [formType, setFormType] = useState<"viewVacancy" | null>(null); 
 
-  useEffect(() => {
-    console.log("selectedVacancy in parent:", selectedVacancy);
-  }, [selectedVacancy]);
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,21 +30,21 @@ export const VacancyAll: React.FC = () => {
     fetchData();
   }, []);
 
-  // Функция для открытия сайдбара с вакансией
-  const toggleSidebar = (type: "viewVacancy", vacancies: VacancyType) => {
+  const toggleSidebar = (type: "viewVacancy", vacancy: VacancyType) => {
     setFormType(type);                
-    setSelectedVacancy(vacancies);      
+    setSelectedVacancy(vacancy);      
     setSidebarOpen(true);  
   };
 
   return (
     <div>
       <SidebarRight
-        sidebarROpen={sidebarOpen}  
-        setSidebarROpen={setSidebarOpen}  
-        formType={formType}  
-        selectedVacancy={selectedVacancy}  
-      />
+  sidebarROpen={sidebarOpen}
+  setSidebarROpen={setSidebarOpen}
+  formType={formType}
+  selectedVacancy={selectedVacancy}
+/>
+
       <h1>Все вакансии</h1>
 
       {vacancies.length > 0 ? (

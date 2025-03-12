@@ -149,7 +149,7 @@ const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate",
                 <TableRow key={index}>
                     <TableCell>{new Date(candidate.createdAt)
         .toLocaleString()
-        .slice(0, 10)}</TableCell>
+        .slice(0, 10)} - {candidate?.manager?.name}</TableCell>
                     <TableCell>
                         <p>{candidate.name}</p>
                         <div className="flex gap-2">

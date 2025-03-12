@@ -16,7 +16,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         }
 
         const candidates = await Candidate.find({
-            '_id': { $in: manager.candidatesFromRecruiter } 
+            '_id': { $in: manager.candidatesFromRecruiter }
         }).sort({ 'updatedAt': -1 })
         .populate({
             path: 'documents',
@@ -33,10 +33,24 @@ export async function GET(request: Request, { params }: { params: { id: string }
             select: 'name',
         })
         .populate({
-            path:"stages",
-            select: 'vacancy'
-            
-        })
+            path: 'stages',
+            select: ['comment','tasks','vacancy'],
+            populate: [
+                {
+                    path: 'vacancy',
+                    select: ['title', 'location', 'roof_type', 'partner'],
+                    populate: {
+                        path: 'partner',
+                        select: ['name', 'companyName'],
+                    }
+                },
+                {
+                    path: 'tasks',  
+                    select: ['taskName', 'dueDate', 'status','vacancy']  
+                }
+            ]
+        });
+        
            
      
 
