@@ -30,9 +30,9 @@ export const VacancyAll: React.FC = () => {
     fetchData();
   }, []);
 
-  const toggleSidebar = (type: "viewVacancy", vacancy: VacancyType) => {
+  const toggleSidebar = (type: "viewVacancy", vacancy?: VacancyType) => {
     setFormType(type);                
-    setSelectedVacancy(vacancy);      
+    setSelectedVacancy(vacancy || null);      
     setSidebarOpen(true);  
   };
 
@@ -52,6 +52,7 @@ export const VacancyAll: React.FC = () => {
           <Card
             className="rounded-md p-2 w-full cursor-pointer flex justify-center items-center"
             key={index}
+            
             onClick={() => toggleSidebar("viewVacancy", vacancy)} 
           >
             <CardHeader>
