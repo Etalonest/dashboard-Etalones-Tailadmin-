@@ -4,7 +4,7 @@ import { CirclePlus, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import { drivePermisData, citizenshipOptions, languesData, langueLevelData } from '@/src/config/constants'
 import { DocumentEntry, CommentEntry, Profession, Langue, InvitationEntry } from "../interfaces/FormCandidate.interface"
 import { useProfessionContext } from "@/src/context/ProfessionContext";
@@ -20,7 +20,7 @@ import SuitableV from '../../SuitableV/SuitableV';
 
 
 const AddCandidateForm = ({onSubmitSuccess}: any) => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId || '';
   const authorName = session?.user?.name || '';
   const { professions } = useProfessionContext();

@@ -1,5 +1,5 @@
 'use client'
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import React from 'react'
 
 

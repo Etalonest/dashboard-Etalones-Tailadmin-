@@ -4,14 +4,14 @@ import { Partner } from '@/src/types/partner';
 import { useState, useEffect, useCallback, } from 'react';
 import SidebarRight from '@/src/components/SidebarRight';
 import { usePartners } from '@/src/context/PartnerContext';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ProfessionPartner } from "@/src/types/professionParnter";
 import { VacancyType } from "@/src/types/vacancy";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 const Vacancy = () => {
 
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
   const { partners, loadPartners } = usePartners();
   const [currentPage, setCurrentPage] = useState(1);

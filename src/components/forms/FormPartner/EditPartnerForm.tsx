@@ -10,8 +10,8 @@ import AutocompleteInput from '../../AutocompleteInput/AutocompleteInput';
 import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
 import { drivePermisData, expiriences, languesData, pDocsData } from '@/src/config/constants';
-import { Car, CirclePlus, Download, PencilLine, X } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { CirclePlus, Download, X } from 'lucide-react';
+import { useSession } from '@/src/context/SessionContext';
 import { CommentEntry, DocumentEntry} from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 import usePartnerData from '@/src/utils/usePartnerData';
@@ -21,13 +21,6 @@ import { Badge } from '@/components/ui/badge';
 import {Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
 import { DocumentChoise } from './DocumentChoise/DocumentChoise';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card"
-import { Avatar } from '@radix-ui/react-avatar';
-import Image from 'next/image';
 import { InputTransparent } from '../../inputs/inputTransparent';
 import { Popover, PopoverTrigger } from '@radix-ui/react-popover';
 import { PopoverContent } from '@/components/ui/popover';
@@ -35,7 +28,7 @@ import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
 
 const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   const { professions } = useProfessionContext();
-  const { data: session } = useSession();
+  const { session } = useSession();
   const userName = session?.user?.name ?? 'defaultManagerName';
   const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();

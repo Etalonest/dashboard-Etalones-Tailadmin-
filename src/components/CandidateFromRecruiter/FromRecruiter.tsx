@@ -11,13 +11,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useEffect, useState } from "react";
 import SidebarRight from "../SidebarRight";
 import { Candidate } from "@/src/types/candidate";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 
 
 export default function FromRecruiter() {
-  const { data } = useSession();
-  const managerRole = data?.managerRole || 'guest';
-  const managerId = data?.managerId || '';
+  const { session } = useSession();
+  if (!session) {
+      return <p>Пожалуйста, войдите в систему.</p>;
+    }
+  const managerId = session?.managerId || '';
   const [candidates, setCandidates] = useState<any[]>([]); // Для хранения полученных данных
   const [loading, setLoading] = useState<boolean>(true); // Статус загрузки
   const [error, setError] = useState<string | null>(null); // Ошибка при запросе данных

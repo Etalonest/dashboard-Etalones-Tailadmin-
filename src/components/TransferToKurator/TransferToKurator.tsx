@@ -16,9 +16,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { HandCoins, HousePlus, MapPinned, OctagonAlert, ThumbsUp, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
-    const { data: session } = useSession();
+    const { session } = useSession();
     const appointed = session?.managerId ?? 'defaultManagerId';
     const [filteredVacancies, setFilteredVacancies] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);

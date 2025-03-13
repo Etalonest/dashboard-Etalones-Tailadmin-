@@ -1,7 +1,7 @@
 // src/context/ManagerContext.tsx
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import { Manager } from '../types/manager';
 
 
@@ -14,7 +14,7 @@ const ManagerContext = createContext<ManagerContextType | undefined>(undefined);
 
 export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [manager, setManager] = useState<Manager | null>(null);
-  const { data: session } = useSession();
+  const { session } = useSession();
 
   const managerId = session?.managerId;
 

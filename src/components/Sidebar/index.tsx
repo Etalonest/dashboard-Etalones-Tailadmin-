@@ -7,7 +7,7 @@ import SidebarItem from "@/src/components/Sidebar/SidebarItem";
 import ClickOutside from "@/src/components/ClickOutside";
 import useLocalStorage from "@/src/hooks/useLocalStorage";
 import { AlarmClockCheck, ChartArea, Search, User, NotebookText, BookCheck, CalendarDays, UserCircle, History, Table, Camera, Settings, Menu } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -140,7 +140,7 @@ const menuGroups = [
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const userRole = session?.managerRole || "";
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 

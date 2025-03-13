@@ -9,7 +9,7 @@ import {
     TableRow,
   } from "@/components/ui/table"
  import {Button} from "@/components/ui/button";
- import { useSession } from "next-auth/react";
+ import { useSession } from "@/src/context/SessionContext";
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useManagers } from "@/src/context/ManagersContext";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
@@ -20,7 +20,7 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 
 
   export function RecruiterTab() {
-const { data: session } = useSession();
+const { session } = useSession();
 const { managers } = useManagers();
 if (session?.managerRole === 'admin') {
 

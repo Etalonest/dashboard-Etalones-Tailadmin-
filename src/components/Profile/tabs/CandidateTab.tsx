@@ -9,13 +9,13 @@ import {
     TableRow,
   } from "@/components/ui/table"
  import {Button} from "@/components/ui/button";
- import { useSession } from "next-auth/react";
+ import { useSession } from "@/src/context/SessionContext";
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useManager } from "@/src/context/ManagerContext";
 import { useCandidates } from '@/src/context/CandidatesContext';
 
   export function CandidateTab() {
-const { data: session } = useSession();
+const { session } = useSession();
 const { manager } = useManager();
 const { candidates, isLoading, error } = useCandidates();
 // console.log("test!!!", candidates[0]?.stages.comment)

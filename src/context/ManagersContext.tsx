@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Тип данных менеджера
@@ -26,7 +26,7 @@ const ManagersContext = createContext<ManagersContextType | undefined>(undefined
 // Провайдер контекста
 export const ManagersProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [managers, setManagers] = useState<Manager[]>([]);
-  const { data: session } = useSession();
+  const { session } = useSession();
   // Получение всех менеджеров
   useEffect(() => {
     if (session?.managerRole !== 'admin') {

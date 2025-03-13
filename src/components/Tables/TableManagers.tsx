@@ -9,7 +9,7 @@ import {
     TableRow,
   } from "@/components/ui/table"
  import {Button} from "@/components/ui/button";
- import { useSession } from "next-auth/react";
+ import { useSession } from "@/src/context/SessionContext";
 import { Circle } from "lucide-react";
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
  interface Manager {
@@ -24,7 +24,7 @@ interface TableManagersProps {
   managers: Manager[]; // Типизация для массива менеджеров
 }
   export function TableManagers({ managers, onClick }: TableManagersProps) {
-const { data: session } = useSession();
+const { session } = useSession();
 if (session?.managerRole === 'admin') {
 
     return (

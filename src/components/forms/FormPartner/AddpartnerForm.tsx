@@ -13,7 +13,7 @@ import { suggestionsData } from '@/src/config/suggestions';
 import CMultiSelect from '../../Multiselect/Multiselect';
 import { drivePermisData, languesData, statusDataPartner, taskStats } from '@/src/config/constants';
 import { X } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import { CommentEntry, DocumentEntry } from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 import { Contract } from '@/src/components/forms/interfaces/FormCandidate.interface';
@@ -24,7 +24,7 @@ import Select  from '@/src/components/inputs/Select/Select';
 
 
 const AddpartnerForm = ({onSubmitSuccess}: any) => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId || '';
   const authorName = session?.user?.name || '';
   const { addNotification } = useNotifications();

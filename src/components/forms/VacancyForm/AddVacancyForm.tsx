@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
 import { Vacancy } from "@/src/types/partner";
@@ -26,7 +26,7 @@ interface AddVacancyFormProps {
 }
 
 const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyFormProps) => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const { manager } = useManager();
   const partnerId = partner?._id || '';
   const managerId = session?.managerId || '';

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 import Link from "next/link";
 import ClickOutside from "@/src/components/ClickOutside";
 import SidebarRight from "../SidebarRight";
@@ -10,7 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 const DropdownNotification = () => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Partner } from '@/src/types/partner';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import { saveToIndexedDB, getFromIndexedDB } from '@/src/local/db';  
 
 interface PartnerContextType {
@@ -16,7 +16,7 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [partners, setPartners] = useState<Partner[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId;
 
   const loadPartners = async (managerId: string) => {

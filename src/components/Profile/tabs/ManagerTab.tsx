@@ -9,7 +9,7 @@ import {
     TableRow,
   } from "@/components/ui/table"
  import {Button} from "@/components/ui/button";
- import { useSession } from "next-auth/react";
+ import { useSession } from "@/src/context/SessionContext";
 import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useManagers } from "@/src/context/ManagersContext";
 import { Plus, TrendingDown, TrendingUp } from "lucide-react";
@@ -30,7 +30,7 @@ interface Manager {
   }
 
   export function ManagersTab({ onClick }: TableManagersProps) { 
-    const { data: session } = useSession();
+    const { session } = useSession();
     const { managers } = useManagers();
 if (session?.managerRole === 'admin') {
 

@@ -3,7 +3,7 @@ import { Partner } from '@/src/types/partner';
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
 import { usePartners } from '@/src/context/PartnerContext';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -17,7 +17,7 @@ import React from "react";
 
 
 const TablePartner = () => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
   const { partners } = usePartners();
   const [currentPage, setCurrentPage] = useState(1);

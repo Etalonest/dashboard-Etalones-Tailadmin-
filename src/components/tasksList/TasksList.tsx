@@ -2,12 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 import Select from "../inputs/Select/Select";
 import {  taskStats } from "@/src/config/constants";
 
 export default function TasksList() {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const managerId = session?.managerId;
   const [tasks, setTasks] = useState<any[]>([]);
   const [message, setMessage] = useState<string | null>(null);

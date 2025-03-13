@@ -4,7 +4,7 @@ import { CirclePlus, Download, ImageDown, Save, Scroll, X } from 'lucide-react';
 import Select from '../../inputs/Select/Select';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/src/context/SessionContext';
 import { drivePermisData, citizenshipOptions, langueLevelData, languesData } from '@/src/config/constants'
 import { DocumentEntry, Langue, CommentEntry, InvitationEntry } from "../interfaces/FormCandidate.interface"
 
@@ -33,7 +33,7 @@ import Funnel from '../Funnel/Funnel';
 import Invitation from '../../Invitation/Invitation';
 import { ScrollArea } from '@/components/ui/scroll-area';
 const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
-  const { data: session } = useSession();
+  const { session } = useSession();
   const { addNotification } = useNotifications();
   const { professions } = useProfessionContext();
   const [isInvited, setIsInvited] = useState(false);
