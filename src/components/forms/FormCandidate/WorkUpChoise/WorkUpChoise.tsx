@@ -26,6 +26,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     OnObject: 'На объекте',
     NoVacancy: 'Нет подходящей вакансии',
     CheckWork: 'Ждёт работу',
+    Interview: 'На собеседовании',
 
   };
   const statusColorText: { [key: string]: string } = {
@@ -40,6 +41,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     OnObject: 'text-black',
     NoVacancy: 'text-black',
     CheckWork: 'text-black',
+    Interview: 'text-black'
   };
   const statusColorMap: { [key: string]: string } = {
     Home: 'bg-yellow-100',
@@ -53,6 +55,7 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     OnObject: 'bg-yellow-100',
     NoVacancy: 'bg-yellow-100',
     CheckWork: 'bg-yellow-100',
+    Interview: 'bg-green-100'
   };
   // Эффект для синхронизации с initialSelectedStatuses
   useEffect(() => {

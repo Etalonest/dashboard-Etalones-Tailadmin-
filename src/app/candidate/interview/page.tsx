@@ -1,9 +1,10 @@
 import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
+import Interviews from "@/src/components/Interviews/Interviews";
 
 export default function Page() {
   return (
     <DefaultLayout>
-      <h1>Interview</h1>
+      <Interviews/>
     </DefaultLayout>
   );
 }

@@ -2,6 +2,7 @@
 
 import { connectDB } from '@/src/lib/db';
 import Manager from '@/src/models/Manager';
+import { select } from 'framer-motion/client';
 import { NextRequest, NextResponse } from "next/server";
 
 export const PUT = async (request: NextRequest, { params }: any) => {
@@ -85,72 +86,7 @@ export const PUT = async (request: NextRequest, { params }: any) => {
   }
 };
 
-// export const PUT = async (request: NextRequest, { params }: any) => {
-//     try {
-//         // Логируем начало выполнения запроса
-//         console.log("Запрос PUT для обновления менеджера");
 
-//         // Подключаемся к базе данных
-//         await connectDB();
-
-//         const id = params.id;
-//         console.log("ID менеджера для обновления:", id);  // Логируем id
-
-//         const data = await request.formData();
-//         const file = data.get('file'); // Если файл загружается, получаем его здесь
-//         const { name, phone, email, viber, telegram, whatsapp } = Object.fromEntries(data); // Получаем данные из формы
-
-//         let updatedManager;
-
-//         if (file) {
-//             // Если выбран файл, обновляем и изображение
-//             const bufferData = await file.arrayBuffer();
-//             const buffer = Buffer.from(bufferData);
-
-//             updatedManager = {
-//                 name,
-//                 phone,
-//                 email,
-//                 viber,
-//                 telegram,
-//                 whatsapp,
-//                 image: {
-//                     name: file.name,
-//                     data: buffer,
-//                     contentType: file.type
-//                 }
-//             };
-//         } else {
-//             // Если файл не выбран, обновляем без изображения
-//             updatedManager = {
-//                 name,
-//                 phone,
-//                 email,
-//                 viber,
-//                 telegram,
-//                 whatsapp
-//             };
-//         }
-
-//         // Лог перед выполнением поиска
-//         console.log("Обновляем данные менеджера с ID:", id);
-//         const updatedManagerDoc = await Manager.findByIdAndUpdate(id, updatedManager, { new: true });
-
-//         if (!updatedManagerDoc) {
-//             console.log("Менеджер с ID", id, "не найден.");
-//             return new NextResponse(JSON.stringify({ success: false, message: "Manager not found" }), { status: 404 });
-//         }
-
-//         // Лог успешного обновления
-//         console.log("Менеджер обновлен:", updatedManagerDoc);
-//         return new NextResponse(JSON.stringify({ success: true, message: "Manager updated", manager: updatedManagerDoc }), { status: 200 });
-
-//     } catch (error) {
-//         // Логируем ошибку
-//         console.error("Ошибка при обновлении менеджера:", error);
-//         return new NextResponse(JSON.stringify({ success: false, message: "Error updating manager", error }), { status: 500 });
-//     }
-// };
 
 export async function GET(request: Request, { params }: any) {
   const { id } = params;
@@ -161,27 +97,31 @@ export async function GET(request: Request, { params }: any) {
       console.log("Подключение к базе данных успешно выполнено.");
 
       const manager = await Manager.findById(id)
-      .populate({
-        path: 'candidates',
-        options: { sort: { updatedAt: -1 } },
-        populate: [
-          {
-            path: 'manager',
-            select: 'name phone '
-          },
-          {
-            path: 'documents',
-            populate: {
-              path: 'file',
-              select: 'name contentType',
-            },
-          },
-          {
-            path: 'dialogs',
-            select: 'text date author',
-          }
-        ]
-      })
+      // .populate({
+      //   path: 'candidates',
+      //   options: { sort: { updatedAt: -1 } },
+      //   populate: [
+      //     {
+      //       path: 'statusWork',
+      //       populate: {
+      //         path: '',
+      //         select: ''
+      //       }
+      //     },
+      //     {
+      //       path: 'documents',
+      //       populate: {
+      //         path: 'file',
+      //         select: 'name contentType',
+      //       },
+      //     },
+      //     {
+      //       path: 'dialogs',
+      //       select: 'text date author',
+      //     }
+      //   ]
+      // })
+      .populate('candidates')
       .populate('role')
       .populate({
         path: 'partners',
@@ -200,7 +140,7 @@ export async function GET(request: Request, { params }: any) {
           },
         ]
       });
-    
+      console.log('Количество кандидатов:', manager?.candidates?.length); 
       if (!manager) {
 
           console.log("Менеджер с ID", id, "не найден.");

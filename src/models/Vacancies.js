@@ -3,6 +3,7 @@ import {VacancyImages} from './VacancyImages';
 import {HomeImages} from './HomeImages';
 import {Partner} from './Partner';
 import {Candidate} from './Candidate';
+import {Interview} from './Interview';
 const VacanciesSchema = new Schema({
     image: {
         type: Schema.Types.ObjectId,
@@ -101,7 +102,7 @@ const VacanciesSchema = new Schema({
       }],
       interviews: [{
         type: Schema.Types.ObjectId,
-        ref: 'Candidate'
+        ref: 'Interview'
       }],
       candidates:[{
         type: Schema.Types.ObjectId,

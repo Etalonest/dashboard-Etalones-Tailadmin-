@@ -42,6 +42,15 @@ const ManagerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Candidate'
       }],
+      candidateFromInterview: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Candidate'
+      }],
+      
+      candidateFromObject: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Candidate'
+      }],
       partners: [{
         type: Schema.Types.ObjectId,
         ref: 'Partner'

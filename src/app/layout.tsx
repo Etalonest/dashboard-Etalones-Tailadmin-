@@ -12,6 +12,7 @@ import { NotificationProvider } from "../context/NotificationContext";
 import Notifications from "../notification/Notifications";
 import { CandidateProvider } from "../context/CandidateContext";
 import { CandidatesProvider } from "../context/CandidatesContext";
+import { SessionProvider } from "../context/SessionContext";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body suppressHydrationWarning={true}>
+      <SessionProvider>
       <Provider>
       <NotificationProvider>
       <Notifications />
@@ -44,6 +46,8 @@ export default function RootLayout({
         </SearchProvider>
         </NotificationProvider>
         </Provider>
+        </SessionProvider>
+
       </body>
     </html>
   );

@@ -33,6 +33,7 @@ export interface ManagerImage {
   
   // Основной тип для менеджера
   export interface Manager {
+    candidateFromInterview: any;
     allCandidates: any;
     _id?: IdReference;
     name?: string;
@@ -43,7 +44,7 @@ export interface ManagerImage {
     whatsapp?: string;
     email?: string;
     __v?: { $numberInt: string };
-    candidates?: IdReference[];
+    candidates?: Candidate[];
     partners?: IdReference[];
     vacancy?: IdReference[];
     onSite?: boolean;

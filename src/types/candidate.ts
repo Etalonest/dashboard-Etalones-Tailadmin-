@@ -42,6 +42,8 @@ export type Profession = {
   
   // Основной тип для кандидата
   export type Candidate = {
+    interviewDate: any;
+    vacancy: any;
     statusWork: any;
     avatar: any;
     stages: any;

@@ -132,6 +132,7 @@ try {
   if (manager) {
     manager.tasks.push(newTask1._id, newTask2._id);
     manager.candidatesFromRecruiter.push(candidate._id);
+    manager.candidates.push(candidate._id);
     await manager.save();
   }
 

@@ -5,14 +5,17 @@ import { useState } from "react";
 import TablePartner from "@/src/components/Tables/TablePartner";
 import TableCandidate from "@/src/components/Tables/TableCandidate";
 import { ProfessionProvider } from "@/src/context/ProfessionContext";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/src/context/SessionContext";
 import Vacancy from "@/src/components/Vacancy/Vacancy";
 import Partner from "@/src/models/Partner";
 import { PartnerProvider } from "@/src/context/PartnerContext";
 
 const TablesPage = () => {
-  const { data: session } = useSession();
-  
+
+   const { session } = useSession();
+      if (!session) {
+          return <p>Пожалуйста, войдите в систему.</p>;
+        }
   // Состояние для выбранной таблицы
   const [activeTable, setActiveTable] = useState("table1");
 

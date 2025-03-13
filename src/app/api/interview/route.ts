@@ -3,6 +3,8 @@ import Interview from '@/src/models/Interview';
 import { connectDB } from '@/src/lib/db';  
 import Candidate from '@/src/models/Candidate';
 
+
+
 export async function POST(req: Request) {
   try {
     const { vacancy, manager, date, comment, candidateId } = await req.json();
