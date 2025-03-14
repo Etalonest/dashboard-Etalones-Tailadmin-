@@ -9,12 +9,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
+import { useSidebar } from "@/src/context/SidebarContext";
 const DropdownNotification = () => {
+   const {
+      setSidebarROpen,
+      setFormType,
+      setSelectedCandidate,
+    } = useSidebar();
   const { session } = useSession();
   const managerId = session?.managerId;
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [tasks, setTasks] = useState<any[]>([]);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
@@ -34,10 +37,10 @@ const DropdownNotification = () => {
     if (managerId) fetchTasks();
   }, [managerId]);
 
-  const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
+  const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
     setFormType(type);
     setSelectedCandidate(candidate || null);
-    setSidebarOpen(prevState => !prevState);  
+    setSidebarROpen(true); 
   };
   const handleCheckboxChange = async (
     taskId: string, 
@@ -74,12 +77,7 @@ const DropdownNotification = () => {
 
   return (
     <>
-      <SidebarRight 
-        sidebarROpen={sidebarOpen} 
-        setSidebarROpen={setSidebarOpen} 
-        formType={formType} 
-        selectedCandidate={selectedCandidate} 
-      />
+      <SidebarRight />
       <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
         <li>
           <Link

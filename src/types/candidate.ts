@@ -1,5 +1,5 @@
 import { Partner } from "./partner";
-
+import { InterviewType } from "./interview";
 // Тип для профессии
 export type Profession = {
     id: string;
@@ -42,6 +42,7 @@ export type Profession = {
   
   // Основной тип для кандидата
   export type Candidate = {
+    interviews: InterviewType[];
     interviewDate: any;
     vacancy: any;
     statusWork: any;

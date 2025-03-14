@@ -1,22 +1,27 @@
-// Сохранение кандидатов в IndexedDB
+import { Manager } from "../types/manager";
+import { openDb } from "./db";
 
-import { openDB } from './openDB';
+// Сохранение или обновление менеджера в IndexedDB
+export const saveManagerToDb = async (manager: Manager): Promise<string> => {
+  if (!manager._id) {
+    return Promise.reject("Manager does not have an '_id' field, unable to save.");
+  }
 
-export const saveToIndexedDB = async (managerId: string, candidates: any[]) => {
-  const db = await openDB(); // Открываем базу данных
-  const transaction = db.transaction('candidates', 'readwrite'); // Создаем транзакцию
-  const store = transaction.objectStore('candidates'); // Получаем хранилище "candidates"
+  const db = await openDb();
+  const transaction = db.transaction("managers", "readwrite");
+  const store = transaction.objectStore("managers");
 
-  // Сохраняем кандидатов с ключом managerId
-  candidates.forEach((candidate) => {
-    store.put(candidate, managerId); // Сохраняем каждого кандидата в базе данных
+  const request = store.put(manager); // put будет обновлять объект, если _id уже существует
+
+  return new Promise<string>((resolve, reject) => {
+    request.onsuccess = () => {
+      console.log("Менеджер успешно сохранен в IndexedDB:", manager);
+      resolve("Manager saved to DB");
+    };
+
+    request.onerror = () => {
+      console.error("Ошибка при сохранении менеджера в IndexedDB:", manager);
+      reject("Failed to save manager");
+    };
   });
-
-  transaction.oncomplete = function() {
-    console.log('Кандидаты сохранены в IndexedDB');
-  };
-
-  transaction.onerror = function() {
-    console.error('Ошибка при сохранении кандидатов в IndexedDB');
-  };
 };

@@ -5,6 +5,7 @@ import { Candidate } from '@/src/types/candidate';
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
 import Loader from "@/src/components/common/Loader";
+import { useSidebar } from '@/src/context/SidebarContext';
 
 const TableCandidate = () => {
   const { manager } = useManager(); 
@@ -15,10 +16,17 @@ const TableCandidate = () => {
 
   const candidatesPerPage = 10;
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-
+const {
+    setSidebarROpen,
+    setFormType,
+    setSelectedCandidate,
+  } = useSidebar();
+   
+  const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
+    setFormType(type);
+    setSelectedCandidate(candidate || null);
+    setSidebarROpen(true); // Открытие сайдбара
+  };
   const currentCandidates = filteredCandidates.slice(
     (currentPage - 1) * candidatesPerPage,
     currentPage * candidatesPerPage
@@ -61,12 +69,7 @@ const TableCandidate = () => {
     setSearchQuery(event.target.value);
   };
 
-  const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
-    setFormType(type);             
-    setSelectedCandidate(candidate || null); 
-    setSidebarOpen(prevState => !prevState);  
-  };
-
+  
   if (loading) {
     return <Loader />; // Если менеджер еще не загружен
   }
@@ -80,12 +83,7 @@ const TableCandidate = () => {
           </h4>
           <UserRoundPlus color='green' onClick={() => toggleSidebar("addCandidate")} className='cursor-pointer' />
         </div>
-        <SidebarRight 
-          sidebarROpen={sidebarOpen} 
-          setSidebarROpen={setSidebarOpen} 
-          formType={formType} 
-          selectedCandidate={selectedCandidate} 
-        />
+        <SidebarRight />
         <input
           type="text"
           value={searchQuery}

@@ -8,6 +8,7 @@ export interface Notification {
   type: 'success' | 'error' | 'warning' | 'info';
   metadata?: any;  // Метаданные
   link?: string;    // Ссылка для уведомления
+  message?:any;
 }
 
 // Тип контекста уведомлений

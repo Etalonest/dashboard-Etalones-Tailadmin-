@@ -1,7 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Candidate } from '@/src/types/candidate';
-import { saveToIndexedDB, getFromIndexedDB } from '@/src/local/db';  // Функции для работы с IndexedDB
 
 interface CandidatesContextType {
   candidates: Candidate[];
@@ -26,20 +25,13 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setError(null);
 
     try {
-      // Попытка загрузить кандидатов из IndexedDB
-      const localCandidates = await getFromIndexedDB('candidates', 'candidates');  // Передаем key
 
-      if (localCandidates.length > 0) {
-        setCandidates(localCandidates);  // Если кандидаты есть в базе, используем их
-      } else {
+       {
         const response = await fetch(`/api/candidates/forAll?page=${page}`);  // Добавим пагинацию в запрос
         const data = await response.json();
 
         if (response.ok) {
           setCandidates(data.candidates);
-          setHasMore(data.candidates.length > 0); // Проверка, есть ли еще кандидаты для загрузки
-          // Сохраняем кандидатов в IndexedDB
-          saveToIndexedDB('candidates', 'candidates', data.candidates);
         } else {
           setError(data.message || 'Не удалось загрузить кандидатов');
         }
@@ -63,8 +55,6 @@ export const CandidatesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       if (response.ok) {
         setCandidates((prevCandidates) => [...prevCandidates, ...data.candidates]);  // Добавляем новых кандидатов к уже загруженным
-        setHasMore(data.candidates.length > 0);  // Проверка, есть ли еще кандидаты для загрузки
-        saveToIndexedDB('candidates', 'candidates', data.candidates); // Сохраняем в IndexedDB
       } else {
         setError(data.message || 'Не удалось загрузить кандидатов');
       }

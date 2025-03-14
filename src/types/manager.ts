@@ -33,6 +33,7 @@ export interface ManagerImage {
   
   // Основной тип для менеджера
   export interface Manager {
+    candidateFromRecruiter: any;
     candidateFromInterview: any;
     allCandidates: any;
     _id?: IdReference;

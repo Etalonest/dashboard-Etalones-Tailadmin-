@@ -6,7 +6,7 @@ import {Candidate} from './Candidate';
 const InterviewSchema = new Schema({
   status: {
     type: String,
-    default: 'отправил'
+    default: 'назначено'
   },
   vacancy: {
     type: Schema.Types.ObjectId,

@@ -9,6 +9,7 @@ import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
 import { Eye, UserCog } from 'lucide-react';
 import { Candidate } from '@/src/types/candidate';
 import SidebarRight from '../SidebarRight';
+import { useSidebar } from '@/src/context/SidebarContext';
 
 const SearchCandidates = () => {
   // Состояния для всех полей
@@ -18,13 +19,14 @@ const SearchCandidates = () => {
   const [status, setStatus] = useState('');
   const [document, setDocument] = useState('');
   const [manager, setManager] = useState('');
-  const [partner, setPartner] = useState('');
-  const [location, setLocation] = useState('');
 
+
+  const {
+    setSidebarROpen,
+    setFormType,
+    setSelectedCandidate,
+  } = useSidebar();
   
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | null>(null);
-    const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   // Состояние для хранения результатов поиска
   const [candidates, setCandidates] = useState<any[]>([]); 
   const [error, setError] = useState<string | null>(null); // Для ошибок
@@ -43,8 +45,6 @@ const SearchCandidates = () => {
         status,
         document,
         manager,
-        partner,
-        location,
       });
 
       // Отправляем запрос на сервер с фильтрами
@@ -69,19 +69,16 @@ const SearchCandidates = () => {
       setIsLoading(false); // Отключаем загрузку
     }
   };
-const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate", candidate?: Candidate) => {
-    setFormType(type);             
-    setSelectedCandidate(candidate || null); 
-    setSidebarOpen(prevState => !prevState);  
+
+   
+  const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
+    setFormType(type);
+    setSelectedCandidate(candidate || null);
+    setSidebarROpen(true); // Открытие сайдбара
   };
   return (
     <div>
-        <SidebarRight 
-          sidebarROpen={sidebarOpen} 
-          setSidebarROpen={setSidebarOpen} 
-          formType={formType} 
-          selectedCandidate={selectedCandidate} 
-        />
+        <SidebarRight />
       <h1 className="text-center text-2xl font-semibold mb-2">Поиск кандидатов</h1>
       <div className="grid grid-cols-4 gap-4">
         <div className="col-span-1">
@@ -147,9 +144,12 @@ const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate",
                 <TableBody>
             {candidates.map((candidate, index) => (
                 <TableRow key={index}>
-                    <TableCell>{new Date(candidate.createdAt)
+                    <TableCell className='flex flex-col'>
+                      <div>{new Date(candidate.createdAt)
         .toLocaleString()
-        .slice(0, 10)} - {candidate?.manager?.name}</TableCell>
+        .slice(0, 10)}</div>
+        <div>{candidate?.manager?.name}</div>
+        </TableCell>
                     <TableCell>
                         <p>{candidate.name}</p>
                         <div className="flex gap-2">

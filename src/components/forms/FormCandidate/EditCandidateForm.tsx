@@ -11,7 +11,6 @@ import { DocumentEntry, Langue, CommentEntry, InvitationEntry } from "../interfa
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import { Button } from "@/components/ui/button"
 import { Badge } from '@/components/ui/badge';
-import { useProfessionContext } from "@/src/context/ProfessionContext";
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import CMultiSelect from '../../Multiselect/Multiselect';
@@ -30,16 +29,17 @@ import {
 } from "@/components/ui/drawer"
 import { Textarea } from '@/components/ui/textarea';
 import Funnel from '../Funnel/Funnel';
-import Invitation from '../../Invitation/Invitation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Profession } from '@/src/types/profession';
 const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   const { session } = useSession();
   const { addNotification } = useNotifications();
-  const { professions } = useProfessionContext();
+  // const { professions } = useProfessionContext();
   const [isInvited, setIsInvited] = useState(false);
   const [status, setStatus] = useState('');
   const [photoDocs, setPhotoDocs] = useState('');
   const [paid, setPaid] = useState(false);
+  const [professions, setProfessions] = useState<Profession[]>([]);
   const [comments, setComments] = useState<{ author: string; text: string }[]>([]);
   const [funnelData, setFunnelData] = useState({});
   const [selectPhone, setSelectPhone] = useState(candidate?.phone || "");
@@ -76,6 +76,23 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
   const userName = session?.user?.name ?? 'defaultManagerName';
   
   
+
+const fetchProfessions = async () => {
+    try {
+      const response = await fetch("/api/profession");
+      if (!response.ok) {
+        throw new Error("Ошибка при загрузке профессий");
+      }
+      const data = await response.json();
+      setProfessions(data);
+    } catch (err) {
+      console.error("Ошибка при загрузке профессий", err);
+    } 
+  };
+
+  useEffect(() => {
+    fetchProfessions(); // Запрашиваем профессии при монтировании компонента
+  }, []);
   useEffect(() => {
     if (candidate?.statusWork) {
       setWorkStatuses(candidate.statusWork);
@@ -380,13 +397,12 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     }    
     formData.append('funnel', JSON.stringify(funnelData));
     formData.append('name', name)
-    formData.append('managerId', managerId);
     formData.append('drivePermis', JSON.stringify(driveData)); 
     formData.append('professions', JSON.stringify(professionsData)); 
     formData.append('langue', JSON.stringify(languesData)); 
     formData.append('additionalPhones', JSON.stringify(additionalPhonesData));
     formData.append('workStatuses', JSON.stringify(workStatusesData));
-    formData.append(managerId, JSON.stringify(managerId));
+    formData.append('managerId', managerId);
     formData.append('invitation', JSON.stringify(invitationData));
 
     const documentsData = documentEntries.map((doc, index) => {

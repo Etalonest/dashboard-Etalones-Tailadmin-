@@ -69,7 +69,7 @@ const Header = (props: {
         </div>
 
         <div className="hidden sm:block">
-          <form >
+          {/* <form >
             <div className="relative w-full">
               <button className="absolute left-0 top-1/2 -translate-y-1/2">
                 <svg
@@ -97,7 +97,7 @@ const Header = (props: {
 <Search />
               
             </div>
-          </form>
+          </form> */}
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">

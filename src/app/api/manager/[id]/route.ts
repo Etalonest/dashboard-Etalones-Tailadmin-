@@ -121,7 +121,12 @@ export async function GET(request: Request, { params }: any) {
       //     }
       //   ]
       // })
-      .populate('candidates')
+      .populate('candidatesFromRecruiter')
+      .populate({
+        path:'candidates',
+        populate: ['interviews','manager']
+      
+      })
       .populate('role')
       .populate({
         path: 'partners',
