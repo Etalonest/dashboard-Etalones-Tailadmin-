@@ -2,34 +2,32 @@
 import { Eye, Plus, Settings } from "lucide-react";
 import { Partner } from '@/src/types/partner';
 import { useState, useEffect, useCallback, } from 'react';
-import SidebarRight from '@/src/components/SidebarRight';
+import {useSidebar} from '@/src/context/SidebarContext';
 import { usePartners } from '@/src/context/PartnerContext';
 import { useSession } from '@/src/context/SessionContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ProfessionPartner } from "@/src/types/professionParnter";
 import { VacancyType } from "@/src/types/vacancy";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import SidebarRight from "../SidebarRight";
 const Vacancy = () => {
 
   const { session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
   const { partners, loadPartners } = usePartners();
+  const {
+    setSidebarROpen,
+    setFormType,
+    setSelectedVacancy,
+  } = useSidebar();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
   const partnersPerPage = 10;
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formType, setFormType] = useState<"addVacancy" | "editVacancy" | "viewVacancy" | null>(null);
-  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
-  const [selectedProfession, setSelectedProfession] = useState<ProfessionPartner | null>(null);
-  const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]); // для выбранных групп
 
-  const currentPartners = filteredPartners.slice(
-    (currentPage - 1) * partnersPerPage,
-    currentPage * partnersPerPage
-  );
+
   const groupedPartners = filteredPartners.reduce((acc, partner) => {
     const status = partner.status || "Без статуса";
     if (!acc[status]) {
@@ -79,16 +77,7 @@ const Vacancy = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
-  const toggleSidebar = useCallback(
-    (type: "addVacancy" | "editVacancy" | "viewVacancy", partner?: Partner, profession?: ProfessionPartner, vacancy?: VacancyType) => {
-      setFormType(type);
-      setSelectedPartner(partner || null);
-      setSelectedProfession(profession || null);
-      setSelectedVacancy(vacancy || null);
-      setSidebarOpen(prevState => !prevState);
-    },
-    []
-  );
+  
   const handleEditVacancy = async (partner: Partner, profession: any) => {
     const vacancyId = profession;
 
@@ -108,7 +97,6 @@ const Vacancy = () => {
 
     console.log("Vacancy found:", vacancy);
 
-    toggleSidebar("editVacancy", partner, profession, vacancy);
   };
   const handleViewVacancy = async (partner: Partner, profession: any) => {
     const vacancyId = profession;
@@ -129,7 +117,7 @@ const Vacancy = () => {
 
     console.log("Vacancy found:", vacancy);
 
-    toggleSidebar("viewVacancy", partner, profession, vacancy);
+    // toggleSidebar("viewVacancy", partner, profession, vacancy);
   };
 
   const handleGroupChange = (group: string, checked: boolean) => {
@@ -139,6 +127,11 @@ const Vacancy = () => {
       setSelectedGroups((prev) => prev.filter((g) => g !== group));
     }
   };
+  const toggleSidebar = (p0: string, partner: Partner, type: 'addVacancy' | 'editVacancy' | 'viewVacancy', vacancy?: VacancyType) => {
+      setFormType(type);
+      setSelectedVacancy(vacancy || null);
+      setSidebarROpen(true); // Открытие сайдбара
+    };
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className='flex justify-between items-center'>
@@ -149,12 +142,6 @@ const Vacancy = () => {
           </h4>
         </div>
         <SidebarRight
-          sidebarROpen={sidebarOpen}
-          setSidebarROpen={setSidebarOpen}
-          formType={formType}
-          selectedPartner={selectedPartner}
-          selectedProfession={selectedProfession}
-          selectedVacancy={selectedVacancy}
         />
          <DropdownMenu>
           <DropdownMenuTrigger asChild>

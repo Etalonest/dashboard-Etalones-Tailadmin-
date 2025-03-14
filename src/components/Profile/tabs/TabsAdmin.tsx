@@ -8,7 +8,6 @@ import { RecruiterTab } from "./RecruiterTab";
 import { ManagersTab } from "./ManagerTab";
 import { useSession } from "@/src/context/SessionContext";
 import { useManagers } from "@/src/context/ManagersContext";
-import SidebarRight from "../../SidebarRight";
 import { UsersTab } from "./UsersTab";
 import {CandidateTable} from "./CandidateTable/CandidateTable";
 import CandidatesInWork from "../../CandidatesInWork/CandidatesInWork";
@@ -18,13 +17,7 @@ export function TabsAdmin() {
   const { session } = useSession(); 
   const [activeTab, setActiveTab] = useState("candidate");
   const { managers, setManagers } = useManagers(); // Получаем менеджеров из контекста
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | null>(null);
 
-  const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate" | "createManager") => {
-    setFormType(type);             
-    setSidebarOpen(prevState => !prevState);  
-  };
 
   const renderTabContent = (activeTab: string) => {
     switch (activeTab) {
@@ -32,8 +25,8 @@ export function TabsAdmin() {
         return <UsersTab />;
       case "tasks":
         return <TasksList />;
-      case "managers":
-        return <ManagersTab managers={managers} onClick={toggleSidebar} />;
+      // case "managers":
+      //   return <ManagersTab managers={managers} onClick={toggleSidebar} />;
       case "salles":
         return <SalesmanTab />;
       case "candidate":
@@ -88,11 +81,7 @@ export function TabsAdmin() {
 
   return (
     <>
-      <SidebarRight
-        sidebarROpen={sidebarOpen}
-        setSidebarROpen={setSidebarOpen}
-        formType={formType} 
-      />
+      
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
         <TabsList className="flex gap-2 flex-wrap w-full mb-2">
           {visibleTabs.map((tab) => (

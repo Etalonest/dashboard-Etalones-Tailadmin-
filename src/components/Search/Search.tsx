@@ -128,10 +128,9 @@ const Search = () => {
   const [results, setResults] = useState<SearchResult[]>([]); 
   const [isLoading, setIsLoading] = useState<boolean>(false); 
   const [debouncedValue, setDebouncedValue] = useState<string>(""); 
-  const [sidebarOpen, setSidebarOpen] = useState(false); 
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null); 
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
-  const [formType, setFormType] = useState<"viewCandidate" | "viewPartner" | null>(null); 
+  
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -174,12 +173,9 @@ const Search = () => {
   const handleSelectResult = (result: any) => {
     if (result.type === "candidate") {
       setSelectedCandidate(result);  
-      setFormType("viewCandidate");  
     } else if (result.type === "partner") {
       setSelectedPartner(result);    
-      setFormType("viewPartner");    
     }
-    setSidebarOpen(true);
   };
 
   return (
@@ -222,13 +218,7 @@ const Search = () => {
         </div>
       )}
 
-      <SidebarRight
-        sidebarROpen={sidebarOpen}
-        setSidebarROpen={setSidebarOpen}
-        selectedCandidate={formType === "viewCandidate" ? selectedCandidate : null} 
-        selectedPartner={formType === "viewPartner" ? selectedPartner : null} 
-        formType={formType} 
-      />
+     
     </div>
   );
 };

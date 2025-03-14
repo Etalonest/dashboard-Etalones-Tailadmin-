@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Partner } from '@/src/types/partner';
 import { useSession } from '@/src/context/SessionContext';
-import { saveToIndexedDB, getFromIndexedDB } from '@/src/local/db';  
 
 interface PartnerContextType {
   partners: Partner[];
@@ -24,19 +23,14 @@ export const PartnerProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setError(null);
 
     try {
-      // Попытка загрузить партнёров из IndexedDB
-      const localPartners = await getFromIndexedDB('partners', managerId);
+    
 
-      if (localPartners.length > 0) {
-        setPartners(localPartners);  // Если партнёры есть в базе, используем их
-      } else {
+      {
         const response = await fetch(`/api/partner-by-manager/${managerId}`);
         const data = await response.json();
 
         if (response.ok) {
           setPartners(data.partners);
-          // Сохраняем партнёров в IndexedDB
-          saveToIndexedDB('partners', managerId, data.partners);
         } else {
           setError(data.message || 'Не удалось загрузить партнёров');
         }

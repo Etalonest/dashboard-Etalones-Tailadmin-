@@ -1,17 +1,15 @@
 'use client'
-import Link from "next/link";
 import Image from "next/image";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useManager } from '@/src/context/ManagerContext';
-import SidebarRight from "../SidebarRight";
+// import SidebarRight from "../SidebarRight";
 import { useState } from "react";
 import { Camera, Pencil } from "lucide-react";
 import { TabsAdmin } from "./tabs/TabsAdmin";
 
 const ProfileComponent = () => {
   const { manager } = useManager();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | null>(null);
+  // const [formType, setFormType] = useState<"addCandidate" | "editCandidate" | "viewCandidate" | "createManager" | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -101,18 +99,17 @@ const ProfileComponent = () => {
   };
 
 
-  const toggleSidebar = (type: "addCandidate" | "editCandidate" | "viewCandidate" | "createManager") => {
-    setFormType(type);
-    setSidebarOpen(prevState => !prevState);
-  };
+  // const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
+  //     setFormType(type);
+  //     setSelectedCandidate(candidate || null);
+  //     setSidebarROpen(true); // Открытие сайдбара
+  //   };
 
   return (
     <><div className="mx-auto max-w-242.5">
-      <SidebarRight
-        sidebarROpen={sidebarOpen}
-        setSidebarROpen={setSidebarOpen}
-        formType={formType}
-      />
+      {/* <SidebarRight
+      
+      /> */}
       <Breadcrumb pageName="Profile" />
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="relative z-20 h-35 md:h-65">

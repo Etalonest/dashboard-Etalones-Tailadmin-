@@ -14,19 +14,24 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { useSidebar } from "@/src/context/SidebarContext";
 
 
 const TablePartner = () => {
   const { session } = useSession();
   const managerId = session?.managerId ?? 'defaultManagerId';
   const { partners } = usePartners();
+
+  const {
+      setSidebarROpen,
+      setFormType,
+      setSelectedPartner,
+    } = useSidebar();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
   const partnersPerPage = 10;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formType, setFormType] = useState<"addPartner" | "editPartner" | "viewPartner" | null>(null);
-  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]); // состояние для выбранных групп
   const groupedPartners = filteredPartners.reduce((acc, partner) => {
     const status = partner.status || "Без статуса";
@@ -70,7 +75,7 @@ const TablePartner = () => {
   const toggleSidebar = (type: "addPartner" | "editPartner" | "viewPartner", partner?: Partner) => {
     setFormType(type);
     setSelectedPartner(partner || null);
-    setSidebarOpen((prevState) => !prevState);
+    setSidebarROpen(true);
   };
 
   // Фильтрация партнёров по выбранным группам
@@ -90,12 +95,7 @@ const TablePartner = () => {
           </h4>
           <UserRoundPlus color="green" onClick={() => toggleSidebar("addPartner")} className="cursor-pointer" />
         </div>
-        <SidebarRight
-          sidebarROpen={sidebarOpen}
-          setSidebarROpen={setSidebarOpen}
-          formType={formType}
-          selectedPartner={selectedPartner}
-        />
+        <SidebarRight />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">Групировать по статусам</Button>

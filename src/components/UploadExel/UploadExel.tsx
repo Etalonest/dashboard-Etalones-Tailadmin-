@@ -2,14 +2,14 @@
 import { useState } from "react";
 
 const UploadExel = () => {
-    const [file, setFile] = useState(null);
-    const [status, setStatus] = useState(null);
+    const [file, setFile] = useState("");
+    const [status, setStatus] = useState("");
   
-    const handleFileChange = (e) => {
+    const handleFileChange = (e:any) => {
       setFile(e.target.files[0]);
     };
   
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e:any) => {
       e.preventDefault();
       if (!file) {
         setStatus('Пожалуйста, выберите файл');
@@ -21,7 +21,7 @@ const UploadExel = () => {
   
       try {
         setStatus('Загрузка...');
-        const response = await fetch('/api/upload', {
+        const response = await fetch('/utils/uploadExel.js', {
           method: 'POST',
           body: formData,
         });

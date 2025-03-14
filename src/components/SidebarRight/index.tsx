@@ -173,7 +173,7 @@ const SidebarRight: React.FC = () => {
 
   const closeSidebar = () => {
     setSidebarROpen(false);
-    if (formType !== "viewCandidate" && formType !== "viewPartner") {
+    if (formType !== "viewCandidate" && formType !== "viewPartner" && formType !== "viewVacancy") {
       // Очистка формы при закрытии, если не просмотр
     }
   };

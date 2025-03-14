@@ -175,7 +175,7 @@ const InterviewRes = ({ candidate }: { candidate: Candidate }) => {
       });
       return;
     }
-
+  
     try {
       const body = {
         interviewId: currentInterview._id,
@@ -184,7 +184,7 @@ const InterviewRes = ({ candidate }: { candidate: Candidate }) => {
         comment,
         departureDate: dialogStatus === 'Прошёл' ? departureDate : null, // Отправляем дату выезда только если статус "Прошёл"
       };
-
+  
       // Отправка запроса на сервер для обновления статуса интервью
       const response = await fetch(`/api/candidates/${id}/stages/partner/updateInterviewStatus`, {
         method: 'POST',
@@ -193,12 +193,14 @@ const InterviewRes = ({ candidate }: { candidate: Candidate }) => {
         },
         body: JSON.stringify(body),
       });
-
+  
       const data = await response.json();
       if (data.message === 'Статус интервью обновлен') {
         // Обновление локального состояния
-        setCurrentInterviewStatus(dialogStatus);
-
+        if (dialogStatus !== null) {
+          setCurrentInterviewStatus(dialogStatus); // Только если dialogStatus не null
+        }
+  
         addNotification({
           title: `Статус изменен на "${dialogStatus}"`,
           type: "success",
@@ -221,12 +223,13 @@ const InterviewRes = ({ candidate }: { candidate: Candidate }) => {
         id: uuidv4Original(),
       });
     }
-
+  
     // Закрытие диалога
     setShowDialog(false);
     setComment('');
     setDepartureDate('');
   };
+  
 
   return (
     <div>
