@@ -124,8 +124,8 @@ export async function GET(request: Request, { params }: any) {
       .populate('candidatesFromRecruiter')
       .populate({
         path:'candidates',
-        populate: ['interviews','manager']
-      
+        populate: ['interviews','manager'],
+        options: { sort: { updatedAt: -1 } },
       })
       .populate('role')
       .populate({
