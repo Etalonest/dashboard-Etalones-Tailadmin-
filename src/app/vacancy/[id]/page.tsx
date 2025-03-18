@@ -3,7 +3,9 @@ import ViewVacancy from "@/src/components/forms/VacancyForm/ViewVacancy";
 
 const getVacancyById = async (id: string) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/vacancy/${id}`, {
+    // const res = await fetch(`http://localhost:3000/api/vacancy/${id}`, {
+      const res = await fetch(`https://dashboard-etalones-tailadmin.vercel.app/api/vacancy/${id}`, {
+
     });
 
     if (!res.ok) {
