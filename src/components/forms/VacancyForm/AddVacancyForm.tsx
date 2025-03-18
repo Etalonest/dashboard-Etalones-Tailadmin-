@@ -15,7 +15,6 @@ import Link from "next/link";
 import { useSession } from "@/src/context/SessionContext";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
-import { Vacancy } from "@/src/types/partner";
 import FirebaseImageUpload from "../../UploadForm/UploadForm";
 import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseImagesUpload";
 
@@ -27,13 +26,13 @@ interface AddVacancyFormProps {
 
 const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyFormProps) => {
   const { session } = useSession();
-  const { manager } = useManager();
-  const partnerId = partner?._id || '';
+  const { manager } = useManager();  
+  const partnerId = profession?._id || '';
   const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
-  const [selectedDrive, setSelectedDrive] = useState(profession?.drivePermis || []);
-  const [selectLangues, setSelectLangues] = useState(profession?.langue || []);
-  const [selectDocs, setSelectDocs] = useState(profession?.pDocs || []);
+  const [selectedDrive, setSelectedDrive] = useState(partner?.drivePermis || []);
+  const [selectLangues, setSelectLangues] = useState(partner?.langue || []);
+  const [selectDocs, setSelectDocs] = useState(partner?.pDocs || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
@@ -176,49 +175,49 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           <div>
             <div>
               <Label>Название вакансии:</Label>
-              <Input type="text" defaultValue={profession?.name} name="title"
+              <Input type="text" defaultValue={partner?.name} name="title"
                 className="font-bold" />
             </div>
             <div>
               <Label>Место работы:</Label>
-              <Input type="text" name="location" defaultValue={profession?.location} />
+              <Input type="text" name="location" defaultValue={partner?.location} />
             </div>
             <div>
               <Label>Стоимость проживания:</Label>
-              <Input type="text" name="homePrice" defaultValue={profession?.rentPrice} />
+              <Input type="text" name="homePrice" defaultValue={partner?.rentPrice} />
             </div>
             <div>
               <Label>Зарплата:</Label>
-              <Input type="text" name="salary" defaultValue={profession?.salary} />
+              <Input type="text" name="salary" defaultValue={partner?.salary} />
             </div>
             <div>
               <Label>Знание языков</Label>
                     <CMultiSelect options={languesData} placeholder={'Выберите языки'}
-                      value={profession?.langue || []}
+                      value={partner?.langue || []}
                       onChange={handleLangueChange} 
                       />
                   </div> 
              <div>
               <Label>Подходящие документы</Label>
                     <CMultiSelect options={documentsOptions} placeholder={'Выберите документы'}
-                      value={profession?.pDocs || []}
+                      value={partner?.pDocs || []}
                       onChange={handleDocsChange}
                       />
                   </div> 
                   <div>
               <Label>Водительское удостоверение</Label>
                     <CMultiSelect options={drivePermisData} placeholder={'Выбериите категории'}
-                      value={profession?.drivePermis || []}
+                      value={partner?.drivePermis || []}
                       onChange={handleDriveChange} 
                       />
                   </div>
                   <div>
               <Label>Свободные места:</Label>
-              <Input type="number" name="place" defaultValue={profession?.place} />
+              <Input type="number" name="place" defaultValue={partner?.place} />
             </div>
             <div>
               <Label>Потенциал объекта:</Label>
-              <Input type="text" name="workHours" defaultValue={profession?.workHours} />
+              <Input type="text" name="workHours" defaultValue={partner?.workHours} />
             </div>
             <div>
               <Label>График:</Label>
@@ -230,20 +229,20 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           <div className="flex flex-col gap-7 h-full">
           <div>
               <Label>Навыки:</Label>
-              <Textarea  name="skills" defaultValue={profession?.skills} />
+              <Textarea  name="skills" defaultValue={partner?.skills} />
             </div>
           <div>
               <Label>Короткое описание вакансии:</Label>
-              <Textarea  name="roof_type" defaultValue={profession?.roof_type}
+              <Textarea  name="roof_type" defaultValue={partner?.roof_type}
                 className="font-bold" />
             </div>
             <div className="h-full">
             <Label>Описание работы:</Label>
-            <Textarea className="h-full" name="work_descr" defaultValue={profession?.workdescr} />
+            <Textarea className="h-full" name="work_descr" defaultValue={partner?.workdescr} />
             </div>
             <div className="h-full">
             <Label>Описание условий проживания:</Label>
-            <Textarea className="h-full" name="home_descr" defaultValue={profession?.workdescr} />
+            <Textarea className="h-full" name="home_descr" defaultValue={partner?.workdescr} />
             </div>
           </div>
           <div className="flex justify-start flex-col gap-2">
@@ -256,7 +255,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
              alt={""} width={450} height={300} 
              className="rounded-md max-h-max" /> */}
                    <div className="flex justify-start flex-col gap-2">
-            <FirebaseImageUpload onImageUpload={handleImageUpload} city={profession?.location} jobTitle={profession?.name} />
+            <FirebaseImageUpload onImageUpload={handleImageUpload} city={partner?.location} jobTitle={partner?.name} />
             {selectedImage && (
               <Image src={selectedImage} alt="Selected Image" width={450} height={300} className="rounded-md" />
             )}
@@ -267,8 +266,8 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
             {/* <Input type="file" multiple name="homeImages" className="col-span-2" 
             onChange={handleImageCarouselChange}/> */}
             <FirebaseImagesUpload
-              city={profession?.location} 
-              jobTitle={profession?.name}  
+              city={partner?.location} 
+              jobTitle={partner?.name}  
               onImagesUpload={handleImagesUpload}  
             />
 

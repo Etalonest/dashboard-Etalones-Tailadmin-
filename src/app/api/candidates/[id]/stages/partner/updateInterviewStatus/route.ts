@@ -3,18 +3,19 @@ import Candidate from '@/src/models/Candidate';
 import Interview from '@/src/models/Interview'; 
 import EventLog from '@/src/models/EventLog';
 
-export const POST = async (req: Request, { params }: any) => {
+export const PATCH = async (req: Request, { params }: any) => {
   const { id } = params;
   try {
     // Извлекаем данные из JSON тела запроса
     const formData = await req.json(); 
-    const { status, author, comment } = formData; // Деструктурируем полученные данные
+    const { status, author, comment, date } = formData; // Деструктурируем полученные данные
 
     // Логируем данные, которые получаем
     console.log('Полученные данные:', {
       status,
       author,
       comment,
+      date
     });
 
     await connectDB();
@@ -57,9 +58,12 @@ export const POST = async (req: Request, { params }: any) => {
     // Логируем перед обновлением
     console.log('Интервью до обновления:', interview);
 
-    // Обновляем статус интервью
+    // Обновляем статус интервью и комментарий
     interview.status = status;
     interview.comment = comment || interview.comment; // Если комментарий был передан, обновляем его
+    if (status === 'Прошёл' && date) {
+      interview.comment = `Дата выезда: ${date}`;
+    }
 
     // Сохраняем обновленное интервью
     await interview.save();
@@ -67,19 +71,12 @@ export const POST = async (req: Request, { params }: any) => {
     // Логируем, что интервью сохранено
     console.log('Интервью после обновления:', interview);
 
-    // Обновляем кандидат в базе данных (при необходимости)
-    candidate.interviews[0] = interview._id; // В случае необходимости это можно настроить для дальнейших операций
-    await candidate.save();
-
-    // Логируем обновление кандидата
-    console.log('Кандидат после обновления:', candidate);
-
     // Создаем лог события
     const eventLog = new EventLog({
       eventType: 'Обновление статуса интервью',
       manager: author, // Автор, который обновил
       relatedId: candidate._id,
-      description: `Статус интервью кандидата "${candidate.name}" изменен на "${status}"`,
+      description: `Кандидат "${candidate.name}" ${status} собеседование`,
     });
     await eventLog.save();
 

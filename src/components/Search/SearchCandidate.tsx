@@ -48,7 +48,7 @@ const SearchCandidates = () => {
       });
 
       // Отправляем запрос на сервер с фильтрами
-      const response = await fetch(`/api/globalSearch?${params.toString()}`, {
+      const response = await fetch(`/api/globalSearchCandidate?${params.toString()}`, {
         method: 'GET', 
       });
 

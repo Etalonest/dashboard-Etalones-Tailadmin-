@@ -40,7 +40,9 @@ export const VacancyAll: React.FC = () => {
     setFormType(type);
     setSelectedVacancy(vacancy || null);
     setSidebarROpen(true);
+    console.log("Selected Vacancy: ", vacancy); // Добавьте лог для отладки
   };
+  
 
   return (
     <div>

@@ -34,18 +34,11 @@ const AddCandidateForm = ({onSubmitSuccess}: any) => {
     date: new Date(),
   });
   
-  const [languesEntries, setLanguesEntries] = useState<Langue[]>([{
-    name: '',
-    level: ''
-  }]);
+  const [languesEntries, setLanguesEntries] = useState<Langue[]>([]);
   const [selectedDrive, setSelectedDrive] = useState<string[]>([]);
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
-  const [professionEntries, setProfessionEntries] = useState<Profession[]>([{
-    name: '',
-    expirience: '',
-    category: ''
-  }]);
+  const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
 
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {

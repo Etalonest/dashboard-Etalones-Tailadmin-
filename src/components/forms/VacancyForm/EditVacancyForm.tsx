@@ -20,8 +20,11 @@ import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseIm
 
 
 
-const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
-  const vacancyH= vacancy?.vacancy;
+const EditVacancyForm = ({ selectedVacancy, onSubmitSuccess }: any) => {
+  console.log("VACANCY from props:", selectedVacancy);
+
+  const vacancyH= selectedVacancy;
+  console.log("VACANCY", vacancyH);
   const { session } = useSession();
   const { manager } = useManager();
   const managerId = session?.managerId || '';

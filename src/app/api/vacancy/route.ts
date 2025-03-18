@@ -9,7 +9,7 @@ export const GET = async (req: Request) => {
   try {
     await connectDB();
 
-    const vacancies = await Vacancies.find().sort({ title: 1 })
+    const vacancy = await Vacancies.find().sort({ createdAt: -1 })
     .populate({
       path: 'manager',
       select: 'name',
@@ -23,7 +23,9 @@ export const GET = async (req: Request) => {
       select: 'name',
     })
 
-    return new NextResponse(JSON.stringify(vacancies), { status: 200 });
+
+
+    return new NextResponse(JSON.stringify(vacancy), { status: 200 });
   } catch (error: any) {
     return new NextResponse(`Ошибка при получении вакансий: ${error.message}`, {
       status: 500,

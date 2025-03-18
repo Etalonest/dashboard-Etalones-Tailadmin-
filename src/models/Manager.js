@@ -46,7 +46,10 @@ const ManagerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Candidate'
       }],
-      
+      candidateFromDA: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Candidate'
+      }],
       candidateFromObject: [{
         type: Schema.Types.ObjectId,
         ref: 'Candidate'

@@ -41,6 +41,8 @@ export const drivePermisData = [
     { value: '661ce21e0cc0e9a8e9261975', label: 'Иван' },
     { value: '6697891852bb24240be4ec27', label: 'Родион' },
     { value: '664af24f4edc695e88c2fe4e', label: 'Татьяна' },
+    { value: '67d7da63b141b32f209a947a', label: 'Светлана' },
+
   ]
   export const documents = [
     { value: 'Виза', label: 'Виза' },

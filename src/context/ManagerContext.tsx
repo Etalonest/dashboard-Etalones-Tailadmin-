@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from '@/src/context/SessionContext';
 import { Manager } from '../types/manager';
+import { Partner } from '../types/partner';
 
 interface ManagerContextType {
   manager: Manager | null;
   setManager: (manager: Manager | null) => void;
   candidates: any[];  // Массив кандидатов
   setCandidates: (candidates: any[]) => void;
+  partner: any[];
+  setPartner: (partner: any[]) => void;
   isLoading: boolean;  // Индикатор загрузки
   error: string | null;  // Ошибка
 }
@@ -16,6 +19,7 @@ const ManagerContext = createContext<ManagerContextType | undefined>(undefined);
 export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [manager, setManager] = useState<Manager | null>(null);
   const [candidates, setCandidates] = useState<any[]>([]); // Состояние для кандидатов
+  const [partner, setPartner] = useState<any[]>([]); // Состояние для партнеров
   const [isLoading, setIsLoading] = useState<boolean>(false);  // Индикатор загрузки
   const [error, setError] = useState<string | null>(null);  // Ошибка при загрузке данных
   const { session } = useSession();
@@ -39,6 +43,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (data.manager) {
           setManager(data.manager);  // Сохраняем данные менеджера
           setCandidates(data.manager.candidates || []);  // Сохраняем кандидатов
+          setPartner(data.manager.partner);
         }
       } catch (error) {
         console.error('Error fetching manager:', error);
@@ -52,7 +57,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [managerId]);
 
   return (
-    <ManagerContext.Provider value={{ manager, setManager, candidates, setCandidates, isLoading, error }}>
+    <ManagerContext.Provider value={{ manager, setManager, candidates, setCandidates, partner, setPartner, isLoading, error }}>
       {children}
     </ManagerContext.Provider>
   );

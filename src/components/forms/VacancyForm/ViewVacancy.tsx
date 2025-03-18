@@ -15,6 +15,8 @@ import { Blocks, ChevronRight, CircleCheck, HandCoins, HousePlus, MapPinned, Min
 import { Label } from "@radix-ui/react-dropdown-menu";
   
 const ViewVacancy = ({ vacancy }: any) => {
+    console.log("vacancy", vacancy);  // Логирование для проверки
+
     const vacancyH = vacancy?.vacancy;
     console.log("vacancyH", vacancyH);
     useEffect(() => {
@@ -58,7 +60,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                             <div className="text-md my-5 text-gray-600 flex gap-2 items-center">
                         <Blocks /><span>{vacancyH?.roof_type}</span>
                     </div>
-                            {vacancyH?.skills.split(';').map((item: string, index: any) => (
+                            {vacancyH?.skills?.split(';').map((item: string, index: any) => (
                                 <div key={index} className="flex gap-2 justify-start items-center my-1">
                                     <CircleCheck size={18} className="flex-shrink-0" /> {item}
                                 </div>
@@ -94,7 +96,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                                 </div>
                                 <Card className="mt-4 rounded-md border border-gray-300 bg-white p-4 shadow-sm">
                                     <Label className="font-semibold">Условия проживания</Label>
-                                {vacancyH?.home_descr.split(';').map((item: string, index: any) => (
+                                {vacancyH?.home_descr?.split(';').map((item: string, index: any) => (
                                     <div key={index} className="flex gap-2 justify-start items-start my-1">
                                         <CircleCheck className="w-5 h-5 mt-0.5 flex-shrink-0" />{item}
                                     </div>
@@ -110,7 +112,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                         <div className="grid grid-cols-3 gap-10">
                             <div className="col-span-2">
                                 <Label className="text-xl font-bold my-2">О работе</Label>
-                                {vacancyH?.work_descr.split(';').map((item: string, index: any) => (
+                                {vacancyH?.work_descr?.split(';').map((item: string, index: any) => (
                                     <div key={index} className="flex gap-2 justify-start items-start my-1">
                                         <Minus className="w-5 h-5 mt-0.5 flex-shrink-0" /> {item}
                                     </div>
@@ -120,7 +122,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                            
                         </div>
                     </div>
-<div>
+{vacancyH?.homeImageFB ?? <div>
     <Label className="text-xl font-bold my-2">Фото жилья</Label>
      <Carousel 
       orientation="horizontal"
@@ -153,7 +155,7 @@ const ViewVacancy = ({ vacancy }: any) => {
         &gt;
       </CarouselNext>
     </Carousel>
-</div>
+</div>}
 <div className="grid grid-cols-3 gap-10">
 <div>
     <Label className="text-xl font-bold my-2">Необходимые документы</Label>
@@ -186,7 +188,7 @@ const ViewVacancy = ({ vacancy }: any) => {
 <div className="flex gap-2 items-center">
     <Label className="my-2">Партнёр:</Label>
     <span className="font-semibold">
-{vacancyH?.partner.name}
+{vacancyH?.partner.companyName}
     </span>
 </div>
 <div className="flex gap-2 items-center">

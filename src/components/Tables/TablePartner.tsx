@@ -2,7 +2,6 @@ import { Eye, UserCog, UserRoundPlus } from "lucide-react";
 import { Partner } from '@/src/types/partner';
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
-import { usePartners } from '@/src/context/PartnerContext';
 import { useSession } from '@/src/context/SessionContext';
 import {
   DropdownMenu,
@@ -15,12 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { useSidebar } from "@/src/context/SidebarContext";
-
+import { useManager } from "@/src/context/ManagerContext";
 
 const TablePartner = () => {
   const { session } = useSession();
+  const { manager } = useManager();
+  const partners = manager?.partners ?? [];
   const managerId = session?.managerId ?? 'defaultManagerId';
-  const { partners } = usePartners();
 
   const {
       setSidebarROpen,
@@ -31,7 +31,6 @@ const TablePartner = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
   const partnersPerPage = 10;
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]); // состояние для выбранных групп
   const groupedPartners = filteredPartners.reduce((acc, partner) => {
     const status = partner.status || "Без статуса";
@@ -51,9 +50,16 @@ const TablePartner = () => {
           (partner.phone && partner.phone.toLowerCase().includes(lowerCaseSearch))
         );
       });
-      setFilteredPartners(filtered);
+      // Обновляем состояние только в случае, если фильтры изменились
+      setFilteredPartners((prevFiltered) => {
+        if (JSON.stringify(prevFiltered) !== JSON.stringify(filtered)) {
+          return filtered;
+        }
+        return prevFiltered;
+      });
     }
-  }, [searchQuery, partners]);
+  }, [searchQuery, partners]);  // Убедитесь, что зависимость 'partners' не вызывает лишних рендеров
+  
 
   // Обновляем фильтрацию на основе выбранных групп
   const handleGroupChange = (group: string, checked: boolean) => {

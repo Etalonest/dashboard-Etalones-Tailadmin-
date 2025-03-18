@@ -34,6 +34,7 @@ const menuGroups = [
         rolesAllowed: ["admin", "manager", "recruiter"],
         children: [
           { label: "Кандидата", route: "/search" },
+          { label: "Партнёра", route: "/search" },
           
         ],
       },
@@ -47,6 +48,7 @@ const menuGroups = [
           { label: "Ждут работу", route: "/candidate/checkWork" },
           { label: "Ждут приглашение", route: "/candidate/invitation" },
           { label: "На собеседовании", route: "/candidate/interview" },
+          { label: "Прибывает на обьёкт", route: "/candidate/checkDA" },
           { label: "На объекте", route: "/candidate/inWork" },
         ],
         rolesAllowed: ["recruiter"],
@@ -62,6 +64,7 @@ const menuGroups = [
           { label: "От рекрутера", route: "/candidate/fromRecruiter" },
           { label: "Ждут приглашение", route: "/candidate/invitation" },
           { label: "На собеседовании", route: "/candidate/interview" },
+          { label: "Прибывает на обьёкт", route: "/candidate/checkDA" },
           { label: "На объекте", route: "/candidate/inWork" },
         ],
         rolesAllowed: ["admin", "manager"],

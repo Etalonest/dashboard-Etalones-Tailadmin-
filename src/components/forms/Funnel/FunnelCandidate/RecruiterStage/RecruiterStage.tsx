@@ -77,7 +77,7 @@ export const RecruiterStage = ({ candidate }: any) => {
             </div>
           </div>
         </CardContent>
-            <SuitableV/>
+            <SuitableV selectedProfessions={candidate?.professions.map((prof: any) => prof.name)}/>
       </Card>
     </>
   );

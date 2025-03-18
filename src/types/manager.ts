@@ -1,5 +1,6 @@
 // src/types/manager.ts
 import { Candidate } from "./candidate";
+import { Partner } from "./partner";
 // Тип для изображения менеджера
 export interface ManagerImage {
     name: string;
@@ -13,6 +14,7 @@ export interface ManagerImage {
   
   // Тип для кандидатов, партнеров, задач и других связанных сущностей
   export interface IdReference {
+    status: string;
     stage: any;
     documents: any;
     id: number;
@@ -46,7 +48,7 @@ export interface ManagerImage {
     email?: string;
     __v?: { $numberInt: string };
     candidates?: Candidate[];
-    partners?: IdReference[];
+    partners?: Partner[];
     vacancy?: IdReference[];
     onSite?: boolean;
     tasks?: IdReference[];

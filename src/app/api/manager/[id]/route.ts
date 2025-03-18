@@ -143,6 +143,13 @@ export async function GET(request: Request, { params }: any) {
               select: 'name contentType',
             },
           },
+          {
+            path: 'professions',
+            populate: {
+              path: 'vacancy',
+              select: ''
+            },
+          }
         ]
       });
       console.log('Количество кандидатов:', manager?.candidates?.length); 

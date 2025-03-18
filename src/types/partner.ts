@@ -2,6 +2,7 @@ import { Manager } from "./manager";
 
 // Тип для профессии партнёра
 export type Profession = {
+    vacancy: any;
     workHours: string;
     salary: string;
     location: string;
@@ -89,6 +90,7 @@ export type Profession = {
  }
   // Основной тип для партнёра
   export type Partner = {
+    vacancy: any;
     avatar: any;
     id: string;
     _id: string;               // ID партнёра

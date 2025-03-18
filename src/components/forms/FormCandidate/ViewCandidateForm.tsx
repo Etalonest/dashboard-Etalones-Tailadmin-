@@ -3,11 +3,10 @@ import TransferToKurator from '../../TransferToKurator/TransferToKurator';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import Image from 'next/image';
 import { Candidate } from '@/src/types/candidate';
-import { p } from 'framer-motion/client';
 
 
 const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null, }) => {
-
+console.log("Rendering ViewCandidateForm with candidate:", candidate);
   if (!candidate) {
     return <p>Нет данных о кандидате</p>;
   }
@@ -38,14 +37,26 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null, }) => {
           <div className=' flex flex-col gap-2'>
           <p>Имя: <strong>{candidate.name}</strong></p>
           <p>Телефон: <strong>{candidate.phone}</strong></p>
-            <p>Возраст: <strong>{candidate.ageNum}</strong></p>
-            <p>Гражданство: <strong>{candidate.citizenship}</strong></p>
-            <p>Местоположение: <strong>{candidate.locations}</strong></p>
-            <div className='flex gap-2'>Языки: {candidate.langue.map((lang,index) => 
-             <div key={index}>
-              <strong>{lang.name}</strong>
-             </div>
-             )}</div>
+           {candidate.ageNum ?? <p>Возраст: <strong>{candidate.ageNum}</strong></p>}
+           {candidate.citizenship ? (
+  <p>Гражданство: <strong>{candidate.citizenship}</strong></p>
+) : (
+  <p>Гражданство не указано</p>
+)}
+            {candidate.locations ?? <p>Местоположение: <strong>{candidate.locations}</strong></p>}
+            {candidate.langue.length > 0 ? (
+  <div className='flex gap-2'>
+    Языки: 
+    {candidate.langue.map((lang, index) => (
+      <div key={index}>
+        <strong>{lang.name}</strong>
+      </div>
+    ))}
+  </div>
+) : (
+  <p>Языки не указаны</p>
+)}
+
             <div className='flex gap-2'>Водительское удостоверение: {candidate.drivePermis.map((perm,index) => 
              <div key={index}>
               <strong>{perm}</strong>

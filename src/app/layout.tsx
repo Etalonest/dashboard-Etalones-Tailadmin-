@@ -37,13 +37,9 @@ export default function RootLayout({
       <Notifications />
         <SearchProvider>
         <ManagerProvider>
-          <CandidatesProvider>
-          <CandidateProvider>
         <div className="text-black dark:text-white dark:bg-boxdark-2   ">
           {loading ? <Loader /> : children}
         </div>
-        </CandidateProvider>
-        </CandidatesProvider>
         </ManagerProvider>
         </SearchProvider>
         </NotificationProvider>

@@ -28,7 +28,6 @@ const TablesPage = () => {
   return (
     <DefaultLayout>
       <ProfessionProvider>
-        <PartnerProvider>
           <Breadcrumb pageName="Tables" />
 
           <div className="mb-6">
@@ -61,7 +60,6 @@ const TablesPage = () => {
             {activeTable === "table2" && <TablePartner />}
             {activeTable === "table3" && <Vacancy />}
           </div>
-        </PartnerProvider>
       </ProfessionProvider>
     </DefaultLayout>
   );
