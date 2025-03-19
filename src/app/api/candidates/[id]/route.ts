@@ -160,7 +160,16 @@ if (commentData) {
         documentsFile: { $each: documentsFileData }, 
       },
     }, { new: true });
+    if (newManager) {
+      const manager = await Manager.findById(newManager);
 
+      if (manager) {
+        if (!manager.candidates.includes(updatedCandidate._id)) {
+          manager.candidates.push(updatedCandidate._id);
+          await manager.save();
+        }
+      }
+    }
     console.log('Candidate updated:', updatedCandidate);
 
     return NextResponse.json({ message: "Candidate обновлён", content:"",success: true, }, { status: 200 });

@@ -18,7 +18,8 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     AnotherCompany: 'Работает с другой фирмой',
     Ready: 'Готов работать с нами',
     WaitPeople: 'Ждёт людей',
-    BadCall: "Тяжело выходит на связь"
+    BadCall: "Тяжело выходит на связь",
+    Negotiation: "На стадии переговоров"
   };
   const statusColorText: { [key: string]: string } = {
     NoObj: 'text-black',
@@ -28,7 +29,8 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     AnotherCompany: 'text-black',
     Ready: 'text-black',
     WaitPeople: 'text-black',
-    BadCall: 'text-white'
+    BadCall: 'text-white',
+    Negotiation: 'text-black'
   };
   const statusColorMap: { [key: string]: string } = {
     NoObj: 'bg-red-100',
@@ -38,7 +40,8 @@ export const WorkUpChoise: React.FC<WorkUpChoiseProps> = ({ onStatusesChange, in
     AnotherCompany: 'bg-yellow-200',
     Ready: 'bg-green-200',
     WaitPeople: 'bg-yellow-100',
-    BadCall: 'bg-red-400'
+    BadCall: 'bg-red-400',
+    Negotiation: 'bg-yellow-100'
   };
   // Эффект для синхронизации с initialSelectedStatuses
   useEffect(() => {
