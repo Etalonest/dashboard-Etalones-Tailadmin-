@@ -4,6 +4,7 @@ import { connectDB } from '@/src/lib/db';
 import Manager from '@/src/models/Manager';
 import { select } from 'framer-motion/client';
 import { NextRequest, NextResponse } from "next/server";
+import path from 'path';
 
 export const PUT = async (request: NextRequest, { params }: any) => {
   try {
@@ -147,8 +148,8 @@ export async function GET(request: Request, { params }: any) {
             path: 'professions',
             populate: {
               path: 'vacancy',
-              select: ''
-            },
+              select: '',
+              }
           }
         ]
       });

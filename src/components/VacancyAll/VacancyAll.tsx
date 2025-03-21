@@ -8,15 +8,12 @@ import { VacancyType } from '@/src/types/vacancy';
 import { useSidebar } from '@/src/context/SidebarContext';
 
 export const VacancyAll: React.FC = () => {
-  const {
-    selectedVacancy,
-    setSidebarROpen,
-    setFormType,
-    setSelectedVacancy,
-  } = useSidebar();
-
-  // Состояние для хранения списка вакансий
-  const [vacancies, setVacancies] = useState<VacancyType[]>([]);
+  const [vacancies, setVacancies] = useState<VacancyType[]>([]); 
+ const {
+  setFormType,
+  setSelectedVacancy,
+  setSidebarROpen
+ } = useSidebar()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,36 +24,35 @@ export const VacancyAll: React.FC = () => {
         }
 
         const data: VacancyType[] = await response.json();
-        setVacancies(data); // Обновляем список вакансий
+        setVacancies(data); 
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, []); // Зависимость пустая, чтобы загрузить данные только при монтировании компонента
+  }, []);
 
-  const toggleSidebar = (type: 'viewVacancy', vacancy?: VacancyType) => {
-    setFormType(type);
-    setSelectedVacancy(vacancy || null);
-    setSidebarROpen(true);
-    console.log("Selected Vacancy: ", vacancy); // Добавьте лог для отладки
+  const toggleSidebar = (type: "viewVacancy", vacancy?: VacancyType) => {
+    setFormType(type);                
+    setSelectedVacancy(vacancy || null); 
+    console.log("SELECTEDVACANCY", vacancy)
+    setSidebarROpen(true);  
   };
-  
 
   return (
     <div>
-      <SidebarRight />
+      <SidebarRight/>
 
       <h1>Все вакансии</h1>
 
-      {/* Если вакансии есть, показываем их */}
       {vacancies.length > 0 ? (
         vacancies.map((vacancy, index) => (
           <Card
             className="rounded-md p-2 w-full cursor-pointer flex justify-center items-center"
             key={index}
-            onClick={() => toggleSidebar('viewVacancy', vacancy)}
+            
+            onClick={() => toggleSidebar("viewVacancy", vacancy)} 
           >
             <CardHeader>
               <Image
@@ -69,9 +65,7 @@ export const VacancyAll: React.FC = () => {
             <CardContent className="w-full">
               <div className="text-xl font-bold">{vacancy.title}</div>
               <div className="text-sm text-gray-600 flex gap-2 items-center">
-                <span>
-                  <MapPinned />
-                </span>
+                <span><MapPinned /></span>
                 <span>{vacancy.location}</span>
               </div>
               <div className="flex gap-2 items-center justify-start">
@@ -84,15 +78,12 @@ export const VacancyAll: React.FC = () => {
                 <span className="font-bold">{vacancy.homePrice}</span>
               </div>
             </CardContent>
-            <div className="flex flex-col justify-center items-end w-full">
+            <div className='flex flex-col justify-center items-end w-full'>
               <div>Свободных мест: {vacancy.place}</div>
               {vacancy.interviews.length > 0 && (
-                <div>
-                  На собеседовании:{' '}
-                  {vacancy.interviews?.map((interview, index) => (
-                    <div key={index}>{interview.name}</div>
-                  ))}
-                </div>
+                <div>На собеседовании: {vacancy.interviews?.map((interview, index) =>
+                  <div key={index}>{interview.name}</div>
+                )}</div>
               )}
               <div className="flex gap-2 items-center justify-end">
                 <span className="text-sm font-semibold">Куратор:</span>

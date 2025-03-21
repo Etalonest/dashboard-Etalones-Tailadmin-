@@ -256,7 +256,7 @@
 'use client'
 import { Eye, Plus, Settings } from "lucide-react";
 import { Partner } from '@/src/types/partner';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSidebar } from '@/src/context/SidebarContext';
 import { useSession } from '@/src/context/SessionContext';
 import { useManager } from "@/src/context/ManagerContext";
@@ -294,20 +294,6 @@ const Vacancy = () => {
     return acc;
   }, {} as Record<string, Partner[]>);
 
-  const fetchVacancy = async (vacancyId: string) => {
-    try {
-      const response = await fetch(`/api/vacancy/${vacancyId}`);
-      if (!response.ok) {
-        throw new Error('Не удалось загрузить данные вакансии');
-      }
-
-      const vacancy = await response.json();
-      return vacancy;
-    } catch (error) {
-      console.error('Ошибка при загрузке вакансии:', error);
-    }
-  };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -316,51 +302,17 @@ const Vacancy = () => {
     setSearchQuery(event.target.value);
   };
 
-  // Функция редактирования вакансии
-  const handleEditVacancy = async (partner: Partner, professionId: string) => {
-    if (!professionId) {
-      console.log("Вакансия не найдена для редактирования.");
-      return;
-    }
-
-    const vacancy = await fetchVacancy(professionId);
-
-    if (!vacancy) {
-      console.log("Вакансия с таким ID не найдена!");
-      return;
-    }
-
-    console.log("Vacancy found:", vacancy);
-    toggleSidebar("editVacancy", vacancy);
-  };
-
-  // Функция для просмотра вакансии
-  const handleViewVacancy = async (partner: Partner, professionId: string) => {
-    if (!professionId) {
-      console.log("Вакансия не найдена для просмотра.");
-      return;
-    }
-
-    const vacancy = await fetchVacancy(professionId);
-
-    if (!vacancy) {
-      console.log("Вакансия с таким ID не найдена!");
-      return;
-    }
-
-    console.log("Vacancy found:", vacancy);
-    toggleSidebar("viewVacancy", vacancy);
-  };
-
-  const toggleSidebar = (type: 'addVacancy' | 'editVacancy' | 'viewVacancy', profession?: any, partner?: any, vacancy?: any) => {
-    console.log("Selected Profession:аномалия", profession);
-    console.log("Selected Partner:аномалия", partner);
-    console.log("Selected Vacancy:аномалия", vacancy);
-    setFormType(type);
-    setSelectedProfession(profession || null); // Передаем профессию в правильный контекст
-    setSelectedPartner(partner || null); // Передаем партнёра в правильный контекст
-    setSelectedVacancy(vacancy || null); // Передаем вакансию в правильный контекст
-    setSidebarROpen(true); // Открытие сайдбара
+const toggleSidebar = (type: 'addVacancy' | 'editVacancy' | 'viewVacancy', profession?: any, partner?: any, vacancy?: any) => {
+  console.log("Selected Profession:", profession);
+  console.log("Selected Partner:", partner);
+  console.log("Selected Vacancy:", vacancy);
+  setFormType(type);
+  setSelectedProfession(profession || null); // Передаем профессию в правильный контекст
+  setSelectedPartner(partner || null); // Передаем партнёра в правильный контекст
+  
+  // Проверяем, есть ли вакансия у профессии, если нет, передаем null
+  setSelectedVacancy(vacancy || profession?.vacancy || null); // Правильная передача вакансии
+  setSidebarROpen(true); // Открытие сайдбара
 };
 
   
@@ -420,7 +372,7 @@ const Vacancy = () => {
         </TableHeader>
         <TableBody>
           {Object.keys(groupedPartners).filter(status => selectedGroups.includes(status)).map((status) => (
-            <div key={status}>
+            <React.Fragment key={status}>
               {groupedPartners[status].map((partner, index) => (
                 <TableRow key={index} className="grid grid-cols-5 gap-2">
                   <TableCell>
@@ -459,13 +411,13 @@ const Vacancy = () => {
 </button>
                             <button
                               className={`text-${profession.vacancy ? 'green-500' : 'gray-500'} ${profession.vacancy ? '' : 'cursor-not-allowed'}`}
-                              onClick={() => toggleSidebar("editVacancy", profession, partner, profession.vacancy)}  
+                              onClick={() => toggleSidebar("editVacancy", profession, partner, partner.vacancy)}  
                               disabled={!profession.vacancy}
                             ><Settings />
                             </button>
                             <button
                               className={`text-${profession.vacancy ? 'green-500' : 'gray-500'} ${profession.vacancy ? '' : 'cursor-not-allowed'}`}
-                              onClick={() => handleViewVacancy(partner, profession.vacancy)}
+                              onClick={() => toggleSidebar("viewVacancy", partner, profession, profession.vacancy)} 
                               disabled={!profession.vacancy}
                             ><Eye />
                             </button>
@@ -476,7 +428,7 @@ const Vacancy = () => {
                   </TableCell>
                 </TableRow>
               ))}
-            </div>
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>

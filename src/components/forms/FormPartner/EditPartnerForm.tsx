@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image';
 import { useNotifications } from '@/src/context/NotificationContext';
 import { v4 as uuidv4Original } from 'uuid';
 import { Button } from '@/components/ui/button';
@@ -345,9 +346,17 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   return (
     <div className='container mx-auto flex justify-center'>
     <form onSubmit={handleSubmit} className='grid grid-cols-3 gap-2 px-5'>   
-      <Card className=''>
-        <CardHeader className=''>
-        {/* <Image src="/images/user/user-01.png" className='w-16 h-16 rounded-full' width={400} height={400} alt="user" /> */}
+      <Card className='mt-2'>
+        <CardContent>
+          <div className='flex justify-between'>
+        <Image src="/images/user/user-01.png" className='w-16 h-16 rounded-full' width={400} height={400} alt="user" />
+          <div>
+           <Label>
+            Менеджер:&nbsp;
+            </Label> 
+            {partner?.manager?.name}
+          </div>
+          </div>
         <InputTransparent placeholder="Имя" name='name' value={selectName || ''}
           onChange={handleChangeName}/>
         <InputTransparent placeholder="Телефон" name='phone' value={selectPhone || ''}
@@ -441,218 +450,12 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
 </ScrollArea> 
           </PopoverContent>
         </Popover>
-        </CardHeader>
+        </CardContent>
         <Textarea
                     placeholder="Оставьте свой комментарий"
                     className="my-5 mx-auto w-[50%] "
                     id="comment" name="comment"/>
-<CardContent className='mt-0 grid grid-cols-2 gap-2'>
-
-</CardContent>
       </Card>
-      
-            {/* <div className="p-2">
-              <Card>
-                <CardHeader className='grid grid-cols-3 gap-2'>
-                  <CardTitle className='col-span-3 flex justify-end items-center gap-2'><PencilLine/><span> {selectName}</span></CardTitle>
-                  <DocumentChoise 
-          initialSelectedDocuments={documents}
-          onDocumentsChange={handleDocumentChange} />
-          <Drawer>
-    <DrawerTrigger>
-  <Button type='button'  variant="outline" >Добавить файл</Button>
-    </DrawerTrigger>
-    <DrawerContent>
-      <DrawerHeader>
-        <DrawerTitle>
-      Добавить документ
-        </DrawerTitle>
-        <DrawerDescription className='text-gray-400'>Выберите какой документ вы хотите добавить</DrawerDescription>
-      </DrawerHeader>
-      <DrawerFooter >
-            <div className='flex gap-2 items-center justify-center'>
-            <Button>Загрузить</Button>
-            <Button>Скачать</Button>
-            </div>
-            <DrawerClose className='absolute top-2 right-2'>
-              <X size={18} color="red"/>
-            </DrawerClose>
-          </DrawerFooter>
-    </DrawerContent>
-  </Drawer>
-          {documents.map((doc: any, index: any) => (
-    <div key={index} className='flex justify-center p-5 wlex-wrap gap-2'>
-      <Drawer>
-        <DrawerTrigger >
-          <Card className='p-1'>
-            <CardTitle>
-              {doc?.docType}
-            </CardTitle>
-            <CardDescription className='p-1 text-gray-400 flex gap-1 items-center  w-max'>
-              {doc?.file?.name || "Нет загруженого файла"} 
-             <Download size={18} />
-            </CardDescription>
-          </Card>
-        </DrawerTrigger>
-        <DrawerContent className='text-black'>
-          <DrawerHeader >
-            <DrawerTitle>{doc?.docType}</DrawerTitle>
-            <div className='flex justify-center items-center gap-2 '>
-            <DrawerDescription className='text-gray-400'>{doc?.file?.name || "Нет загруженого документа"}</DrawerDescription>
-            <div className="flex gap-2 items-center">
-                  <button onClick={() => downloadFile(doc?.file?._id, doc.file.name)} >
-                  <Download />
-                  </button>
-                </div>
-            </div>
-          </DrawerHeader>
-          <DrawerFooter >
-            <div className='flex gap-2 items-center justify-center'>
-            <div className="grid w-full max-w-sm  gap-1.5">
-      <Input id="picture" type="file" 
-      placeholder={doc?.file?.name}
-      onChange={(e) => handleFileChange(e, index)} />
-    </div>           
-            </div>
-            <DrawerClose className='absolute top-2 right-2'>
-            <X size={18} color="red"/>
-                        </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    </div>
-  ))}
-                </CardHeader>
-                <CardContent className='mt-0 grid grid-cols-2 gap-2'>
-                <CardTitle>
-                    <Label>ФИО</Label>
-                    <Input placeholder="Имя" name='name'
-                      value={selectName || ''}
-                      onChange={handleChangeName} />
-                       <Label>Телефон</Label>
-                    <Input placeholder="+495651322654" name='phone'
-                      value={selectPhone || ''}
-                      onChange={handleChangePhone} />
-                      <div>
-                  <HoverCard>
-                    <HoverCardTrigger>
-                    <Button type='button' variant="link">Соцсети</Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent>
-                    <div>
-                    <Label>Viber</Label>
-                    <Input placeholder="+495651322654" name='viber'
-                      value={selectViber || ''}
-                      onChange={handleChangeViber} />
-                  </div>
-                  <div>
-                    <Label>Whatsapp</Label>
-                    <Input placeholder="+495651322654" name='whatsapp'
-                      value={selectWhatsapp || ''}
-                      onChange={handleChangeWhatsapp} />
-                  </div>
-                  <div>
-                    <Label>Telegram</Label>
-                    <Input placeholder="+495651322654" name='telegram'
-                      value={selectTelegram || ''}
-                      onChange={handleChangeTelegram} />
-                  </div>
-                  <div>
-                    <Label>Почта</Label>
-                    <Input placeholder="mail@gmail.com" name='email'
-                      value={selectEmail || ''}
-                      onChange={handleChangeEmail} />
-                  </div>
-                    </HoverCardContent>
-
-                  </HoverCard>
-                  <HoverCard>
-                    <HoverCardTrigger>
-                    <Button type='button' variant="link">Фирма</Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent >
-                    <div>
-                    <Label>Название фирмы</Label>
-                    <Input placeholder="GMBH gfgtg" name='companyName'
-                      value={selectCompanyName || ''}
-                      onChange={handleChangeCompanyName} />
-                  </div>
-                  <div>
-                    <Label>Номер DE</Label>
-                    <Input placeholder="DE495651322654" name='numberDE'
-                      value={selectNumberDE || ''}
-                      onChange={handleChangeNumberDE} />
-                  </div>
-                  <div>
-                    <Label>Местоположение</Label>
-                    <Input placeholder="Дюсельдорф" name='location'
-                      value={selectLocation || ''}
-                      onChange={handleChangeLocation} />
-                  </div>
-                  <div>
-                    <Label>Сайт</Label>
-                    <Input placeholder="www.site.com" name='site'
-                      value={selectSite || ''}
-                      onChange={handleChangeSite} />
-                  </div>
-                  <div className='col-span-2 grid grid-cols-3 gap-2'>
-                  <Input
-                    name='typeC'
-                    value={contract.typeC}
-                    placeholder="Введите тип контракта"
-                    onChange={(e) => handleChangeContract(e, 'typeC')} />
-                  <Input
-                    name='contractPrice'
-                    value={contract.sum}
-                    placeholder="Введите цену контракта"
-                    onChange={(e) => handleChangeContract(e, 'contractPrice')} />
-                    <Input
-                    name='salaryWorker'
-                    value={contract.salaryWorker}
-                    placeholder="Введите минимальную зарплату работника"
-                    onChange={(e) => handleChangeContract(e, 'salaryWorker')} />
-                  </div>
-                    </HoverCardContent>
-                  </HoverCard>
-                  <HoverCard>
-                    <HoverCardTrigger>
-                    <Button type='button' variant="link">Комментарии:</Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent >
-                    <Textarea
-                    placeholder="Оставьте свой комментарий"
-                    className="mt-5"
-                    id="comment" name="comment"/>
-  <ScrollArea className="max-h-50 w-full rounded-md border">
-  {commentEntries.map((comment, index) => (
-  <div key={index} className="relative flex gap-2 items-center rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
-    <Badge>
-      {new Date(comment.date)
-        .toLocaleString()
-        .slice(0, 5)}.
-      {new Date(comment.date)
-        .getFullYear()
-        .toString()
-        .slice(-2)}
-    </Badge>
-    <Badge className='text-green-700'>
-      {new Date(comment.date)
-        .toLocaleString()
-        .slice(12, 17)}
-    </Badge>
-    <p className="text-sm">{comment.text}</p>
-    <span className='absolute right-2'>Автор: {comment.author}</span>
-  </div>
-))}
-</ScrollArea>
-                    </HoverCardContent>
-                  </HoverCard>
-                  </div>
-                  </CardTitle>       
-                </CardContent>
-              </Card>
-                    
-            </div> */}
             <div className='col-span-2'>
             <CardHeader className='grid grid-cols-3 gap-2'>
                         <CardTitle className="col-span-1">Документ</CardTitle>

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import React from 'react';
-import TransferToKurator from '../../TransferToKurator/TransferToKurator';
 import Image from 'next/image';
 import { Partner } from '@/src/types/partner';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -11,7 +10,7 @@ const ViewParnterForm = ({ partner }: { partner: Partner | null }) => {
 
   console.log("PARTNER",partner);
   if (!partner) {
-    return <p>Нет данных о кандидате</p>;
+    return <p>Нет данных о партнёре</p>;
   }
 
   return (

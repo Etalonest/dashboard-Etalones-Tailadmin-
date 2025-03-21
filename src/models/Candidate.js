@@ -5,6 +5,9 @@ import {Task} from './Task';
 import {Dialog} from './Dialog';
 import {Stage} from './Stage';
 const CandidateSchema = new Schema({
+  source: {
+    type: String
+  },
   type: {
     type: String,
     default: 'candidate'
@@ -73,9 +76,6 @@ const CandidateSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Task'
       }],
-      source: {
-        type: String
-      },
       name: {
         type: String,
       },

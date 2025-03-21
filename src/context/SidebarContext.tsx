@@ -32,7 +32,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null);
   const [selectedProfession, setSelectedProfession] = useState<ProfessionPartner | null>(null);
 
-  console.log("Profession", selectedProfession);
+  console.log("Profession11", selectedProfession);
   console.log("SelectedVACANCY", selectedVacancy);
 
 
