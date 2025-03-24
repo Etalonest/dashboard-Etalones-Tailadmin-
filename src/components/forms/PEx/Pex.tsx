@@ -19,7 +19,7 @@ const PEx = () => {
     e.preventDefault();
 
     if (!file) {
-      setError('Please select a file to upload.');
+      setError('Пожалуйста, выберите файл для загрузки.');
       return;
     }
 
@@ -36,7 +36,7 @@ const PEx = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload file.');
+        throw new Error('Не удалось загрузить файл.');
       }
 
       const data = await response.json();
@@ -46,11 +46,11 @@ const PEx = () => {
         setParsedCandidates(data.previewData);  // Сохраняем данные кандидатов
         setIsPreview(true);  // Включаем режим предварительного просмотра
       } else {
-        setError('Failed to parse data from the file.');
+        setError('Не удалось разобрать данные из файла.');
       }
 
     } catch (error: any) {
-      setError(error.message || 'Something went wrong.');
+      setError(error.message || 'Что-то пошло не так.');
     } finally {
       setLoading(false);
     }
@@ -70,16 +70,16 @@ const PEx = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save data.');
+        throw new Error('Не удалось сохранить данные.');
       }
 
       const data = await response.json();
       setParsedCandidates(data.data);  // Сохраняем успешных кандидатов в parsedCandidates
 
-      alert('Candidates saved successfully!');  // Уведомление о успешном сохранении
+      alert('Кандидаты успешно сохранены!');  // Уведомление о успешном сохранении
 
     } catch (error: any) {
-      setError(error.message || 'Something went wrong.');
+      setError(error.message || 'Что-то пошло не так.');
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ const PEx = () => {
 
   // Функция для поиска кандидата по номеру телефона и возврата самого объекта
   const findDuplicateCandidate = (phone: string) => {
-    return parsedCandidates.find((candidate: any) => candidate['контактный номер или ник в телеграм'] === phone);
+    return parsedCandidates.find((candidate: any) => candidate['phone'] === phone);
   };
 
   // Фильтрация уникальных кандидатов (без дублей)
@@ -103,7 +103,7 @@ const PEx = () => {
     const uniqueCandidates = getUniqueCandidates();
     setLoading(true);
     setError(null);
-
+  
     try {
       const response = await fetch('/api/pEx', {
         method: 'POST',
@@ -112,46 +112,47 @@ const PEx = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (!response.ok) {
-        throw new Error('Failed to save unique candidates.');
+        throw new Error('Не удалось сохранить уникальных кандидатов.');
       }
-
+  
       const data = await response.json();
       setParsedCandidates(data.data);  // Сохраняем успешных кандидатов в parsedCandidates
-
-      alert('Unique candidates saved successfully!');  // Уведомление о успешном сохранении
-
+  
+      alert('Уникальные кандидаты успешно сохранены!');  // Уведомление о успешном сохранении
+  
     } catch (error: any) {
-      setError(error.message || 'Something went wrong.');
+      setError(error.message || 'Что-то пошло не так.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div>
-      <h1>Upload Excel File</h1>
+      <h1>Загрузить файл Excel</h1>
       <form onSubmit={handlePreview}>
         <input type="file" accept=".xlsx" onChange={handleFileChange} />
-        <button type="submit" disabled={loading}>Preview</button>
+        <button type="submit" disabled={loading}>Предпросмотр</button>
       </form>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      {loading && <p>Loading...</p>}
+      {loading && <p>Загрузка...</p>}
 
       {/* Показываем таблицу с данными для предварительного просмотра */}
       {isPreview && parsedCandidates && Array.isArray(parsedCandidates) && parsedCandidates.length > 0 && (
         <div>
-          <h2>Preview Parsed Data</h2>
+          <h2>Предпросмотр разобранных данных</h2>
           <table cellPadding="10" style={{ marginTop: '20px' }}>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Professions</th>
-                <th>Comment</th>
-                <th>Duplicate Check</th>
+                <th>Имя</th>
+                <th>Телефон</th>
+                <th>Профессии</th>
+                <th>Комментарий</th>
+                <th>Проверка на дубликат</th>
               </tr>
             </thead>
             <tbody>
@@ -173,7 +174,7 @@ const PEx = () => {
                     <td>
                       {candidate['примечание'] && (
                         <div>
-                          <strong>Note:</strong> {candidate['примечание']}
+                          <strong>Примечание:</strong> {candidate['примечание']}
                         </div>
                       )}
                     </td>
@@ -181,15 +182,15 @@ const PEx = () => {
                       {/* Если дубликат найден, выводим его информацию */}
                       {duplicate ? (
                         <div>
-                          <span style={{ color: 'red' }}>Duplicate</span>
+                          <span style={{ color: 'red' }}>Дубликат</span>
                           <div>
-                            <strong>Duplicate Candidate Info:</strong>
-                            <div>Name: {duplicate['Имя ']}</div>
-                            <div>Phone: {duplicate['контактный номер или ник в телеграм']}</div>
+                            <strong>Информация о дубликате:</strong>
+                            <div>Имя: {duplicate['Имя ']}</div>
+                            <div>Телефон: {duplicate['контактный номер или ник в телеграм']}</div>
                           </div>
                         </div>
                       ) : (
-                        <span style={{ color: 'green' }}>Unique</span>
+                        <span style={{ color: 'green' }}>Уникальный</span>
                       )}
                     </td>
                   </tr>
@@ -198,9 +199,9 @@ const PEx = () => {
             </tbody>
           </table>
 
-          <button onClick={handleSave} disabled={loading}>Save All Data</button>
+          {/* <button onClick={handleSave} disabled={loading}>Сохранить все данные</button> */}
           {/* Новая кнопка для сохранения только уникальных кандидатов */}
-          <button onClick={handleSaveUnique} disabled={loading}>Save Unique Candidates</button>
+          <button onClick={handleSaveUnique} disabled={loading}>Сохранить уникальных кандидатов</button>
         </div>
       )}
     </div>
