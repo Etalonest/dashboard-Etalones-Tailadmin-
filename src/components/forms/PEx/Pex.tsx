@@ -1,13 +1,14 @@
 'use client';
 
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React, { useState } from 'react';
 
 const PEx = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [parsedCandidates, setParsedCandidates] = useState<any[]>([]);  // Для хранения парсенных данных
+  const [parsedCandidates, setParsedCandidates] = useState<any[]>([]); // Для хранения парсенных данных
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isPreview, setIsPreview] = useState(false);  // Для отображения превью
+  const [isPreview, setIsPreview] = useState(false); // Для отображения превью
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -39,12 +40,12 @@ const PEx = () => {
         throw new Error('Не удалось загрузить файл.');
       }
 
-      const data = await response.json();
+      const candidates = await response.json();
+      console.log('Ответ от сервера:', candidates);  // Это поможет понять, что приходит от сервера
 
-      // Убедитесь, что данные приходят как массив
-      if (data.previewData && Array.isArray(data.previewData)) {
-        setParsedCandidates(data.previewData);  // Сохраняем данные кандидатов
-        setIsPreview(true);  // Включаем режим предварительного просмотра
+      if (candidates.previewData && Array.isArray(candidates.previewData)) {
+        setParsedCandidates(candidates.previewData); // Сохраняем данные кандидатов
+        setIsPreview(true); // Включаем режим предварительного просмотра
       } else {
         setError('Не удалось разобрать данные из файла.');
       }
@@ -55,59 +56,30 @@ const PEx = () => {
       setLoading(false);
     }
   };
-
-  const handleSave = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/pEx', {
-        method: 'POST',
-        body: JSON.stringify(parsedCandidates),  // Отправляем уже выбранных кандидатов
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Не удалось сохранить данные.');
-      }
-
-      const data = await response.json();
-      setParsedCandidates(data.data);  // Сохраняем успешных кандидатов в parsedCandidates
-
-      alert('Кандидаты успешно сохранены!');  // Уведомление о успешном сохранении
-
-    } catch (error: any) {
-      setError(error.message || 'Что-то пошло не так.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Функция для поиска кандидата по номеру телефона и возврата самого объекта
-  const findDuplicateCandidate = (phone: string) => {
-    return parsedCandidates.find((candidate: any) => candidate['phone'] === phone);
-  };
-
-  // Фильтрация уникальных кандидатов (без дублей)
-  const getUniqueCandidates = () => {
-    return parsedCandidates.filter((candidate: any) => {
-      const duplicate = findDuplicateCandidate(candidate['контактный номер или ник в телеграм']);
-      // Возвращаем только тех кандидатов, у которых нет дублей
-      return !duplicate || duplicate === candidate;
-    });
-  };
-
   const handleSaveUnique = async () => {
-    const uniqueCandidates = getUniqueCandidates();
+    const uniqueCandidates = parsedCandidates.filter((candidate: any) => !candidate.isDuplicate);
     setLoading(true);
     setError(null);
   
+    const transformedCandidates = uniqueCandidates.map((candidate: any) => {
+      return {
+        name: candidate['Имя'],
+        phone: candidate['Контактный номер'],
+        status: candidate['Статус'] || 'не обработан',  // Если статус отсутствует, ставим 'не обработан'
+        professions: candidate['Специальность'],
+        source: 'excel',
+        note: candidate['Примечание'],  // Примечание
+        responsible: candidate['Ответственный'],  // Ответственный
+        comment: candidate['Комментарий'],  // Комментарий
+        messenger: candidate['Мессенджер'],  // Мессенджер (если нужно)
+      };
+    });
+    
+  
     try {
-      const response = await fetch('/api/pEx', {
+      const response = await fetch('/api/candidates/exel', {
         method: 'POST',
-        body: JSON.stringify(uniqueCandidates),  // Отправляем только уникальных кандидатов
+        body: JSON.stringify(transformedCandidates),  // Send transformed data
         headers: {
           'Content-Type': 'application/json',
         },
@@ -118,9 +90,9 @@ const PEx = () => {
       }
   
       const data = await response.json();
-      setParsedCandidates(data.data);  // Сохраняем успешных кандидатов в parsedCandidates
+      setParsedCandidates(data.data); // Succeeding candidates data
   
-      alert('Уникальные кандидаты успешно сохранены!');  // Уведомление о успешном сохранении
+      console.log('Уникальные кандидаты успешно сохранены!', data); // Success alert
   
     } catch (error: any) {
       setError(error.message || 'Что-то пошло не так.');
@@ -128,6 +100,7 @@ const PEx = () => {
       setLoading(false);
     }
   };
+  
   
 
   return (
@@ -145,62 +118,67 @@ const PEx = () => {
       {isPreview && parsedCandidates && Array.isArray(parsedCandidates) && parsedCandidates.length > 0 && (
         <div>
           <h2>Предпросмотр разобранных данных</h2>
-          <table cellPadding="10" style={{ marginTop: '20px' }}>
-            <thead>
-              <tr>
-                <th>Имя</th>
-                <th>Телефон</th>
-                <th>Профессии</th>
-                <th>Комментарий</th>
-                <th>Проверка на дубликат</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Имя</TableHead >
+                <TableHead >Мессенджер</TableHead > 
+                <TableHead >Телефон</TableHead >
+                <TableHead >Профессии</TableHead >
+                <TableHead >Комментарий</TableHead >
+                <TableHead >Менеджер</TableHead >
+                <TableHead >Статус</TableHead >
+                <TableHead>Комментарий-2</TableHead>
+                <TableHead >Проверка на дубликат</TableHead >
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {parsedCandidates.map((candidate: any, index) => {
-                // Проверка на дубликат
-                const duplicate = findDuplicateCandidate(candidate['контактный номер или ник в телеграм']);
-                
                 return (
-                  <tr key={index}>
-                    <td>{candidate['Имя ']}</td>
-                    <td>{candidate['контактный номер или ник в телеграм']}</td>
-                    <td>
-                      {candidate['специальность '] && Array.isArray(candidate['специальность '].split(',')) &&
-                        candidate['специальность '].split(',').map((prof: string, idx: number) => (
+                  <TableRow key={index}>
+                    <TableCell className="w-[100px]">{candidate['Имя']}</TableCell>
+                    <TableCell>{candidate['Мессенджер']}</TableCell>
+                    <TableCell>{candidate['Контактный номер']}</TableCell>
+                    <TableCell>
+                      {candidate['Специальность'] && Array.isArray(candidate['Специальность'].split(',')) &&
+                        candidate['Специальность'].split(',').map((prof: string, idx: number) => (
                           <div key={idx}>{prof.trim()}</div>
                         ))
                       }
-                    </td>
-                    <td>
-                      {candidate['примечание'] && (
+                    </TableCell>
+                    <TableCell>
+                      {candidate['Примечание'] && (
                         <div>
-                          <strong>Примечание:</strong> {candidate['примечание']}
+                          <strong>Примечание:</strong> {candidate['Примечание']}
                         </div>
                       )}
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>{candidate['Ответственный']}</TableCell>
+                    <TableCell>{candidate['Статус']}</TableCell>
+                    <TableCell>{candidate['Комментарий']}</TableCell>
+                    <TableCell>
                       {/* Если дубликат найден, выводим его информацию */}
-                      {duplicate ? (
+                      {candidate.isDuplicate ? (
                         <div>
                           <span style={{ color: 'red' }}>Дубликат</span>
                           <div>
                             <strong>Информация о дубликате:</strong>
-                            <div>Имя: {duplicate['Имя ']}</div>
-                            <div>Телефон: {duplicate['контактный номер или ник в телеграм']}</div>
-                          </div>
+                            <div>Имя: {candidate.existingCandidate?.name}</div>
+                            <div>Телефон: {candidate.existingCandidate?.phone}</div>
+                            <div>Менеджер: {candidate.existingCandidate?.manager?.name}</div>
+                            <div>Комментарий: {candidate.existingCandidate?.comment.slice(-1)[0]?.text}</div>
+                            </div>
                         </div>
                       ) : (
                         <span style={{ color: 'green' }}>Уникальный</span>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
 
-          {/* <button onClick={handleSave} disabled={loading}>Сохранить все данные</button> */}
-          {/* Новая кнопка для сохранения только уникальных кандидатов */}
           <button onClick={handleSaveUnique} disabled={loading}>Сохранить уникальных кандидатов</button>
         </div>
       )}

@@ -1,188 +1,153 @@
-// import { NextRequest, NextResponse } from 'next/server';
-// import * as XLSX from 'xlsx'; // Исправлено
-// import Candidate from '@/src/models/Candidate';
-// import { connectDB } from '@/src/lib/db';
-
-// interface ExcelRow {
-//   Имя: string;
-//   'контактный номер или ник в телеграм': string;
-//   специальность: string;
-//   примечание: string;
-//   мессенджер: string;
-// }
-
-// const parseExcel = (buffer: Buffer) => {
-//   try {
-//     console.log('Parsing Excel file...');
-//     const workbook = XLSX.read(buffer, { type: 'buffer' });
-//     const sheetName = workbook.SheetNames[0];
-//     const sheet = workbook.Sheets[sheetName];
-//     return XLSX.utils.sheet_to_json(sheet) as ExcelRow[];
-//   } catch (error) {
-//     console.error('Error parsing Excel file:', error);
-//     throw new Error('Failed to parse Excel file');
-//   }
-// };
-
-// export async function POST(req: NextRequest) {
-//   try {
-//     console.log('Connecting to the database...');
-//     await connectDB();
-
-//     console.log('Fetching form data...');
-//     const formData = await req.formData();
-//     const file = formData.get('file') as Blob;
-    
-//     if (!file) {
-//       console.error('No file provided in the request');
-//       return NextResponse.json({ error: 'File not provided' }, { status: 400 });
-//     }
-
-//     console.log('Converting file to buffer...');
-//     const buffer = await file.arrayBuffer();
-//     const data: ExcelRow[] = parseExcel(Buffer.from(buffer));
-
-//     console.log('Parsed data:', data);
-
-//     // Отправляем данные обратно на клиент для предварительного просмотра
-//     return NextResponse.json({
-//       message: 'Data successfully parsed, preview it before saving.',
-//       previewData: data,  // Отправляем только данные для предварительного просмотра
-//     });
-
-//   } catch (error: any) {
-//     console.error('Error during file processing:', error);
-//     return NextResponse.json({ error: 'Failed to parse Excel file', details: error.message }, { status: 500 });
-//   }
-// }
-
-// // Endpoint для сохранения данных в базу данных
-// export async function SAVE(req: NextRequest) {
-//   try {
-//     console.log('Connecting to the database...');
-//     await connectDB();
-
-//     const body = await req.json();
-//     const candidates = body.data;
-
-//     console.log('Saving candidates to the database...');
-//     const savedCandidates = await Candidate.insertMany(candidates);
-
-//     console.log('Data successfully saved to the database');
-//     return NextResponse.json({ message: 'Data successfully uploaded', data: savedCandidates });
-
-//   } catch (error: any) {
-//     console.error('Error during database insertion:', error);
-//     return NextResponse.json({ error: 'Failed to save data', details: error.message }, { status: 500 });
-//   }
-// }
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
-import Candidate from '@/src/models/Candidate';
-import { connectDB } from '@/src/lib/db';
+import Candidate from '@/src/models/Candidate'; // Модель для работы с MongoDB
+import { connectDB } from '@/src/lib/db'; // Функция для подключения к базе данных
 
 interface ExcelRow {
   Имя: string;
-  'контактный номер или ник в телеграм': string;
-  специальность: string;
-  примечание: string;
-  мессенджер: string;
+  'Контактный номер': string;
+  Мессенджер: string;
+  Специальность: string;
+  Примечание: string;
+  Ответственный: string;
+  Комментарий: string;
+  Статус: string;
   isDuplicate?: boolean;
-
+  existingCandidate?: any; // Для хранения информации о дубликате
 }
 
+// Парсим Excel файл
 const parseExcel = (buffer: Buffer) => {
   try {
-    console.log('Parsing Excel file...');
     const workbook = XLSX.read(buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     return XLSX.utils.sheet_to_json(sheet) as ExcelRow[];
   } catch (error) {
-    console.error('Error parsing Excel file:', error);
     throw new Error('Failed to parse Excel file');
   }
 };
 
-const checkForDuplicates = async (phone: string) => {
-  // Проверяем наличие кандидата с таким же номером телефона
-  const existingCandidate = await Candidate.findOne({ 'контактный номер или ник в телеграм': phone });
+// Проверяем наличие кандидата по телефону (для парсинга Excel)
+const checkForDuplicatesInParsing = async (phone: string) => {
+  const existingCandidate = await Candidate.findOne({ phone: { $regex: phone, $options: 'i' } },);
   return existingCandidate;
 };
 
+// Преобразуем данные Excel в формат для хранения
+const mapExcelToCandidate = (candidate: ExcelRow) => {
+  return {
+    name: candidate.Имя,
+    phone: candidate['Контактный номер'],
+    professions: [{
+      name: candidate.Специальность,
+      expirience: '',
+    }],
+    status: candidate.Статус,
+    comment: [{
+      author: 'system',
+      text: [candidate.Примечание],
+      date: new Date(),
+    },
+    {
+      author: 'system',
+      text: [candidate.Комментарий],
+      date: new Date(),
+    }],
+    messenger: candidate.Мессенджер,
+    manager: candidate.Ответственный,
+  };
+};
+
+// Основной POST запрос
 export async function POST(req: NextRequest) {
   try {
-    console.log('Connecting to the database...');
     await connectDB();
 
     const contentType = req.headers.get('Content-Type');
 
     if (contentType?.includes('multipart/form-data')) {
-      // Если запрос с типом 'multipart/form-data', значит, это загрузка файла
-      console.log('Fetching form data...');
+      // Обрабатываем файл Excel
       const formData = await req.formData();
       const file = formData.get('file') as Blob;
-      
+
       if (!file) {
-        console.error('No file provided in the request');
         return NextResponse.json({ error: 'File not provided' }, { status: 400 });
       }
 
-      console.log('Converting file to buffer...');
       const buffer = await file.arrayBuffer();
       const data: ExcelRow[] = parseExcel(Buffer.from(buffer));
 
-      console.log('Parsed data:', data);
+      // Логируем полученные данные из файла
+      console.log('Полученные данные из файла:', data);
 
-      // Проверка на дубликаты и добавление в лог
+      // Обработка данных и проверка на дубликаты
       const dataWithDuplicates = await Promise.all(data.map(async (candidate) => {
-        const isDuplicate = await checkForDuplicates(candidate['контактный номер или ник в телеграм']);
-        if (isDuplicate) {
-          console.log(`Candidate ${candidate['Имя']} with phone ${candidate['контактный номер или ник в телеграм']} is a duplicate.`);
-        } else {
-          console.log(`Candidate ${candidate['Имя']} with phone ${candidate['контактный номер или ник в телеграм']} is unique.`);
+        if (!candidate['Контактный номер']) {
+          return { 
+            ...candidate, 
+            isDuplicate: false, 
+            existingCandidate: null 
+          };
         }
-        return { ...candidate, isDuplicate };
+        
+        const isDuplicate = await checkForDuplicatesInParsing(candidate['Контактный номер']);
+        return { 
+          ...candidate, 
+          isDuplicate: isDuplicate !== null, 
+          existingCandidate: isDuplicate || null 
+        };
       }));
 
-      // Отправляем данные обратно на клиент для предварительного просмотра
+      // Логируем данные с проверкой на дубликаты
+      console.log('Данные с проверкой на дубликаты:', dataWithDuplicates);
+
       return NextResponse.json({
         message: 'Data successfully parsed, preview it before saving.',
-        previewData: dataWithDuplicates,  // Отправляем только данные для предварительного просмотра
+        previewData: dataWithDuplicates, // Отправляем данные для отображения на фронте
       });
 
     } else if (contentType?.includes('application/json')) {
-      // Если запрос с типом 'application/json', значит, это запрос на сохранение данных
-      console.log('Saving candidates to the database...');
-      const body = await req.json();
-      const candidates = body.data;
+      // Получаем данные из тела запроса (JSON, это данные, которые пришли из фронтенда)
+      const candidates = await req.json();
 
-      // Отбираем только уникальных кандидатов
-      const uniqueCandidates = (candidates as ExcelRow[]).filter(candidate => !candidate.isDuplicate);
+      console.log('Полученные данные из JSON:', candidates);
 
-      // Для каждого уникального кандидата проверяем на дубликат перед сохранением
-      const candidatesToSave = await Promise.all(uniqueCandidates.map(async (candidate: ExcelRow) => {
-        const isDuplicate = await checkForDuplicates(candidate['контактный номер или ник в телеграм']);
-        if (isDuplicate) {
-          console.log(`Candidate ${candidate['Имя']} with phone ${candidate['контактный номер или ник в телеграм']} is a duplicate.`);
+      // Обработка данных перед сохранением
+      const candidatesToSave = await Promise.all(candidates.map(async (candidate: any) => {
+        const candidateData = mapExcelToCandidate(candidate); // Преобразуем данные в нужный формат
+        console.log('Кандидат, который будет сохранён:', candidateData);  // Логируем каждого кандидата
+
+        // Проверка на дубликаты при сохранении (не связана с Excel, только с сохранением в базу)
+        const isDuplicate = await checkForDuplicatesInParsing(candidateData.phone);
+        
+        if (!isDuplicate) {
+          return candidateData; // Если кандидата нет в базе, то добавляем его
         } else {
-          console.log(`Candidate ${candidate['Имя']} with phone ${candidate['контактный номер или ник в телеграм']} is unique.`);
+          console.log('Дубликат, не будет сохранён:', candidateData);
+          return null; // Возвращаем null для кандидатов, которые уже есть в базе
         }
-        return candidate;
       }));
 
-      // Сохраняем уникальных кандидатов в базу
-      const savedCandidates = await Candidate.insertMany(candidatesToSave);
+      // Убираем null из массива (кандидаты, которые не прошли проверку)
+      const uniqueCandidates = candidatesToSave.filter(candidate => candidate !== null);
 
-      console.log('Data successfully saved to the database');
-      return NextResponse.json({ message: 'Data successfully uploaded', data: savedCandidates });
+      if (uniqueCandidates.length > 0) {
+        // Сохраняем уникальных кандидатов в базу данных
+        const savedCandidates = await Candidate.insertMany(uniqueCandidates);
+        console.log('Кандидаты успешно сохранены:', savedCandidates);
+
+        return NextResponse.json({ message: 'Data successfully uploaded', data: savedCandidates });
+      } else {
+        return NextResponse.json({ message: 'No unique candidates to upload.' });
+      }
 
     } else {
       return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 415 });
     }
 
   } catch (error: any) {
-    console.error('Error during processing:', error);
+    console.error('Ошибка обработки запроса:', error);  // Логируем ошибку
     return NextResponse.json({ error: 'Failed to process request', details: error.message }, { status: 500 });
   }
 }
