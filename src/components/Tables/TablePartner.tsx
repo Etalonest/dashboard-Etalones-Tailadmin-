@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { useSidebar } from "@/src/context/SidebarContext";
+import { useSidebarR } from "@/src/context/SidebarRContext";
 import { useManager } from "@/src/context/ManagerContext";
 
 const TablePartner = () => {
@@ -26,7 +26,7 @@ const TablePartner = () => {
       setSidebarROpen,
       setFormType,
       setSelectedPartner,
-    } = useSidebar();
+    } = useSidebarR();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);

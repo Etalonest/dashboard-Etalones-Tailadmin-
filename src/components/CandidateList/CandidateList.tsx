@@ -4,7 +4,7 @@ import { useSession } from '@/src/context/SessionContext';
 import { Candidate } from '@/src/types/candidate';
 import { Eye, UserCog } from 'lucide-react';
 import SidebarRight from '../SidebarRight';
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
 
 const CandidatesList = () => {
@@ -17,7 +17,7 @@ const CandidatesList = () => {
       setSidebarROpen,
       setFormType,
       setSelectedCandidate,
-    } = useSidebar();
+    } = useSidebarR();
   // Функция для запроса данных
   const fetchCandidates = async () => {
     setLoading(true);

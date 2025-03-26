@@ -1,5 +1,7 @@
 'use client';
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React, { useState } from 'react';
 
@@ -65,7 +67,7 @@ const PEx = () => {
       return {
         name: candidate['Имя'],
         phone: candidate['Контактный номер'],
-        status: candidate['Статус'] || 'не обработан',  // Если статус отсутствует, ставим 'не обработан'
+        status: 'Не обработан', 
         professions: candidate['Специальность'],
         source: 'excel',
         note: candidate['Примечание'],  // Примечание
@@ -105,10 +107,10 @@ const PEx = () => {
 
   return (
     <div>
-      <h1>Загрузить файл Excel</h1>
-      <form onSubmit={handlePreview}>
-        <input type="file" accept=".xlsx" onChange={handleFileChange} />
-        <button type="submit" disabled={loading}>Предпросмотр</button>
+        <Label htmlFor="excel">Загрузить файл Excel</Label>
+      <form onSubmit={handlePreview}className="flex w-full max-w-sm items-center gap-1.5">
+    <Input id="excel" type="file" accept=".xlsx" onChange={handleFileChange} />
+    <Button type="submit" disabled={loading}>Предпросмотр</Button>
       </form>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -121,9 +123,7 @@ const PEx = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Имя</TableHead >
-                <TableHead >Мессенджер</TableHead > 
-                <TableHead >Телефон</TableHead >
+                <TableHead className="w-[100px]"><p>Имя</p><p>Мессенджер</p><p>Телефон</p></TableHead >
                 <TableHead >Профессии</TableHead >
                 <TableHead >Комментарий</TableHead >
                 <TableHead >Менеджер</TableHead >
@@ -136,16 +136,21 @@ const PEx = () => {
               {parsedCandidates.map((candidate: any, index) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell className="w-[100px]">{candidate['Имя']}</TableCell>
-                    <TableCell>{candidate['Мессенджер']}</TableCell>
-                    <TableCell>{candidate['Контактный номер']}</TableCell>
+<TableCell className="w-[100px]">
+  <p className="w-[100px] overflow-hidden whitespace-nowrap text-ellipsis">{candidate['Имя']}</p>
+  <p>{candidate['Мессенджер']}</p>
+  <p>{candidate['Контактный номер']}</p>
+</TableCell>
                     <TableCell>
-                      {candidate['Специальность'] && Array.isArray(candidate['Специальность'].split(',')) &&
-                        candidate['Специальность'].split(',').map((prof: string, idx: number) => (
-                          <div key={idx}>{prof.trim()}</div>
-                        ))
-                      }
-                    </TableCell>
+  {typeof candidate['Специальность'] === 'string' && candidate['Специальность'].trim() && (
+    candidate['Специальность']
+    .split(/[\s,\.]+/)
+    .map((prof: string, idx: number) => (
+        <div key={idx}>{prof.trim()}</div>
+      ))
+  )}
+</TableCell>
+
                     <TableCell>
                       {candidate['Примечание'] && (
                         <div>

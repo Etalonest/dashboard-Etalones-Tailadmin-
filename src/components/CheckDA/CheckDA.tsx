@@ -6,7 +6,7 @@ import { Candidate } from '@/src/types/candidate';
 import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
 import { Eye, Tag, UserCog } from 'lucide-react';
 import SidebarRight from '../SidebarRight';
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 
 const CheckDA = () => {
   const { session } = useSession();  // Для проверки сессии
@@ -15,7 +15,7 @@ const CheckDA = () => {
     setSidebarROpen,
     setFormType,
     setSelectedCandidate,
-  } = useSidebar();
+  } = useSidebarR();
    
   const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
     setFormType(type);

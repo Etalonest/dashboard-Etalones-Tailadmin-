@@ -114,7 +114,7 @@ const Header = (props: {
             {/* <DropdownMessage /> */}
             {/* <!-- Chat Notification Area --> */}
           </ul>
-
+            <Link href={"/candidate/add"}>Добавить кандидатов</Link>
           {/* <!-- User Area --> */}
           <DropdownUser />
           {/* <!-- User Area --> */}

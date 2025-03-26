@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Eye, UserCog } from 'lucide-react';
 import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 import SidebarRight from '../SidebarRight';
 
 const CandidateVacancy = ({ candidates }: { candidates: any[] }) => {
-    const { setSidebarROpen, setFormType, setSelectedCandidate } = useSidebar();
+    const { setSidebarROpen, setFormType, setSelectedCandidate } = useSidebarR();
 
     // Логируем список кандидатов, который поступает в компонент
     useEffect(() => {

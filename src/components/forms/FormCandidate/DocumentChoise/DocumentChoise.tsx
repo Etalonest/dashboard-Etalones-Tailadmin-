@@ -15,11 +15,12 @@ export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChang
 
   // Маппинг названий документов на их ключи
   const documentNamesMap: { [key: string]: string } = {
+    Pasport: 'Паспорт',
     Visa: 'Виза',
     Invitation: 'Приглашение',
     ResidenceCard: 'Карта побыту',
     Pessel: 'Пессель',
-    EUPassport: 'Паспорт ЕС',
+    EUPasport: 'Паспорт ЕС',
     Par24: 'Параграф 24',
     Bio: 'Биометрия Украина',
     VNJ: 'ВНЖ ЕС',
@@ -52,6 +53,14 @@ export const DocumentChoise: React.FC<DocumentChoiseProps> = ({ onDocumentsChang
 
   return (
     <div className="flex flex-wrap gap-1">
+      <Button
+        type="button"
+        variant="outline"
+        className={`hover:bg-gray-300 text-black ${selectedDocuments.includes("Паспорт") ? "bg-green-800 text-white" : ""}`}
+        onClick={() => handleButtonClick("Паспорт")}
+      >
+        Паспорт
+      </Button>
       <Button
         type="button"
         variant="outline"

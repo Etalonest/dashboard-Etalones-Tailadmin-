@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarItem from "@/src/components/Sidebar/SidebarItem";
@@ -148,7 +148,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 
   console.log("ROLE", userRole);
-
+  const sidebarRef = useRef<HTMLDivElement>(null);
   // Фильтруем дублирующиеся пункты с одинаковым key, оставляя только первый доступный
   const filteredMenuGroups = menuGroups.map((group) => {
     const uniqueItems = new Map<string, any>();
@@ -173,26 +173,25 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   
 
   return (
-    <ClickOutside onClick={() => setSidebarOpen(false)}>
-      <aside
-       className={`fixed left-0 top-0  flex h-screen w-72.5 flex-col 
-        overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark 
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
-      
-      >
+    <ClickOutside onClick={() => setSidebarOpen(false)} exceptionRef={sidebarRef}>
+      <aside ref={sidebarRef}
+      className={`z-99999 fixed top-0 left-0 h-screen w-72.5 bg-black text-white p-5 transition-all duration-300 ease-in-out
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+    >
         {/* Заголовок сайдбара */}
         <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
           <Link href="/">
             <Image width={176} height={32} src="/images/logo/logo.svg" alt="Logo" priority />
           </Link>
 
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} aria-controls="sidebar" className="block lg:hidden">
-            <Menu />
-          </button>
+          {/* <button onClick={() => setSidebarOpen(!sidebarOpen)} aria-controls="sidebar" className="block ">
+            <Menu className="text-white absolute "/>
+          </button> */}
         </div>
 
         {/* Контент сайдбара */}
-        <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+        <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear z-99999">
           <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
             {filteredMenuGroups.map((group, groupIndex) => (
               <div key={groupIndex}>

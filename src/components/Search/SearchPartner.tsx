@@ -9,7 +9,7 @@ import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
 import { Eye, UserCog } from 'lucide-react';
 import { Partner } from '@/src/types/partner'; // Подключаем тип партнёра
 import SidebarRight from '../SidebarRight';
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 
 const SearchPartners = () => {
   const [name, setName] = useState('');
@@ -19,7 +19,7 @@ const SearchPartners = () => {
   const [document, setDocument] = useState('');
   const [manager, setManager] = useState('');
 
-  const { setSidebarROpen, setFormType, setSelectedPartner } = useSidebar();
+  const { setSidebarROpen, setFormType, setSelectedPartner } = useSidebarR();
 
   const [partners, setPartners] = useState<Partner[]>([]);
   const [error, setError] = useState<string | null>(null);

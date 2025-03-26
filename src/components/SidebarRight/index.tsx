@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useSidebar } from "@/src/context/SidebarContext";
+import { useSidebarR } from "@/src/context/SidebarRContext";
 import AddCandidateForm from "@/src/components/forms/FormCandidate/AddCandidateForm";
 import EditCandidateForm from "@/src/components/forms/FormCandidate/EditCandidateForm";
 import ViewCandidateForm from "@/src/components/forms/FormCandidate/ViewCandidateForm";
@@ -22,7 +22,7 @@ const SidebarRight: React.FC = () => {
     selectedPartner,
     selectedVacancy,
     selectedProfession,
-  } = useSidebar();
+  } = useSidebarR();
 
   const closeSidebar = () => {
     setSidebarROpen(false);

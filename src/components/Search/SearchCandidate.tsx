@@ -9,7 +9,7 @@ import { CallHistory } from '../forms/Funnel/CallHistory/CallHistory';
 import { Eye, UserCog } from 'lucide-react';
 import { Candidate } from '@/src/types/candidate';
 import SidebarRight from '../SidebarRight';
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 
 const SearchCandidates = () => {
   // Состояния для всех полей
@@ -25,7 +25,7 @@ const SearchCandidates = () => {
     setSidebarROpen,
     setFormType,
     setSelectedCandidate,
-  } = useSidebar();
+  } = useSidebarR();
   
   // Состояние для хранения результатов поиска
   const [candidates, setCandidates] = useState<any[]>([]); 

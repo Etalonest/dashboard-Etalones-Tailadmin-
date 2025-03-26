@@ -5,7 +5,7 @@ import { Candidate } from '@/src/types/candidate';
 import { useState, useEffect } from 'react';
 import SidebarRight from '../SidebarRight';
 import Loader from "@/src/components/common/Loader";
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 
 const TableCandidate = () => {
   const { manager } = useManager(); 
@@ -20,7 +20,7 @@ const {
     setSidebarROpen,
     setFormType,
     setSelectedCandidate,
-  } = useSidebar();
+  } = useSidebarR();
    
   const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
     setFormType(type);

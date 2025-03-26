@@ -30,7 +30,7 @@ const parseExcel = (buffer: Buffer) => {
 
 // Проверяем наличие кандидата по телефону (для парсинга Excel)
 const checkForDuplicatesInParsing = async (phone: string) => {
-  const existingCandidate = await Candidate.findOne({ phone: { $regex: phone, $options: 'i' } },);
+  const existingCandidate = await Candidate.findOne({ phone: { $regex: phone, $options: 'i' } },).populate({path: 'manager', select: 'name'});
   return existingCandidate;
 };
 

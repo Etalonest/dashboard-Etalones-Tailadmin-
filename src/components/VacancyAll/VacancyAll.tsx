@@ -5,7 +5,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import SidebarRight from '../SidebarRight';
 import { VacancyType } from '@/src/types/vacancy';
-import { useSidebar } from '@/src/context/SidebarContext';
+import { useSidebarR } from '@/src/context/SidebarRContext';
 
 export const VacancyAll: React.FC = () => {
   const [vacancies, setVacancies] = useState<VacancyType[]>([]); 
@@ -13,7 +13,7 @@ export const VacancyAll: React.FC = () => {
   setFormType,
   setSelectedVacancy,
   setSidebarROpen
- } = useSidebar()
+ } = useSidebarR()
 
   useEffect(() => {
     const fetchData = async () => {

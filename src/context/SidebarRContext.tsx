@@ -5,7 +5,7 @@ import { VacancyType } from "@/src/types/vacancy";
 import { ProfessionPartner } from "@/src/types/professionParnter";
 
 // Типизация контекста
-interface SidebarContextType {
+interface SidebarRContextType {
   sidebarROpen: boolean;
   setSidebarROpen: (open: boolean) => void;
   formType: string | null;
@@ -21,10 +21,10 @@ interface SidebarContextType {
 }
 
 // Создание контекста с типом
-const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
+const SidebarRContext = createContext<SidebarRContextType | undefined>(undefined);
 
 // Поставщик контекста
-export const SidebarProvider = ({ children }: { children: ReactNode }) => {
+export const SidebarRProvider = ({ children }: { children: ReactNode }) => {
   const [sidebarROpen, setSidebarROpen] = useState<boolean>(false);
   const [formType, setFormType] = useState<string | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
@@ -37,7 +37,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <SidebarContext.Provider
+    <SidebarRContext.Provider
       value={{
         sidebarROpen,
         setSidebarROpen,
@@ -54,13 +54,13 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </SidebarContext.Provider>
+    </SidebarRContext.Provider>
   );
 };
 
 // Хук для использования контекста
-export const useSidebar = (): SidebarContextType => {
-  const context = useContext(SidebarContext);
+export const useSidebarR = (): SidebarRContextType => {
+  const context = useContext(SidebarRContext);
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider");
   }

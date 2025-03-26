@@ -13,7 +13,7 @@ import Notifications from "../notification/Notifications";
 import { CandidateProvider } from "../context/CandidateContext";
 import { CandidatesProvider } from "../context/CandidatesContext";
 import { SessionProvider } from "../context/SessionContext";
-import { SidebarProvider } from "../context/SidebarContext";
+import { SidebarRProvider } from "../context/SidebarRContext";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,7 +32,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={true}>
       <SessionProvider>
       <Provider>
-      <SidebarProvider>
+      <SidebarRProvider>
       <NotificationProvider>
       <Notifications />
         <SearchProvider>
@@ -43,7 +43,7 @@ export default function RootLayout({
         </ManagerProvider>
         </SearchProvider>
         </NotificationProvider>
-        </SidebarProvider>
+        </SidebarRProvider>
         </Provider>
         </SessionProvider>
 

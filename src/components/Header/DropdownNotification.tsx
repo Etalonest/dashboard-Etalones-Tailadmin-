@@ -9,13 +9,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { useSidebar } from "@/src/context/SidebarContext";
+import { useSidebarR } from "@/src/context/SidebarRContext";
 const DropdownNotification = () => {
    const {
       setSidebarROpen,
       setFormType,
       setSelectedCandidate,
-    } = useSidebar();
+    } = useSidebarR();
   const { session } = useSession();
   const managerId = session?.managerId;
   const [dropdownOpen, setDropdownOpen] = useState(false);
