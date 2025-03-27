@@ -47,7 +47,7 @@ export type Profession = {
     interviews: InterviewType[];
     interviewDate: any;
     vacancy: any;
-    statusWork: any;
+    statusWork: { name: string }[];
     avatar: any;
     stages: any;
     stage: any;

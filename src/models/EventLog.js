@@ -25,7 +25,6 @@ const EventLogSchema = new Schema({
       },
     manager:{
         type: Schema.Types.ObjectId,
-        required: true,
         ref: 'Manager',
     },
     description: {

@@ -4,6 +4,7 @@ import {Partner} from './Partner';
 import {Task} from './Task';
 import {Dialog} from './Dialog';
 import {Stage} from './Stage';
+import {EventLog} from './EventLog';
 const CandidateSchema = new Schema({
   source: {
     type: String
@@ -186,6 +187,12 @@ const CandidateSchema = new Schema({
         {
           type: Schema.Types.ObjectId, 
           ref: 'Interview'
+        }
+      ],
+      events:[
+        {
+          type: Schema.Types.ObjectId,
+          ref: 'EventLog'
         }
       ],
       comment: [{
