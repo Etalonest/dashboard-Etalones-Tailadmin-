@@ -1,5 +1,6 @@
 import { Partner } from "./partner";
 import { InterviewType } from "./interview";
+import { Manager } from "./manager";
 // Тип для профессии
 export type Profession = {
     id: string;
@@ -70,11 +71,7 @@ export type Profession = {
     professions: Profession[]; // Массив профессий
     documents: Document[]; // Массив документов
     langue: Langue[]; 
-    manager: {
-      phone: string;
-      name: any;
-      $oid: string; // ID менеджера
-    };
+    manager: Manager;
     status: string;
     comment: Comment; // Массив комментариев
     commentMng: Comment; // Массив комментариев менеджера (если есть)

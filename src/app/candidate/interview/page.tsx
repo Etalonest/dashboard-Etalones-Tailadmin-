@@ -3,8 +3,8 @@ import Interviews from "@/src/components/Interviews/Interviews";
 
 export default function Page() {
   return (
-    <DefaultLayout>
+    <>
       <Interviews/>
-    </DefaultLayout>
+    </>
   );
 }

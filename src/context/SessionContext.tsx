@@ -1,3 +1,4 @@
+'use client'
 // context/SessionContext.tsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { Session } from 'next-auth';

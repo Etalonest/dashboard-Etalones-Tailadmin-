@@ -1,3 +1,4 @@
+'use client'
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Candidate } from "@/src/types/candidate";
 import { Partner } from "@/src/types/partner";

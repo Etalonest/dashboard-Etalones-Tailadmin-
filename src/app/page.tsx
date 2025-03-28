@@ -1,6 +1,5 @@
 import ECommerce from "@/src/components/Dashboard/E-commerce";
 import { Metadata } from "next";
-import DefaultLayout from "@/src/components/Layouts/DefaultLayout";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
@@ -18,9 +17,7 @@ export default async function Home () {
   }
   return (
     <>
-      <DefaultLayout>
         <ECommerce />
-      </DefaultLayout>
     </>
   );
 }

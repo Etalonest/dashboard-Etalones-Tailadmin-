@@ -1,181 +1,425 @@
 'use client'
-import { useManager } from '@/src/context/ManagerContext'; 
-import { Eye, UserCog, UserRoundPlus } from "lucide-react";
-import { Candidate } from '@/src/types/candidate';
-import { useState, useEffect } from 'react';
-import SidebarRight from '../SidebarRight';
-import Loader from "@/src/components/common/Loader";
-import { useSidebarR } from '@/src/context/SidebarRContext';
+import React, { useState, useEffect, use } from "react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Candidate } from "@/src/types/candidate";
+import SidebarRight from "@/src/components/SidebarRight";
+import { useSidebarR } from "@/src/context/SidebarRContext";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { useManager } from "@/src/context/ManagerContext";
 
 const TableCandidate = () => {
   const { manager } = useManager(); 
-  const [loading, setLoading] = useState<boolean>(!manager); 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
+  const [candidates, setCandidates] = useState<(any)[]>([]); // Состояние для кандидатов
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
-  const candidatesPerPage = 10;
 
-const {
-    setSidebarROpen,
-    setFormType,
-    setSelectedCandidate,
-  } = useSidebarR();
-   
-  const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [candidateIdToDelete, setCandidateIdToDelete] = useState<string | null>(null);
+  const {
+        setSidebarROpen,
+        setFormType,
+        setSelectedCandidate,
+      } = useSidebarR();
+  
+      const openDialog = (id: string) => {
+        setCandidateIdToDelete(id);
+        setIsDialogOpen(true);
+      };
+    
+      const closeDialog = () => {
+        setIsDialogOpen(false);
+        setCandidateIdToDelete(null);
+      };
+
+      useEffect(() => {
+        if (manager && Array.isArray(manager.candidates)) {
+          setCandidates(manager.candidates); // Обновляем состояние с кандидатами
+        }
+      }, [manager]);
+
+  const handleDelete = async () => {
+    if (!candidateIdToDelete) return; // Если нет кандидата для удаления, выходим из функции
+    try {
+      // Отправляем запрос на удаление кандидата
+      const response = await fetch(`/api/testApi/${candidateIdToDelete}/dellete`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Кандидат успешно перемещён в "Удалённые"');
+      } else {
+console.log("Erroor");}
+    } catch (err) {
+      console.error('Ошибка при удалении кандидата:', err);
+    } finally {
+      closeDialog();  
+    }
+  };
+  
+ 
+  const columns: ColumnDef<Candidate>[] = [
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
+    {
+        accessorKey: "managerAndDate",
+        header: "Менеджер и Дата",  // Название новой колонки
+        cell: ({ row }) => {
+          const manager = row.getValue("manager") as { name: string } | null;
+          const createdAt = row.getValue("createdAt") as string;
+          const formattedDate = new Date(createdAt).toLocaleString().slice(0, 10); // Обрезаем строку до первых 10 символов
+      
+          return (
+            <div>
+              <div>{manager ? `Менеджер: ${manager.name}` : "Менеджер: Нет"}</div>
+              <div>Добавлен: {formattedDate}</div>
+            </div>
+          );
+        },
+      },
+      
+    {
+        accessorKey: "createdAt",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Добавлен
+            <ArrowUpDown />
+          </Button>
+        ),
+        cell: ({ row }) => {
+            const createdAt = row.getValue("createdAt") as string;;
+            const formattedDate = new Date(createdAt)
+              .toLocaleString()
+              .slice(0, 10); // Обрезаем строку до первых 10 символов
+            return <div className="lowercase">{formattedDate}</div>;
+          },
+                },                 
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown />
+        </Button>
+      ),
+      cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+    },
+    {
+        accessorKey: "phone",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Телефон
+            <ArrowUpDown />
+          </Button>
+        ),
+        cell: ({ row }) => <div className="lowercase">{row.getValue("phone")}</div>,
+      },
+    {
+        accessorKey: "professions",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Профессии
+            <ArrowUpDown />
+          </Button>
+        ),
+        cell: ({ row }) => {
+            const professions = row.getValue("professions");
+          
+            if (Array.isArray(professions)) {
+              return (
+                <div>
+                  {professions.length > 0
+                    ? professions.map((profession: { name: string }) => profession.name).join(", ")
+                    : "Профессия не указана"}
+                </div>
+              );
+            } else {
+              return <div>No professions</div>;
+            }
+          },
+          
+      },      
+      {
+        accessorKey: "statusWork",  
+        header: "Status",  
+        cell: ({ row }) => {
+          const statuses = row.getValue("statusWork");  
+      
+          
+          if (Array.isArray(statuses)) {
+            return (
+              <TableCell>
+                {statuses.map((status: { name: string }) => status.name).join(', ')} {/* Отображаем статусы через запятую */}
+              </TableCell>
+            );
+          }
+      
+          return <TableCell>-</TableCell>;  // Если это не массив, возвращаем дефолтное значение
+        },
+      },
+      {
+        accessorKey: "documents",
+        header: "Документы",  // Заголовок
+        cell: ({ row }) => {
+          const documents = row.getValue("documents");  // Получаем список документов
+      
+          if (Array.isArray(documents)) {
+            if (documents.length > 0) {
+              // Если массив не пустой, отображаем типы документов через запятую
+              return (
+                <TableCell>
+                  {documents.map((document: { docType: string }) => document.docType).join(", ")}
+                </TableCell>
+              );
+            } else {
+              // Если массив пустой
+              return <TableCell>Документы не указаны</TableCell>;
+            }
+          } else {
+            // Если documents не массив
+            return <TableCell>Документы не указаны</TableCell>;
+          }
+        },
+      },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const candidate = row.original;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Действия</DropdownMenuLabel>
+              <DropdownMenuItem
+            onClick={() => {
+              if (candidate._id) {
+                navigator.clipboard.writeText(candidate._id);  // Копируем ID кандидата
+              } else {
+                console.error("Candidate ID is missing");
+              }
+            }}
+          >
+  Copy candidate ID
+</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} >Посмотреть</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} >Редактировать</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+    if (candidate._id) {
+      openDialog(candidate._id);  
+    } else {
+      console.error("Candidate ID is missing");
+    }
+  }} >Удалить</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
+  // Настройки таблицы с использованием useReactTable
+  const table = useReactTable({
+    data: candidates, 
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+ const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
     setFormType(type);
     setSelectedCandidate(candidate || null);
     setSidebarROpen(true); // Открытие сайдбара
   };
-  const currentCandidates = filteredCandidates.slice(
-    (currentPage - 1) * candidatesPerPage,
-    currentPage * candidatesPerPage
-  );
-
-  // Фильтрация кандидатов
-  useEffect(() => {
-    if (manager && Array.isArray(manager.candidates)) {
-      const filtered = manager.candidates.filter((candidate) => {
-        const lowerCaseSearch = searchQuery.toLowerCase();
-
-        // Фильтрация по имени и телефону
-        const nameMatch = candidate.name && candidate.name.toLowerCase().includes(lowerCaseSearch);
-        const phoneMatch = candidate.phone && candidate.phone.toLowerCase().includes(lowerCaseSearch);
-
-        // Фильтрация по профессии
-        const professionMatch = candidate.professions?.some((profession: any) =>
-          profession.name.toLowerCase().includes(lowerCaseSearch)
-        );
-
-        // Фильтрация по документам
-        const documentMatch = candidate.documents?.some((document: any) =>
-          document.docType.toLowerCase().includes(lowerCaseSearch)
-        );
-
-        // Возвращаем кандидатов, у которых совпадает хотя бы одно из полей
-        return nameMatch || phoneMatch || professionMatch || documentMatch;
-      });
-
-      setFilteredCandidates(filtered as any);
-      setLoading(false); // Останавливаем индикатор загрузки
-    }
-  }, [searchQuery, manager]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
-
-  
-  if (loading) {
-    return <Loader />; // Если менеджер еще не загружен
-  }
-
   return (
-    <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-      <div className='flex justify-between items-center'>
-        <div className='flex items-center gap-3 mb-6'>
-          <h4 className="text-xl font-semibold text-black dark:text-white">
-           <span>{manager?.candidates?.length || 0}</span> Мои кандидаты!
-          </h4>
-          <UserRoundPlus color='green' onClick={() => toggleSidebar("addCandidate")} className='cursor-pointer' />
-        </div>
-        <SidebarRight />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Поиск по имени, телефону или профессии"
-          className="mb-4 px-4 py-2  border border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+    <div className="w-full">
+        <SidebarRight/>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter emails..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
         />
+        
       </div>
-
-      <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Имя</h5>
-          </div>
-          <div className="p-2.5 text-start xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Профессии</h5>
-          </div>
-          <div className="p-2.5 text-start xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Документы</h5>
-          </div>
-          <div className="hidden p-2.5 text-start sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Добавлен/Обновлён</h5>
-          </div>
-          <div className="hidden p-2.5 text-center sm:block xl:p-5">
-            <h5 className="text-sm font-medium uppercase xsm:text-base">Телефон</h5>
-          </div>
-        </div>
-
-        {currentCandidates.map((candidate: any, index: number) => (
-          <div
-            className={`grid grid-cols-3 sm:grid-cols-5 ${'border-b border-stroke dark:border-strokedark'}`}
-            key={candidate.id || index}
-          >
-            <div className="flex items-center gap-3 p-2.5 xl:p-5">
-              <div className="flex-shrink-0">
-                <Eye onClick={() => toggleSidebar("viewCandidate", candidate)} />
-                <UserCog onClick={() => toggleSidebar("editCandidate", candidate)} />
-              </div>
-              <div className="hidden text-black dark:text-white sm:block">{candidate.name}</div>
-            </div>
-            <div className="flex items-center justify-start p-2.5 xl:p-5">
-              <div className="text-black dark:text-white">
-                {candidate.professions.map((profession: any, index: any) => (
-                  <div key={index}>{profession.name}</div>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center justify-start p-2.5 xl:p-5">
-              <div className="text-meta-3">
-                {candidate.documents.map((document: any, index: any) => (
-                  <div key={index}>{document.docType}</div>
-                ))}
-              </div>
-            </div>
-            <div className="hidden text-sm items-center justify-center p-2.5 sm:flex xl:p-5">
-              <div className="text-black dark:text-white">
-                {`${new Date(candidate.createdAt).toLocaleDateString('ru-RU', {
-                  day: '2-digit', month: 'long', year: '2-digit'
-                })} / ${new Date(candidate.updatedAt).toLocaleDateString('ru-RU', {
-                  day: '2-digit', month: 'long', year: '2-digit'
-                })}`}
-              </div>
-            </div>
-            <div className="hidden items-center justify-end p-2.5 sm:flex xl:p-5">
-              <div className="text-meta-5">{candidate.phone}</div>
-            </div>
-          </div>
-        ))}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
-
-      {/* Пагинация */}
-      {filteredCandidates.length > candidatesPerPage && (
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 text-sm font-semibold bg-blue-500 text-white rounded-md"
-          >
-            Назад
-          </button>
-          <span className="mx-4 text-sm font-medium text-black dark:text-white">
-            Страница {currentPage} из {Math.ceil(filteredCandidates.length / candidatesPerPage)}
-          </span>
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === Math.ceil(filteredCandidates.length / candidatesPerPage)}
-            className="px-4 py-2 text-sm font-semibold bg-blue-500 text-white rounded-md"
-          >
-            Вперёд
-          </button>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-      )}
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+      <div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
+        <DialogContent className="w-[800px] p-4 flex flex-col justify-center items-center">
+          <DialogHeader>
+            <DialogTitle>Вы уверены?</DialogTitle>
+            <DialogDescription className="text-start p-5">
+              Это действие нельзя будет отменить. Вы уверены, что хотите удалить этого кандидата?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline"  onClick={closeDialog}>Отмена</Button>
+            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} >
+              {"Подтвердить"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      </div>
+      
     </div>
   );
 };

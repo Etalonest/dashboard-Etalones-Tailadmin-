@@ -1,3 +1,4 @@
+'use client'
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Profession } from "../types/profession"; // Убедитесь, что у вас есть тип Profession
 

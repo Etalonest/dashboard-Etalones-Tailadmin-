@@ -42,52 +42,28 @@
 "use client";
 
 import React, { useState } from "react";
-import Sidebar from "@/src/components/Sidebar";
 import Header from "@/src/components/Header";
-import ClickOutside from "@/src/components/ClickOutside"; // Для закрытия сайдбара при клике вне
+import ClickOutside from "@/src/components/ClickOutside"; 
 import { Menu } from "lucide-react";
+import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/SideBar/app-sidebar";
 
 export default function DefaultLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Функция для переключения состояния сайдбара
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const { open, setOpen } = useSidebar();
 
   return (
-    <>
-      <div className="flex">
-        {/* Сайдбар */}
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <><div className="relative flex flex-1 flex-col">
+      {/* <Header /> */}
+        <main>
+        <SidebarTrigger />
 
-        {/* Контент */}
-        <div className="relative flex flex-1 flex-col">
-          {/* Добавим кнопку для открытия/закрытия сайдбара */}
-          <button
-            onClick={toggleSidebar}
-            className="fixed top-15 left-5 z-9999 p-2 bg-black text-white rounded-full opacity-25 transition-opacity duration-300 hover:opacity-100 focus:opacity-100 dark:bg-white dark:text-black dark:hover:opacity-100 dark:focus:opacity-100"
-            aria-label="Toggle Sidebar"
-          >
-            <Menu />
-          </button>
-
-          <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-          <main>
-            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-              {/* Используем ClickOutside для закрытия сайдбара при клике вне его */}
-              <ClickOutside onClick={() => setSidebarOpen(false)}>
-                {children}
-              </ClickOutside>
-            </div>
-          </main>
-        </div>
-      </div>
-    </>
+          {children}
+        </main>
+    </div></>
   );
 }

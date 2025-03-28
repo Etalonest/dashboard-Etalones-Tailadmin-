@@ -1,3 +1,4 @@
+'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from '@/src/context/SessionContext';
 import { Manager } from '../types/manager';
@@ -40,6 +41,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
 
         const data = await response.json();
+        console.log('MANAGER CONTEXT', data);
         if (data.manager) {
           setManager(data.manager);  // Сохраняем данные менеджера
           setCandidates(data.manager.candidates || []);  // Сохраняем кандидатов

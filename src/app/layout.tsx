@@ -1,9 +1,9 @@
-"use client";
-import "jsvectormap/dist/jsvectormap.css";
-import "flatpickr/dist/flatpickr.min.css";
+import { cookies } from "next/headers";
+// import "jsvectormap/dist/jsvectormap.css";
+// import "flatpickr/dist/flatpickr.min.css";
 import "@/src/css/satoshi.css";
 import "@/src/css/style.css";
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
 import Loader from "@/src/components/common/Loader";
 import { Provider } from "@/src/Provider";
 import { ManagerProvider } from "../context/ManagerContext";
@@ -14,39 +14,46 @@ import { CandidateProvider } from "../context/CandidateContext";
 import { CandidatesProvider } from "../context/CandidatesContext";
 import { SessionProvider } from "../context/SessionContext";
 import { SidebarRProvider } from "../context/SidebarRContext";
-export default function RootLayout({
+import DefaultLayout from "../components/Layouts/DefaultLayout";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/SideBar/app-sidebar";
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"; // Get the sidebar state from cookies
 
   // const pathname = usePathname();
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => setLoading(false), 1000);
+  // }, []);
 
   return (
     <html lang="ru">
       <body suppressHydrationWarning={true}>
       <SessionProvider>
-      <Provider>
       <SidebarRProvider>
+            <SidebarProvider defaultOpen={true}>
+            <AppSidebar variant="inset" />
       <NotificationProvider>
       <Notifications />
         <SearchProvider>
         <ManagerProvider>
-        <div className="text-black dark:text-white dark:bg-boxdark-2   ">
-          {loading ? <Loader /> : children}
-        </div>
+        <DefaultLayout >
+        <SidebarInset>
+          {children}
+        </SidebarInset>
+        </DefaultLayout>
         </ManagerProvider>
         </SearchProvider>
         </NotificationProvider>
+        </SidebarProvider>
         </SidebarRProvider>
-        </Provider>
         </SessionProvider>
-
       </body>
     </html>
   );

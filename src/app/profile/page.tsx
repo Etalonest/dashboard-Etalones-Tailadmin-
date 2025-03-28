@@ -14,13 +14,13 @@ const Profile = async () => {
   }
 
   return (
-    <DefaultLayout>
+    <>
       <ManagersProvider>
         <AllCandidatesProvider>
       <ProfileComponent />
       </AllCandidatesProvider>
       </ManagersProvider>
-    </DefaultLayout>
+    </>
   );
 };
 

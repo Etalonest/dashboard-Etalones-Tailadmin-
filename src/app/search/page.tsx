@@ -5,11 +5,11 @@ import { ProfessionProvider } from "@/src/context/ProfessionContext";
 
 const Page = () => {
   return (
-      <DefaultLayout>
+      <>
         <ProfessionProvider>
       <SearchPage/>
     </ProfessionProvider>
-    </DefaultLayout>
+    </>
   );
 };
 

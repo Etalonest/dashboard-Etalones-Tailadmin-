@@ -1,10 +1,6 @@
-
-
 import { connectDB } from '@/src/lib/db';
 import Manager from '@/src/models/Manager';
-import { select } from 'framer-motion/client';
 import { NextRequest, NextResponse } from "next/server";
-import path from 'path';
 
 export const PUT = async (request: NextRequest, { params }: any) => {
   try {
@@ -98,30 +94,30 @@ export async function GET(request: Request, { params }: any) {
       console.log("Подключение к базе данных успешно выполнено.");
 
       const manager = await Manager.findById(id)
-      // .populate({
-      //   path: 'candidates',
-      //   options: { sort: { updatedAt: -1 } },
-      //   populate: [
-      //     {
-      //       path: 'statusWork',
-      //       populate: {
-      //         path: '',
-      //         select: ''
-      //       }
-      //     },
-      //     {
-      //       path: 'documents',
-      //       populate: {
-      //         path: 'file',
-      //         select: 'name contentType',
-      //       },
-      //     },
-      //     {
-      //       path: 'dialogs',
-      //       select: 'text date author',
-      //     }
-      //   ]
-      // })
+      .populate({
+        path: 'candidates',
+        options: { sort: { updatedAt: -1 } },
+        populate: [
+          {
+            path: 'statusWork',
+            populate: {
+              path: '',
+              select: ''
+            }
+          },
+          {
+            path: 'documents',
+            populate: {
+              path: 'file',
+              select: 'name contentType',
+            },
+          },
+          {
+            path: 'dialogs',
+            select: 'text date author',
+          }
+        ]
+      })
       .populate('candidatesFromRecruiter')
       .populate({
         path:'candidates',

@@ -3,15 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSession } from "@/src/context/SessionContext";
 import React, { useState } from 'react';
 
 const PEx = () => {
+  const { session } = useSession();
   const [file, setFile] = useState<File | null>(null);
   const [parsedCandidates, setParsedCandidates] = useState<any[]>([]); // Для хранения парсенных данных
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPreview, setIsPreview] = useState(false); // Для отображения превью
-
+  if (session?.managerRole !== 'admin') {
+    return null; 
+  }
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setFile(e.target.files[0]);

@@ -21,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Candidate } from "@/src/types/candidate"; // Убедитесь, что типы кандидатов правильно указаны
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -34,33 +33,70 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Candidate } from "@/src/types/candidate";
+import SidebarRight from "@/src/components/SidebarRight";
+import { useSidebarR } from "@/src/context/SidebarRContext";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+ 
+export default function TestPage(data: any) {
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [rowSelection, setRowSelection] = React.useState({});
 
-export default function TestPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]); // Состояние для кандидатов
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [stageId, setStageId] = useState<string>(process.env.NEXT_PUBLIC_STAGE_ALL_CANDIDATES || "");
 
-  // Обработчик изменения выбора стадии
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [candidateIdToDelete, setCandidateIdToDelete] = useState<string | null>(null);
+  const {
+        setSidebarROpen,
+        setFormType,
+        setSelectedCandidate,
+      } = useSidebarR();
+  
+      const openDialog = (id: string) => {
+        setCandidateIdToDelete(id);
+        setIsDialogOpen(true);
+      };
+    
+      const closeDialog = () => {
+        setIsDialogOpen(false);
+        setCandidateIdToDelete(null);
+      };
+      // Обработчик изменения выбора стадии
+  
   const handleStageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setStageId(event.target.value); // Обновляем состояние stageId
   };
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!candidateIdToDelete) return; // Если нет кандидата для удаления, выходим из функции
+
     setLoading(true);
     setError(null);
-  
+
     try {
-      // Отправляем запрос на удаление кандидата по его id
-      const response = await fetch(`/api/testApi/${id}/dellete`, {
+      // Отправляем запрос на удаление кандидата
+      const response = await fetch(`/api/testApi/${candidateIdToDelete}/dellete`, {
         method: 'POST',
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
-        // Успешное удаление, можно обновить UI или уведомить пользователя
         alert('Кандидат успешно перемещён в "Удалённые"');
-        // Здесь можно добавить логику обновления списка кандидатов (например, удалив его из состояния)
+        // Обновление списка кандидатов или другая логика, например, удаление из состояния
       } else {
         setError(data.error || 'Неизвестная ошибка');
       }
@@ -69,8 +105,10 @@ export default function TestPage() {
       setError('Ошибка при удалении кандидата');
     } finally {
       setLoading(false);
+      closeDialog();  // Закрываем диалог после выполнения операции
     }
   };
+
   
   // Функция для загрузки кандидатов по stageId
   const fetchCandidates = async () => {
@@ -96,10 +134,7 @@ export default function TestPage() {
   }, [stageId]);
 
   // Состояние для таблицы
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  
 
   // Структура колонок для таблицы
   const columns: ColumnDef<Candidate>[] = [
@@ -123,6 +158,23 @@ export default function TestPage() {
       enableHiding: false,
     },
     {
+        accessorKey: "managerAndDate",
+        header: "Менеджер и Дата",  // Название новой колонки
+        cell: ({ row }) => {
+          const manager = row.getValue("manager") as { name: string } | null;
+          const createdAt = row.getValue("createdAt") as string;
+          const formattedDate = new Date(createdAt).toLocaleString().slice(0, 10); // Обрезаем строку до первых 10 символов
+      
+          return (
+            <div>
+              <div>{manager ? `Менеджер: ${manager.name}` : "Менеджер: Нет"}</div>
+              <div>Добавлен: {formattedDate}</div>
+            </div>
+          );
+        },
+      },
+      
+    {
         accessorKey: "createdAt",
         header: ({ column }) => (
           <Button
@@ -140,7 +192,7 @@ export default function TestPage() {
               .slice(0, 10); // Обрезаем строку до первых 10 символов
             return <div className="lowercase">{formattedDate}</div>;
           },
-                },
+                },                 
     {
       accessorKey: "name",
       header: ({ column }) => (
@@ -265,7 +317,17 @@ export default function TestPage() {
   Copy candidate ID
 </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleDelete(candidate._id || '')} disabled={loading}>Удалить</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} disabled={loading}>Посмотреть</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} disabled={loading}>Редактировать</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => {
+    if (candidate._id) {
+      openDialog(candidate._id);  
+    } else {
+      console.error("Candidate ID is missing");
+    }
+  }} disabled={loading}>Удалить</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -292,9 +354,14 @@ export default function TestPage() {
       rowSelection,
     },
   });
-
+ const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: Candidate) => {
+    setFormType(type);
+    setSelectedCandidate(candidate || null);
+    setSidebarROpen(true); // Открытие сайдбара
+  };
   return (
     <div className="w-full">
+        <SidebarRight/>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
@@ -379,6 +446,25 @@ export default function TestPage() {
           </Button>
         </div>
       </div>
+      <div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
+        <DialogContent className="w-[800px] p-4 flex flex-col justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <DialogHeader>
+            <DialogTitle>Вы уверены?</DialogTitle>
+            <DialogDescription className="w-2/3 text-start p-5">
+              Это действие нельзя будет отменить. Вы уверены, что хотите удалить этого кандидата?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2">
+            <Button variant="outline"  onClick={closeDialog}>Отмена</Button>
+            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} disabled={loading}>
+              {loading ? "Удаление..." : "Подтвердить"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      </div>
+      
     </div>
   );
 }

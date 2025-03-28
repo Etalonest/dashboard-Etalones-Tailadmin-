@@ -1,4 +1,4 @@
-
+'use client'
 import React, { useContext, useEffect, useState } from "react";
 import { NotificationContext, Notification } from "@/src/context/NotificationContext";
 
