@@ -1,35 +1,27 @@
-'use client';
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-  } from "@/components/ui/tabs"
+"use client";
+import { useSearchParams } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SearchCandidates from "./SearchCandidate";
 import SearchPartners from "./SearchPartner";
 
 const SearchPage = () => {
-
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "candidate"; // По умолчанию "candidate"
 
   return (
     <div>
-     <Tabs defaultValue="candidate" >
-     <TabsList className="grid w-full grid-cols-6 bg-slate-200">
-        <TabsTrigger value="candidate" className="col-span-2">Кандидат</TabsTrigger>
-        <TabsTrigger value="partner" className="col-span-2">Партнёр</TabsTrigger>
-        {/* <TabsTrigger value="vacancy" className="col-span-2">Вакансия</TabsTrigger> */}
-
-      </TabsList>
-      <TabsContent value="candidate">
-<SearchCandidates/>
-      </TabsContent>
-      <TabsContent value="partner">
-<SearchPartners/>
-      </TabsContent>
-      {/* <TabsContent value="vacancy">
-        <p>Vacancy</p>
-      </TabsContent> */}
-     </Tabs>
+      <Tabs defaultValue={tab}>
+        <TabsList>
+          <TabsTrigger value="candidate">Кандидат</TabsTrigger>
+          <TabsTrigger value="partner">Партнёр</TabsTrigger>
+        </TabsList>
+        <TabsContent value="candidate">
+          <SearchCandidates />
+        </TabsContent>
+        <TabsContent value="partner">
+          <SearchPartners />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -159,7 +159,7 @@ export function CallHistory({ candidate }: CallHistoryProps) {
               {totalCalls}<Phone size={16}/> 
             </Badge> 
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[1025px] fixed top-5 right-0">
+          <DialogContent className="sm:max-w-[1025px] ">
             <DialogHeader>
               <DialogTitle>Данные о звонках</DialogTitle>
               <DialogDescription>
@@ -260,7 +260,7 @@ export function CallHistory({ candidate }: CallHistoryProps) {
       {/* Диалог для комментариев */}
       <div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
-          <DialogContent className='h-max p-5 top-0 bottom-0'>
+          <DialogContent >
             <DialogHeader>
               <DialogTitle>Добавить комментарий</DialogTitle>
               <DialogDescription>Напишите комментарий к звонку, что вы узнали нового или о чём договорились:</DialogDescription>

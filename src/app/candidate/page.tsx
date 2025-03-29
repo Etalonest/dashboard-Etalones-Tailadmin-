@@ -47,7 +47,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
  
-export default function TestPage(data: any) {
+export default function CandidatePage(data: any) {
   console.log("DATA", data);
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -386,7 +386,7 @@ export default function TestPage(data: any) {
           }
           className="max-w-sm"
         />
-        <select
+        {/* <select
           value={stageId}
           onChange={handleStageChange}
           className="ml-auto"
@@ -397,7 +397,7 @@ export default function TestPage(data: any) {
           <option value={process.env.NEXT_PUBLIC_STAGE_ON_INTERVIEW}>На собеседовании</option>
           <option value={process.env.NEXT_PUBLIC_STAGE_INTERVIEW_SUCCESS}>Положительное собеседование</option>
           <option value={process.env.NEXT_PUBLIC_STAGE_ON_OBJECT}>На объекте</option>
-        </select>
+        </select> */}
       </div>
       <div className="rounded-md border">
         <Table>

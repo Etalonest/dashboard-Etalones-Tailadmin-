@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation";
+
 import {
   AudioWaveform,
   BookOpen,
@@ -8,12 +10,20 @@ import {
   Command,
   Frame,
   GalleryVerticalEnd,
+  MailQuestion,
   Map,
+  MapPinned,
+  NotebookPen,
   NotebookTabs,
   PieChart,
   Plus,
+  Search,
+  SearchCheck,
   Settings2,
+  SmilePlus,
   SquareTerminal,
+  Trash2,
+  UserRoundPlus,
 } from "lucide-react"
 
 import { NavMain } from "@/components/SideBar/nav-main"
@@ -53,36 +63,13 @@ const data = {
       icon: SquareTerminal,
       isActive: false,
       items: [
-        {
-          title: "Все кандидаты",
-          url: "/candidate/all",
-          stageId: process.env.NEXT_PUBLIC_STAGE_ALL_CANDIDATES
-        },
-        {
-          title: "Новые кандидаты",
-          url: "/candidate/new",
-          stageId: process.env.NEXT_PUBLIC_STAGE_NEW
-        },
-        {
-          title: "В обработке",
-          url: "/testPage/inProcess",
-          stageId: process.env.NEXT_PUBLIC_STAGE_IN_PROCESS
-        },
-        {
-          title: "На собеседовании",
-          url: "/testPage/interview",
-          stageId: process.env.NEXT_PUBLIC_STAGE_ON_INTERVIEW
-        },
-        {
-          title: "Прошли собеседования",
-          url: "/testPage/passedInterview",
-          stageId: process.env.NEXT_PUBLIC_STAGE_INTERVIEW_SUCCESS
-        },
-        {
-          title: "На объекте",
-          url: "/tables/onObject",
-          stageId: process.env.NEXT_PUBLIC_STAGE_ON_OBJECT
-        },
+        { title: "Все кандидаты", url: "/candidate/stage/all" },
+        { title: "Новые кандидаты", url: "/candidate/stage/new", icon: UserRoundPlus },
+        { title: "Рекрутируются", url: "/candidate/stage/processing", icon: NotebookPen },
+        { title: "На собеседовании", url: "/candidate/stage/interview",icon: MailQuestion },
+        { title: "Прошли собеседования", url: "/candidate/stage/interviewPassed", icon: SmilePlus },
+        { title: "На объекте", url: "/candidate/stage/onObject", icon: MapPinned },
+        { title: "Корзина", url: "/candidate/stage/deleted", icon: Trash2 },
       ],
     },
     {
@@ -155,6 +142,30 @@ const data = {
        
       ],
     },
+    {
+      title: "Поиск",
+      url: "#",
+      icon: Search,
+      items: [
+        
+        {
+          icon: SearchCheck,
+          title: "Кандидата",
+          url: "/search?tab=candidate",
+        },
+        {
+          icon: SearchCheck,
+          title: "Партнёра",
+          url: "/search?tab=partner",
+        },
+        {
+          icon: SearchCheck,
+          title: "Вакансии",
+          url: "#",
+        },
+       
+      ],
+    },
   ],
   projects: [
     {
@@ -177,19 +188,28 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
+  const pathname = usePathname();
   const { session } = useSession(); 
+  const managerRole = session?.managerRole || "";
+  const isCandidateSection = pathname.startsWith("/candidate");
   const handleLogout = async () => {
       await signOut();
       router.push('/auth/signin');
     }; 
-    
+    const filteredNavMain = data.navMain.map((category) => ({
+      ...category,
+      isActive: category.title === "Кандидаты" ? isCandidateSection : false, 
+      items: category.items.filter((item) => 
+        item.title !== "Корзина" || managerRole === "admin"
+      ),
+    }));
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
