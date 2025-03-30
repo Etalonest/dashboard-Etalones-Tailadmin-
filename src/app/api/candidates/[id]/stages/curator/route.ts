@@ -182,7 +182,7 @@ export const POST = async (req: Request, { params }: any) => {
     }
 
     // Получаем ID текущей стадии кандидата из переменной окружения
-    const stageId = process.env.NEXT_PUBLIC_STAGE_ON_INTERVIEW;
+    const stageId = process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_INTERVIEW;
     
     // Находим стадию по ID из переменной окружения
     const currentStage = await Stage.findById(stageId).populate('candidates');

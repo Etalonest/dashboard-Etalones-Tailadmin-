@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -12,6 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -46,8 +55,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
- 
+import { DrawerBody } from "@/src/components/Drawer/DrawerBody/DrawerBody";
+import { useSession } from "@/src/context/SessionContext";
 export default function CandidatePage(data: any) {
+  const { session } = useSession();
   console.log("DATA", data);
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -311,6 +322,7 @@ export default function CandidatePage(data: any) {
       cell: ({ row }) => {
         const candidate = row.original;
         return (
+          <Drawer>     
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -323,13 +335,15 @@ export default function CandidatePage(data: any) {
               <DropdownMenuItem
             onClick={() => {
               if (candidate._id) {
-                navigator.clipboard.writeText(candidate._id);  // Копируем ID кандидата
+                navigator.clipboard.writeText(candidate._id);  
               } else {
                 console.error("Candidate ID is missing");
               }
             }}
           >
-  Copy candidate ID
+  <DrawerTrigger asChild>
+        <div >Передать на собеседование</div>
+      </DrawerTrigger>
 </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} disabled={loading}>Посмотреть</DropdownMenuItem>
@@ -345,6 +359,19 @@ export default function CandidatePage(data: any) {
   }} disabled={loading}>Удалить</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Передать на собеседование кандидата {candidate.name}?</DrawerTitle>
+            <DrawerDescription>Выберите вакансию для передачи на собеседование</DrawerDescription>
+          </DrawerHeader>
+          <DrawerBody candidate={candidate} managerId={session?.managerId} />
+          <DrawerFooter >
+            <DrawerClose asChild>
+              <Button variant="outline">Отмена</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+          </Drawer>
         );
       },
     },
@@ -386,18 +413,7 @@ export default function CandidatePage(data: any) {
           }
           className="max-w-sm"
         />
-        {/* <select
-          value={stageId}
-          onChange={handleStageChange}
-          className="ml-auto"
-        >
-          <option value={process.env.NEXT_PUBLIC_STAGE_ALL_CANDIDATES}>Все кандидаты</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_NEW}>Новые</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_IN_PROCESS}>В обработке</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_ON_INTERVIEW}>На собеседовании</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_INTERVIEW_SUCCESS}>Положительное собеседование</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_ON_OBJECT}>На объекте</option>
-        </select> */}
+       
       </div>
       <div className="rounded-md border">
         <Table>
@@ -479,7 +495,7 @@ export default function CandidatePage(data: any) {
         </DialogContent>
       </Dialog>
       </div>
-      
+     
     </div>
   );
 }

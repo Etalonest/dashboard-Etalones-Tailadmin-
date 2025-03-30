@@ -2,7 +2,7 @@ import { Schema, model, models } from "mongoose";
 import { Manager } from "@/src/models/Manager"
 import { Candidate } from "@/src/models/Candidate"
 import { Partner } from "@/src/models/Partner"
-
+import { Vacancies } from "@/src/models/Vacancies"
 const EventLogSchema = new Schema({
     eventType: {
         type: String,
@@ -30,6 +30,13 @@ const EventLogSchema = new Schema({
     description: {
         type: String,
         required: true,
+      },
+      vacancy:{
+        type: Schema.Types.ObjectId,
+        ref: 'Vacancies',
+      },
+      comment:{
+        type: String,
       },
 }, { timestamps: true });
 

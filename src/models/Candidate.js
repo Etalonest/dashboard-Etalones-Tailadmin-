@@ -69,11 +69,11 @@ const CandidateSchema = new Schema({
         data: Buffer,
         contentType: String
       },
-      documentsFile: [{
+  documentsFile: [{
         type: Schema.Types.ObjectId,
         ref: 'Document'
       }],
-      tasks: [{
+  tasks: [{
         type: Schema.Types.ObjectId,
         ref: 'Task'
       }],

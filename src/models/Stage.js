@@ -2,26 +2,27 @@ import { Schema, model, models } from "mongoose";
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
 import {Manager} from './Manager';
-import {Task} from './Task';
 import {Vacancies} from './Vacancies';
 const StageSchema = new Schema({
   name: String,
   candidates:[{
     type: Schema.Types.ObjectId,
-    ref: 'Candidate', // Кандидат, проходящий через этап
+    ref: 'Candidate', 
   }],
   partners:[{
     type: Schema.Types.ObjectId,
-    ref: 'Partner', // Партнер, с которым работает кандидат
+    ref: 'Partner', 
   }],
   vacancy:[{
     type: Schema.Types.ObjectId,
     ref: 'Vacancies', 
   }],
-  tasks:[{
-    type: Schema.Types.ObjectId,
-    ref: 'Task', // Задача, связанная с этапом
-  }],
+  
+}, { timestamps: true });
+
+const Stage = models?.Stage || model("Stage", StageSchema);
+export default Stage;
+
   // tasks:[{
   //   type: Schema.Types.ObjectId,
   //   ref: 'Task', // Задача, связанная с этапом
@@ -77,7 +78,3 @@ const StageSchema = new Schema({
   //   type: Schema.Types.ObjectId,
   //   ref: 'Vacancies', // Уникальная связь, чтобы предотвратить повторные собеседования
   // },
-}, { timestamps: true });
-
-const Stage = models?.Stage || model("Stage", StageSchema);
-export default Stage;

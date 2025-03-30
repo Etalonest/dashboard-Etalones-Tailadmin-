@@ -14,8 +14,9 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
   }
 
   return (
-    <div className='grid grid-cols-2 gap-5 mx-auto w-full'>
-      <Card className='col-span-1'>
+    <div className='grid grid-cols-3 gap-5 mx-auto w-full'>
+      <Card className='col-span-2'>
+      <div className='w-full text-center'>тут новый бллок</div>
         <div className='flex items-center justify-around m-5 w-full'>
         <div className='flex items-center justify-around m-5'>
           <Image src={candidate.avatar || "/images/logo/logo-red.png"} alt="candidate" width={150} height={150} />
@@ -175,7 +176,7 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
         </CardFooter>
       </Card>
       
-      <TransferToKurator candidate={candidate} selectedProfessions={candidate?.professions.map((prof) => prof.name)} />
+      <TransferToKurator className='col-span-1' candidate={candidate} selectedProfessions={candidate?.professions.map((prof) => prof.name)} />
     </div>
   );
 };

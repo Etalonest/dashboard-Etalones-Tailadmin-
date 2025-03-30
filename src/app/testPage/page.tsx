@@ -391,12 +391,12 @@ export default function TestPage(data: any) {
           onChange={handleStageChange}
           className="ml-auto"
         >
-          <option value={process.env.NEXT_PUBLIC_STAGE_ALL_CANDIDATES}>Все кандидаты</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_NEW}>Новые</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_IN_PROCESS}>В обработке</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_ON_INTERVIEW}>На собеседовании</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_INTERVIEW_SUCCESS}>Положительное собеседование</option>
-          <option value={process.env.NEXT_PUBLIC_STAGE_ON_OBJECT}>На объекте</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL_CANDIDATES}>Все кандидаты</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_NEW}>Новые</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_IN_PROCESS}>В обработке</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_INTERVIEW}>На собеседовании</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_INTERVIEW_SUCCESS}>Положительное собеседование</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_OBJECT}>На объекте</option>
         </select>
       </div>
       <div className="rounded-md border">

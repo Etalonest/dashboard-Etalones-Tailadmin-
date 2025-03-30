@@ -4,6 +4,7 @@ import {HomeImages} from './HomeImages';
 import {Partner} from './Partner';
 import {Candidate} from './Candidate';
 import {Interview} from './Interview';
+import {EventLog} from './EventLog';
 const VacanciesSchema = new Schema({
     image: {
         type: Schema.Types.ObjectId,
@@ -107,7 +108,13 @@ const VacanciesSchema = new Schema({
       candidates:[{
         type: Schema.Types.ObjectId,
         ref: 'Candidate'
-      }]
+      }],
+      events:[
+              {
+                type: Schema.Types.ObjectId,
+                ref: 'EventLog'
+              }
+            ],
 
 },{ timestamps: true });
 

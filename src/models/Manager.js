@@ -3,12 +3,19 @@ import {Vacancies} from './Vacancies';
 import {Candidate} from './Candidate';
 import {Partner} from './Partner';
 import {Role} from './Role';
-
+import {EventLog} from './EventLog';
+import {Task} from './Task';
 const ManagerSchema = new Schema({
   vacancy: [{
     type: Schema.Types.ObjectId,
     ref: 'Vacancies'
   }],
+  events:[
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'EventLog'
+          }
+        ],
       email: {
         type: String,
         unique: true,

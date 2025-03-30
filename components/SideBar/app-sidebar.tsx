@@ -102,7 +102,7 @@ const data = {
       items: [
         {
           title: "Все вакансии",
-          url: "#",
+          url: "/vacancy/all",
         },
         {
           title: "Актуальные вакансии",
@@ -210,7 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser session={session} logout={handleLogout}  />

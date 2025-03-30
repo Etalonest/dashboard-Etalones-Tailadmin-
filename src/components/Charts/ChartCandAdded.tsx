@@ -1,7 +1,7 @@
 import { ApexOptions } from "apexcharts";
 import React, { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { useSession } from 'next-auth/react';
+import { useSession } from "@/src/context/SessionContext";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -108,7 +108,7 @@ const ChartCandAdded: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState("2025-01");
 
   // Получаем сессию, чтобы узнать ID и роль пользователя
-  const { data: session } = useSession();
+  const { session } = useSession();
   const userId = session?.managerId; 
   const userRole = session?.managerRole; 
 
