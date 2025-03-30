@@ -1,5 +1,7 @@
 import { connectDB } from '@/src/lib/db';
 import Manager from '@/src/models/Manager';
+import { se } from 'date-fns/locale';
+import { create } from 'domain';
 import { NextRequest, NextResponse } from "next/server";
 
 export const PUT = async (request: NextRequest, { params }: any) => {
@@ -118,11 +120,32 @@ export async function GET(request: Request, { params }: any) {
           }
         ]
       })
-      .populate('candidatesFromRecruiter')
       .populate({
-        path:'candidates',
-        populate: ['interviews','manager'],
+        path:'candidateFromInterview',
         options: { sort: { updatedAt: -1 } },
+        populate: [
+          {
+            path:'recruiter',
+            select: 'name'
+          },
+          {
+            path:'manager',
+            select: 'name'
+          },
+          {
+            path:'events',
+            select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
+            populate: [{
+              path: 'manager',
+              select: 'name'   
+            },
+            {
+              path: 'vacancy',
+              select: ''
+            }
+            ]
+          }
+        ],
       })
       .populate('role')
       .populate({
@@ -149,6 +172,7 @@ export async function GET(request: Request, { params }: any) {
           }
         ]
       });
+      
       console.log('Количество кандидатов:', manager?.candidates?.length); 
       if (!manager) {
 

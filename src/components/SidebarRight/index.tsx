@@ -23,7 +23,9 @@ const SidebarRight: React.FC = () => {
     selectedVacancy,
     selectedProfession,
   } = useSidebarR();
-
+  console.log('SelectedCandidate index sidebarR', selectedCandidate);
+console.log("SelectedVacancy index sidebarR", selectedVacancy);
+console.log("SelectedPartner index sidebarR", selectedPartner);
   const closeSidebar = () => {
     setSidebarROpen(false);
     if (formType !== "viewCandidate" && formType !== "viewPartner" && formType !== "viewVacancy") {
@@ -51,10 +53,7 @@ const SidebarRight: React.FC = () => {
       case "editVacancy":
         return <EditVacancyForm vacancy={selectedVacancy} onSubmitSuccess={closeSidebar} />;
         case "viewVacancy":
-          if (!selectedVacancy) {
-            return <div>Загрузка...</div>; 
-          }
-          return <ViewVacancy vacancy={selectedVacancy} onSubmitSuccess={closeSidebar} />;
+        return <ViewVacancy vacancy={selectedVacancy} onSubmitSuccess={closeSidebar} />;
           default:
         return null;
     }

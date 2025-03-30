@@ -7,7 +7,8 @@ import { Partner } from '../types/partner';
 interface ManagerContextType {
   manager: Manager | null;
   setManager: (manager: Manager | null) => void;
-  candidates: any[];  // Массив кандидатов
+  candidates: any[];  
+  candidateFromInterview?: any[];
   setCandidates: (candidates: any[]) => void;
   partner: any[];
   setPartner: (partner: any[]) => void;
@@ -19,12 +20,13 @@ const ManagerContext = createContext<ManagerContextType | undefined>(undefined);
 
 export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [manager, setManager] = useState<Manager | null>(null);
-  const [candidates, setCandidates] = useState<any[]>([]); // Состояние для кандидатов
+  const [candidates, setCandidates] = useState<any[]>([]); 
+  const [candidateFromInterview, setCandidateFromInterview] = useState<any[]>([]);
   const [partner, setPartner] = useState<any[]>([]); // Состояние для партнеров
   const [isLoading, setIsLoading] = useState<boolean>(false);  // Индикатор загрузки
   const [error, setError] = useState<string | null>(null);  // Ошибка при загрузке данных
   const { session } = useSession();
-
+console.log("candidateFromInterview", candidateFromInterview);
   const managerId = session?.managerId;
 
   useEffect(() => {
@@ -44,7 +46,8 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.log('MANAGER CONTEXT', data);
         if (data.manager) {
           setManager(data.manager);  // Сохраняем данные менеджера
-          setCandidates(data.manager.candidates || []);  // Сохраняем кандидатов
+          setCandidates(data.manager.candidates || []); 
+          setCandidateFromInterview(data.manager.candidateFromInterview || []);
           setPartner(data.manager.partner);
         }
       } catch (error) {
@@ -59,7 +62,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [managerId]);
 
   return (
-    <ManagerContext.Provider value={{ manager, setManager, candidates, setCandidates, partner, setPartner, isLoading, error }}>
+    <ManagerContext.Provider value={{ manager, setManager, candidates, candidateFromInterview, setCandidates, partner, setPartner, isLoading, error }}>
       {children}
     </ManagerContext.Provider>
   );

@@ -1,4 +1,5 @@
 'use client'
+import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { MapPinned, HandCoins, HousePlus } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export function DrawerBody({ candidate, managerId }: { candidate: any; managerId: any }) {
+  const { toast } = useToast()
   const [vacancies, setVacancies] = useState<VacancyType[]>([]); 
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null);
   const [comment, setComment] = useState("");
@@ -55,7 +57,12 @@ export function DrawerBody({ candidate, managerId }: { candidate: any; managerId
 
       if (!response.ok) throw new Error("Ошибка при отправке данных");
 
-      alert("Заявка отправлена успешно");
+      toast({
+        title: "Кандидат успешно передан в \"На собеседовании\"",
+        description: "Для просмотра кандидатов перейдите в раздел \"Кандидаты на собеседовании\"",
+        duration: 5000,
+        variant: "destructive",
+      })
       setComment(""); // Очистить комментарий
       setSelectedVacancy(null); // Очистить выбор
     } catch (error) {

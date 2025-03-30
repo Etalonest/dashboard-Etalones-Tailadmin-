@@ -66,7 +66,7 @@ const data = {
         { title: "Все кандидаты", url: "/candidate/stage/all" },
         { title: "Новые кандидаты", url: "/candidate/stage/new", icon: UserRoundPlus },
         { title: "Рекрутируются", url: "/candidate/stage/processing", icon: NotebookPen },
-        { title: "На собеседовании", url: "/candidate/stage/interview",icon: MailQuestion },
+        { title: "На собеседовании", url: "/candidate/interview",icon: MailQuestion },
         { title: "Прошли собеседования", url: "/candidate/stage/interviewPassed", icon: SmilePlus },
         { title: "На объекте", url: "/candidate/stage/onObject", icon: MapPinned },
         { title: "Корзина", url: "/candidate/stage/deleted", icon: Trash2 },

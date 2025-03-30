@@ -43,6 +43,7 @@ export type Profession = {
   
   // Основной тип для кандидата
   export type Candidate = {
+    events: any[];
     tasks: any[];
     invoices: any[];
     interviews: InterviewType[];

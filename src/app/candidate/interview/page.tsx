@@ -1,11 +1,13 @@
-import CandidatePage from "../page";
-
+'use client'
+import CandidatesInterview from "@/src/components/CandidatesInterview/CandidatesInterview";
+import { useManager } from "@/src/context/ManagerContext";
 export default function Page() {
-  const data =  process.env.NEXT_PUBLIC_CANDIDATES_STAGE_INTERVIEW
-     
+    const { candidateFromInterview } = useManager();
+    const data = candidateFromInterview;
+    console.log("DATA", data);
      return (
          <div>
-             <CandidatePage data={data}/>
+             <CandidatesInterview data={data || []}/>
          </div>
      )
 }

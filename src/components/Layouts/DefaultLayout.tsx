@@ -41,12 +41,9 @@
 // }
 "use client";
 
-import React, { useState } from "react";
-import Header from "@/src/components/Header";
-import ClickOutside from "@/src/components/ClickOutside"; 
-import { Menu } from "lucide-react";
-import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/SideBar/app-sidebar";
+import React from "react";
+import {  SidebarTrigger} from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/toaster"
 
 export default function DefaultLayout({
   children,
@@ -54,7 +51,6 @@ export default function DefaultLayout({
   children: React.ReactNode;
 }) {
 
-  const { open, setOpen } = useSidebar();
 
   return (
       <><div className="relative flex flex-1 flex-col">
@@ -63,6 +59,7 @@ export default function DefaultLayout({
         <SidebarTrigger />
 
           {children}
+          <Toaster />
         </main>
     </div></>
   );

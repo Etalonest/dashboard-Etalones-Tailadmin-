@@ -42,7 +42,7 @@ export const POST = async (req: Request) => {
     );
     
     const eventLog = new EventLog({
-      eventType: 'На собеседование',
+      eventType: 'Передан на собеседование',
       relatedId: candidateId,
       responsible: vacancy.manager,
       appointed: managerId,
@@ -54,9 +54,11 @@ export const POST = async (req: Request) => {
     
     await eventLog.save();
     await Promise.all([
-        Candidate.updateOne({ _id: candidateId }, { $push: { events: eventLog._id } }),
-        Vacancies.updateOne({ _id: vacancyId }, { $push: { events: eventLog._id } }),
-        Manager.updateOne({ _id: managerId }, { $push: { events: eventLog._id } })
+        Candidate.updateOne({ _id: candidateId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
+        Vacancies.updateOne({ _id: vacancyId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
+        Manager.updateOne({ _id: managerId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
+        Manager.updateOne({ _id: managerId }, { $push: { candidateFromInterview: {$each: [candidateId], $position: 0 } } }),
+        Manager.updateOne({ _id: vacancy.manager }, { $push: { candidateFromInterview: {$each: [candidateId], $position: 0 } } })
       ]);
   
     return NextResponse.json({ success: true, message: "Interview scheduled", eventId: eventLog._id }, { status: 201 });
