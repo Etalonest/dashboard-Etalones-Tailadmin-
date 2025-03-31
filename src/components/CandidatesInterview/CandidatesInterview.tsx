@@ -57,8 +57,7 @@ import {
 import { DrawerBody } from "@/src/components/Drawer/DrawerBody/DrawerBodyToInterviewRes";
 import { useSession } from "@/src/context/SessionContext";
 import { VacancyType } from "@/src/types/vacancy";
-import { set } from "mongoose";
-import { ca } from "date-fns/locale";
+
 export default function CandidatesInterview({ data }: { data: Candidate[] }) {
   const { session } = useSession();
   const { toast } = useToast()

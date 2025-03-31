@@ -5,8 +5,14 @@ import Manager from '@/src/models/Manager';
 import Stage from '@/src/models/Stage';
 import Task from '@/src/models/Task';
 import EventLog from '@/src/models/EventLog';
+import { ca } from 'date-fns/locale';
+
+
+const STAGE_NEW = process.env.NEXT_PUBLIC_CANDIDATES_STAGE_NEW;
+const STAGE_PROCESSING = process.env.NEXT_PUBLIC_CANDIDATES_STAGE_PROCESSING;
 
 export const GET = async (request: NextRequest) => {
+  
   try {
     await connectDB();
 
@@ -44,6 +50,7 @@ export const GET = async (request: NextRequest) => {
 
 
 export const POST = async (request: Request) => {
+  
   try {
 
     const formData = await request.formData();
@@ -140,57 +147,38 @@ export const POST = async (request: Request) => {
 
     await newCandidate.save();
 
-    const newStage = new Stage({
-      stage: 'recruiter', // Этап рекрутера
-      status: 'in-progress',
-      candidate: newCandidate._id,
-      responsible: managerId,
-      comment: 'Кандидат добавлен на этап рекрутера',
-    });
-    await newStage.save();
+    const stageNewId = STAGE_NEW;
+const stageProcessingId = STAGE_PROCESSING;
 
-    newCandidate.stages = newStage._id; // Сохраняем ID последнего этапа у кандидата
-    await newCandidate.save();
+if (stageNewId) {
+  await Stage.findByIdAndUpdate(
+    stageNewId,
+    { $push: { candidates: newCandidate._id } },
+    { new: true }
+  );
+}
 
-    const newTask1 = new Task({
-      taskName: 'Анкетирование', // Название задачи
-      description: 'Провести анкетирование кандидата', // Описание
-      status: 'не выполнена', // Статус задачи
-      stage: newStage._id, // Связь с этапом
-      candidate: newCandidate._id, // Связь с кандидатом
-      assignedTo: managerId, // Менеджер, ответственный за задачу
-      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 1 день)
-      appointed: managerId
-    });
-    
-    await newTask1.save(); // Сохраняем задачу 1
-    
-    // Задача 2: Подбор вакансии
-    const newTask2 = new Task({
-      taskName: 'Подбор вакансии', // Название задачи
-      description: 'Выбрать вакансии для кандидата', // Описание
-      status: 'не выполнена', // Статус задачи
-      stage: newStage._id, // Связь с этапом
-      candidate: newCandidate._id, // Связь с кандидатом
-      assignedTo: managerId, // Менеджер, ответственный за задачу
-      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Дата выполнения задачи (через 2 дня)
-      appointed: managerId
+if (stageProcessingId) {
+  await Stage.findByIdAndUpdate(
+    stageProcessingId,
+    { $push: { candidates: newCandidate._id } },
+    { new: true }
+  );
+}
 
-    });
-    
-    await newTask2.save();
     const eventLog = new EventLog({
       eventType: 'Добавлен кандидат',
       relatedId: newCandidate._id,
       manager: managerId,
       description: `Добавлен новый кандидат: ${name}`,
     });
-    console.log("EVENTLOG", eventLog)
+
     await eventLog.save();
     if (newCandidate.manager) {
       const manager = await Manager.findById(newCandidate.manager);
       if (manager) {
-        await Manager.findByIdAndUpdate(manager._id, { $addToSet: { candidates: newCandidate._id } });
+        await Manager.findByIdAndUpdate(manager._id, { $push: { candidates: { $each: [newCandidate._id], $position: 0 } } });
+        await Manager.findByIdAndUpdate(manager._id, { $push: { events: { $each: [eventLog._id], $position: 0 } } });
       }
     }
    

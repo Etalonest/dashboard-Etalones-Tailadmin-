@@ -7,6 +7,7 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  Calendar,
   Command,
   Frame,
   GalleryVerticalEnd,
@@ -68,7 +69,7 @@ const data = {
         { title: "Новые кандидаты", url: "/candidate/stage/new", icon: UserRoundPlus },
         { title: "Рекрутируются", url: "/candidate/stage/processing", icon: NotebookPen },
         { title: "На собеседовании", url: "/candidate/interview",icon: MailQuestion },
-        { title: "Прошли собеседования", url: "/candidate/stage/interviewPassed", icon: SmilePlus },
+        { title: "Прошли собеседования", url: "/candidate/interview/success", icon: SmilePlus },
         { title: "Отклонены", url: "/candidate/stage/interviewRejected", icon: Trash2 },
         { title: "На объекте", url: "/candidate/stage/onObject", icon: MapPinned },
         { title: "Корзина", url: "/candidate/stage/deleted", icon: Trash2 },
@@ -166,6 +167,25 @@ const data = {
           url: "#",
         },
        
+      ],
+    },
+    {
+      title: "События",
+      url: "/events",
+      icon: Calendar,
+      items: [
+        
+        // {
+        //   icon: SearchCheck,
+        //   title: "Менеджеров",
+        //   url: "/events",
+        // },
+        // {
+        //   icon: SearchCheck,
+        //   title: "Кандидатов",
+        //   url: "/search?tab=partner",
+        // },
+        
       ],
     },
   ],

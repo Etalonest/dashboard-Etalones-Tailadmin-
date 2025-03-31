@@ -51,18 +51,28 @@ export const POST = async (req: Request) => {
       manager: managerId,
       date: new Date(date),
       description: `Кандидат: ${candidate.name} отклонен после собеседования для вакансии "${vacancy.title}" в город ${vacancy.location}`,
-      comment, // Комментарий о причине отклонения
+      comment, 
     });
 
     await eventLog.save();
 
-    // Обновляем связанные записи с событием
     await Promise.all([
-      Candidate.updateOne({ _id: candidateId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
+      Candidate.updateOne({ _id: candidateId }, { $push: { stages: { $each: [STAGE_REJECTED], $position: 0 } } }),
+      Vacancies.updateOne(
+        { _id: vacancyId },
+        { $pull: { interviews: candidateId } }
+      ),
+      Manager.updateOne(
+        { _id: managerId },
+        { $pull: { candidateFromInterview: candidateId } }
+      ),
+      Manager.updateOne(
+        { _id: managerId },
+        { $push: { candidateRejected: { $each: [candidateId], $position: 0 } } }
+      ),
       Vacancies.updateOne({ _id: vacancyId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
-      Manager.updateOne({ _id: managerId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
-      Manager.updateOne({ _id: managerId }, { $push: { candidateRejected: {$each: [candidateId], $position: 0 } } }), // Добавляем в массив отклоненных кандидатов у менеджера
-      Manager.updateOne({ _id: vacancy.manager }, { $push: { candidateRejected: {$each: [candidateId], $position: 0 } } }) // Добавляем в массив отклоненных кандидатов у менеджера вакансии
+
+      Manager.updateOne({ _id: managerId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } })
     ]);
 
     return NextResponse.json({ success: true, message: "Candidate rejected", eventId: eventLog._id }, { status: 201 });

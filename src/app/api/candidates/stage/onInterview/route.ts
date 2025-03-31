@@ -56,6 +56,7 @@ export const POST = async (req: Request) => {
     await Promise.all([
         Candidate.updateOne({ _id: candidateId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
         Vacancies.updateOne({ _id: vacancyId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
+        Vacancies.updateOne({ _id: vacancyId }, { $push: { interviews: { $each: [candidateId], $position: 0 } } }),
         Manager.updateOne({ _id: managerId }, { $push: { events: { $each: [eventLog._id], $position: 0 } } }),
         Manager.updateOne({ _id: managerId }, { $push: { candidateFromInterview: {$each: [candidateId], $position: 0 } } }),
         Manager.updateOne({ _id: vacancy.manager }, { $push: { candidateFromInterview: {$each: [candidateId], $position: 0 } } })
