@@ -48,8 +48,8 @@ console.log("SelectedPartner index sidebarR", selectedPartner);
         return <EditPartnerForm partner={selectedPartner} onSubmitSuccess={closeSidebar} />;
       case "viewPartner":
         return <ViewPartnerForm partner={selectedPartner} />;
-      case "addVacancy":
-        return <AddVacancyForm  partners={partners}  />;
+      // case "addVacancy":
+      //   return <AddVacancyForm  partners={partners}  />;
       case "editVacancy":
         return <EditVacancyForm vacancy={selectedVacancy} onSubmitSuccess={closeSidebar} />;
         case "viewVacancy":
