@@ -391,7 +391,7 @@ export default function TestPage(data: any) {
           onChange={handleStageChange}
           className="ml-auto"
         >
-          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL_CANDIDATES}>Все кандидаты</option>
+          <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL}>Все кандидаты</option>
           <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_NEW}>Новые</option>
           <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_IN_PROCESS}>В обработке</option>
           <option value={process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_INTERVIEW}>На собеседовании</option>

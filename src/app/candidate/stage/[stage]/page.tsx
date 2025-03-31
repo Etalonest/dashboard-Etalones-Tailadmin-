@@ -1,7 +1,7 @@
 import CandidatePage from "../../page"; 
 
 const STAGE_MAP: Record<string, string> = {
-  all: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL_CANDIDATES!,
+  all: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL!,
   new: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_NEW!,
   processing: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_PROCESSING!,
   interview: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_INTERVIEW!,

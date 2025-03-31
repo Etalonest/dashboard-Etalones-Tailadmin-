@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: any) {
   const managerId = params; // Правильный способ получения ID менеджера из параметров
-  const stageId = process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL_CANDIDATES; // Получаем ID стадии из переменной окружения
+  const stageId = process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ALL; // Получаем ID стадии из переменной окружения
   try {
     // Проверяем, что переменная окружения для stageId не пуста
     if (!stageId) {
