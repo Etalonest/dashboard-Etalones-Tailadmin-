@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { Candidate } from '@/src/types/candidate';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import EventsCandidate from '../../Events/EventsCandidate';
+import { Label } from '@/components/ui/label';
 
 const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
   console.log("Rendering ViewCandidateForm with candidate:", candidate);
@@ -16,7 +18,7 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
   return (
     <div className='grid grid-cols-3 gap-5 mx-auto w-full'>
       <Card className='col-span-2'>
-      <div className='w-full text-center'>тут новый бллок</div>
+      
         <div className='flex items-center justify-around m-5 w-full'>
         <div className='flex items-center justify-around m-5'>
           <Image src={candidate.avatar || "/images/logo/logo-red.png"} alt="candidate" width={150} height={150} />
@@ -168,8 +170,11 @@ const ViewCandidateForm = ({ candidate }: { candidate: Candidate | null }) => {
               <p>Задачи не указаны</p>
             )}
           </div>
+          
         </CardContent>
-
+        <div className='w-full'>
+            <Label className='text-xl font-bold my-2'>События</Label>
+        <EventsCandidate candidate={candidate} /></div>
         <CardFooter className='flex flex-col justify-center items-end'>
           <div>Куратор: <strong>{candidate?.manager?.name || "Не указан"}</strong></div>
           <div>Контракт: <strong>{candidate?.manager?.phone || "Не указан"}</strong></div>

@@ -16,6 +16,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import CandidateVacancy from '@/src/components/CandidateVacancy/CandidateVacancy';
 
 const ViewVacancy = ({ vacancy }: any) => {
+    console.log("Vacancy in viewVacancy:", vacancy);
     const [vacancyH, setVacancyH] = useState<any>(vacancy || null);
     const [candidates, setCandidates] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);

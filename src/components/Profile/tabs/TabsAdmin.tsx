@@ -12,6 +12,7 @@ import { UsersTab } from "./UsersTab";
 import {CandidateTable} from "./CandidateTable/CandidateTable";
 import CandidatesInWork from "../../CandidatesInWork/CandidatesInWork";
 import TasksList from "../../tasksList/TasksList";
+import { CandidateTab } from "./CandidateTab";
 
 export function TabsAdmin() {
   const { session } = useSession(); 
@@ -30,7 +31,7 @@ export function TabsAdmin() {
       case "salles":
         return <SalesmanTab />;
       case "candidate":
-        return <CandidateTable />;
+        return <CandidateTab />;
       // case "candidateIsInWork":
       //   return <CandidatesInWork />;
       case "partner":

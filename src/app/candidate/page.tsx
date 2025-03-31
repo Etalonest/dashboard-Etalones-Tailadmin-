@@ -127,29 +127,30 @@ export default function CandidatePage(data: any) {
     }
   };
 
-  useEffect(() => {
-    setLoading(true);
-    fetchCandidates(); 
-  }, [stageId]);
+   // Add fetchCandidates here
+  
   // Функция для загрузки кандидатов по stageId
-  const fetchCandidates = async () => {
-    try {
-      const response = await fetch(`/api/testApi/stages?stageId=${stageId}`);
-      const data = await response.json();
-      if (response.ok) {
-        setCandidates(data);
-      } else {
-        setError("Ошибка при загрузке кандидатов");
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const response = await fetch(`/api/testApi/stages?stageId=${stageId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setCandidates(data);
+        } else {
+          setError("Ошибка при загрузке кандидатов");
+        }
+      } catch (err) {
+        setError("Произошла ошибка при запросе");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError("Произошла ошибка при запросе");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-
+    };
+    
+    setLoading(true);
+    fetchCandidates();
+  }, [stageId]); // только зависимость от stageId
+  
   
 
   // Структура колонок для таблицы

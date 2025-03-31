@@ -6,6 +6,7 @@ const STAGE_MAP: Record<string, string> = {
   processing: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_PROCESSING!,
   interview: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_INTERVIEW!,
   interviewPassed: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_INTERVIEW_SUCCESS!,
+  interviewRejected: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_REJECTED!,
   onObject: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_ON_OBJECT!,
   deleted: process.env.NEXT_PUBLIC_CANDIDATES_STAGE_DELETED!,
 };

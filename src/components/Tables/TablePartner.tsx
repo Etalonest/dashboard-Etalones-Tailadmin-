@@ -1,6 +1,6 @@
 import { Eye, UserCog, UserRoundPlus } from "lucide-react";
 import { Partner } from '@/src/types/partner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import SidebarRight from '../SidebarRight';
 import { useSession } from '@/src/context/SessionContext';
 import {
@@ -32,33 +32,32 @@ const TablePartner = () => {
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
   const partnersPerPage = 10;
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]); // состояние для выбранных групп
-  const groupedPartners = filteredPartners.reduce((acc, partner) => {
-    const status = partner.status || "Без статуса";
-    if (!acc[status]) {
-      acc[status] = [];
-    }
-    acc[status].push(partner);
-    return acc;
-  }, {} as Record<string, Partner[]>);
+  const groupedPartners = useMemo(() => {
+    return filteredPartners.reduce((acc, partner) => {
+      const status = partner.status || "Без статуса";
+      if (!acc[status]) {
+        acc[status] = [];
+      }
+      acc[status].push(partner);
+      return acc;
+    }, {} as Record<string, Partner[]>);
+  }, [filteredPartners]);
+  
 
+  const filteredPartnersMemo = useMemo(() => {
+    return partners.filter((partner) => {
+      const lowerCaseSearch = searchQuery.toLowerCase();
+      return (
+        (partner.name && partner.name.toLowerCase().includes(lowerCaseSearch)) ||
+        (partner.phone && partner.phone.toLowerCase().includes(lowerCaseSearch))
+      );
+    });
+  }, [searchQuery, partners]);
+  
   useEffect(() => {
-    if (partners && Array.isArray(partners)) {
-      const filtered = partners.filter((partner) => {
-        const lowerCaseSearch = searchQuery.toLowerCase();
-        return (
-          (partner.name && partner.name.toLowerCase().includes(lowerCaseSearch)) ||
-          (partner.phone && partner.phone.toLowerCase().includes(lowerCaseSearch))
-        );
-      });
-      // Обновляем состояние только в случае, если фильтры изменились
-      setFilteredPartners((prevFiltered) => {
-        if (JSON.stringify(prevFiltered) !== JSON.stringify(filtered)) {
-          return filtered;
-        }
-        return prevFiltered;
-      });
-    }
-  }, [searchQuery, partners]);  // Убедитесь, что зависимость 'partners' не вызывает лишних рендеров
+    setFilteredPartners(filteredPartnersMemo);
+  }, [filteredPartnersMemo]);
+   // Убедитесь, что зависимость 'partners' не вызывает лишних рендеров
   
 
   // Обновляем фильтрацию на основе выбранных групп

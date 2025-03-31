@@ -23,7 +23,7 @@ const SidebarRight: React.FC = () => {
     selectedVacancy,
     selectedProfession,
   } = useSidebarR();
-  console.log('SelectedCandidate index sidebarR', selectedCandidate);
+console.log('SelectedCandidate index sidebarR', selectedCandidate);
 console.log("SelectedVacancy index sidebarR", selectedVacancy);
 console.log("SelectedPartner index sidebarR", selectedPartner);
   const closeSidebar = () => {

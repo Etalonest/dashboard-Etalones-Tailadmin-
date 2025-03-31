@@ -22,11 +22,15 @@ export const GET = async (request: NextRequest) => {
     // Получаем документ этапа из коллекции Stage
     const stage = await Stage.findById(stageId).populate({
       path: 'candidates',
-      select: '',
-      populate: {
+      populate: [{
         path: 'manager',  
         select: 'name',
-      }
+      },
+      {
+        path: 'events',
+        select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
+      },
+    ]
     })
 
     // Если этап не найден, возвращаем ошибку

@@ -58,6 +58,7 @@ import { DrawerBody } from "@/src/components/Drawer/DrawerBody/DrawerBodyToInter
 import { useSession } from "@/src/context/SessionContext";
 import { VacancyType } from "@/src/types/vacancy";
 import { set } from "mongoose";
+import { ca } from "date-fns/locale";
 export default function CandidatesInterview({ data }: { data: Candidate[] }) {
   const { session } = useSession();
   const { toast } = useToast()
@@ -214,7 +215,7 @@ export default function CandidatesInterview({ data }: { data: Candidate[] }) {
           let eventVacancyLocation = "Нет места"; 
       
           if (Array.isArray(events) && events.length > 0) {
-            const lastEvent = events[events.length - 1]; // Получаем последнее событие
+            const lastEvent = events[0]; 
             if (lastEvent?.vacancy) {
               eventVacancy = lastEvent.vacancy?.title || "Вакансия не указана";
               eventVacancyLocation = lastEvent.vacancy?.location || "Место не указано";
@@ -328,9 +329,9 @@ export default function CandidatesInterview({ data }: { data: Candidate[] }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} >Посмотреть кандидата</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("viewVacancy", candidate.events[0].vacancy)} >Посмотреть вакансию</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("viewVacancy", candidate?.events[0]?.vacancy)} >Посмотреть вакансию</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} disabled={loading}>Редактировать</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} >Редактировать</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
     if (candidate._id) {
@@ -338,15 +339,15 @@ export default function CandidatesInterview({ data }: { data: Candidate[] }) {
     } else {
       console.error("Candidate ID is missing");
     }
-  }} disabled={loading}>Удалить</DropdownMenuItem>
+  }} >Удалить</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>Выберите результат собеседования по вакансии "" для кандидптп {candidate.name}?</DrawerTitle>
+            <DrawerTitle><p>Выберите результат собеседования по вакансии &quot;{candidate?.events[0]?.vacancy?.title}&quot; для кандидптп {candidate.name}?</p></DrawerTitle>
             <DrawerDescription>Город зарплата</DrawerDescription>
           </DrawerHeader>
-          <DrawerBody candidate={candidate} managerId={session?.managerId} />
+          <DrawerBody candidate={candidate} managerId={session?.managerId} vacancy={candidate?.events[0]?.vacancy} />
           <DrawerFooter >
             <DrawerClose asChild>
               <Button variant="outline">Отмена</Button>
@@ -380,7 +381,7 @@ export default function CandidatesInterview({ data }: { data: Candidate[] }) {
   });
   const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate' | 'viewVacancy', candidate?: Candidate, ) => {
     setFormType(type);
-    const selectedVacancy = candidate && candidate.events && candidate.events.length > 0 ? candidate.events[0].vacancy : null;
+    const selectedVacancy =  candidate?.events[0].vacancy as VacancyType;
     setSelectedVacancy(selectedVacancy);
     setSelectedCandidate(candidate || null);
     setSidebarROpen(true);

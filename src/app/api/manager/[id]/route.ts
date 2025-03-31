@@ -96,16 +96,14 @@ export async function GET(request: Request, { params }: any) {
       console.log("Подключение к базе данных успешно выполнено.");
 
       const manager = await Manager.findById(id)
+      .populate('events')
       .populate({
         path: 'candidates',
         options: { sort: { updatedAt: -1 } },
         populate: [
           {
-            path: 'statusWork',
-            populate: {
-              path: '',
-              select: ''
-            }
+            path: 'events',
+            select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
           },
           {
             path: 'documents',

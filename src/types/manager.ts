@@ -1,6 +1,7 @@
 // src/types/manager.ts
 import { Candidate } from "./candidate";
 import { Partner } from "./partner";
+import { Events } from "./events";
 // Тип для изображения менеджера
 export interface ManagerImage {
     name: string;
@@ -51,6 +52,7 @@ export interface ManagerImage {
     partners?: Partner[];
     vacancy?: IdReference[];
     onSite?: boolean;
+    events?: Events[];
     tasks?: IdReference[];
     role?: string;
   }

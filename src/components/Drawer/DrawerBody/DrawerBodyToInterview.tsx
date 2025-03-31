@@ -101,7 +101,7 @@ export function DrawerBody({ candidate, managerId }: { candidate: any; managerId
       {selectedVacancy && (
         <form className="p-4 border rounded-md" onSubmit={handleSubmit}>
           <p className="text-lg font-semibold">
-            Вы хотите отправить кандидата {candidate?.name} на собеседование по вакансии "{selectedVacancy.title}" в город {selectedVacancy.location}?
+            Вы хотите отправить кандидата {candidate?.name} на собеседование по вакансии &quot;{selectedVacancy.title}&quot; в город {selectedVacancy.location}?
           </p>
           <p className="text-sm text-gray-600">
             Куратор: {selectedVacancy.manager?.name}
