@@ -2,7 +2,7 @@
 
  import { useSession } from "@/src/context/SessionContext";
 import { useManager } from "@/src/context/ManagerContext";
-import CandidatesInterview from "../../CandidatesInterview/CandidatesInterview";
+import CandidatesTable from "./CandidateTable/CandidateTable";
 
   export function CandidateTab() {
 const { session } = useSession();
@@ -11,7 +11,7 @@ const candidates = manager?.candidates || [];
 if (session?.managerRole && ['recruiter', 'manager', 'admin'].includes(session.managerRole)) {
 
     return (
-    <CandidatesInterview data={candidates} />
+    <CandidatesTable data={candidates} />
     )
   }
 }

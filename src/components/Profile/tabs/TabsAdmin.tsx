@@ -9,7 +9,6 @@ import { ManagersTab } from "./ManagerTab";
 import { useSession } from "@/src/context/SessionContext";
 import { useManagers } from "@/src/context/ManagersContext";
 import { UsersTab } from "./UsersTab";
-import {CandidateTable} from "./CandidateTable/CandidateTable";
 import CandidatesInWork from "../../CandidatesInWork/CandidatesInWork";
 import TasksList from "../../tasksList/TasksList";
 import { CandidateTab } from "./CandidateTab";
