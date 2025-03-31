@@ -9,7 +9,6 @@ import {
   Bot,
   Command,
   Frame,
-  Frown,
   GalleryVerticalEnd,
   MailQuestion,
   Map,
@@ -41,6 +40,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useSession } from "@/src/context/SessionContext";
 import { signOut } from "next-auth/react"
+import { useEffect, useState } from "react";
 
 // This is sample data.
 const data = {
@@ -67,9 +67,9 @@ const data = {
         { title: "Все кандидаты", url: "/candidate/stage/all" },
         { title: "Новые кандидаты", url: "/candidate/stage/new", icon: UserRoundPlus },
         { title: "Рекрутируются", url: "/candidate/stage/processing", icon: NotebookPen },
-        { title: "На собеседовании", url: "/candidate/interview",icon: MailQuestion },
+        { title: "На собеседовании", url: "/candidate/stage/interview",icon: MailQuestion },
         { title: "Прошли собеседования", url: "/candidate/stage/interviewPassed", icon: SmilePlus },
-        { title: "Не прошли собеседования", url: "/candidate/stage/interviewRejected", icon: Frown },
+        { title: "Отклонены", url: "/candidate/stage/interviewRejected", icon: Trash2 },
         { title: "На объекте", url: "/candidate/stage/onObject", icon: MapPinned },
         { title: "Корзина", url: "/candidate/stage/deleted", icon: Trash2 },
       ],
@@ -104,7 +104,7 @@ const data = {
       items: [
         {
           title: "Все вакансии",
-          url: "/vacancy/all",
+          url: "#",
         },
         {
           title: "Актуальные вакансии",
@@ -194,6 +194,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { session } = useSession(); 
   const managerRole = session?.managerRole || "";
   const isCandidateSection = pathname.startsWith("/candidate");
+  const [candidateCounts, setCandidateCounts] = useState({
+    newCandidatesCount: 0,
+    inProcessCandidatesCount: 0,
+    interviewCandidatesCount: 0,
+    onObjectCount: 0,
+    interviewRejectedCount: 0,
+    
+  });
+  useEffect(() => {
+    const fetchCandidateCounts = async () => {
+      try {
+        const response = await fetch('/api/candidates/count');
+        const data = await response.json();
+  
+        console.log('Полученные данные кандидатов:', data);  
+  
+        setCandidateCounts({
+          newCandidatesCount: data['Новые кандидаты'] || 0,
+          inProcessCandidatesCount: data['В обработке'] || 0,
+          interviewCandidatesCount: data['На собеседовании'] || 0,
+          onObjectCount: data['На объекте'] || 0,
+          interviewRejectedCount: data['Отклонены'] || 0,
+        });
+        
+      } catch (error) {
+        console.error('Ошибка при получении данных кандидатов:', error);
+      }
+    };
+  
+    fetchCandidateCounts();
+  }, []);
+  
   const handleLogout = async () => {
       await signOut();
       router.push('/auth/signin');
@@ -201,10 +233,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const filteredNavMain = data.navMain.map((category) => ({
       ...category,
       isActive: category.title === "Кандидаты" ? isCandidateSection : false, 
-      items: category.items.filter((item) => 
-        item.title !== "Корзина" || managerRole === "admin"
-      ),
+      items: category.items.map((item) => {
+        if (item.title === "Новые кандидаты") {
+          return { ...item, badge: candidateCounts.newCandidatesCount };
+        }
+        if (item.title === "Рекрутируются") {
+          return { ...item, badge: candidateCounts.inProcessCandidatesCount };
+        }
+        if (item.title === "На собеседовании") {
+          return { ...item, badge: candidateCounts.interviewCandidatesCount };
+        }
+        if (item.title === "Прошли собеседования") {
+          return { ...item, badge: candidateCounts.interviewCandidatesCount };
+        }
+        if (item.title === "На объекте") {
+          return { ...item, badge: candidateCounts.onObjectCount };
+        }
+        if (item.title === "Отклонены") {
+          return { ...item, badge: candidateCounts.interviewRejectedCount };
+        }
+        return item;
+      }),
     }));
+    
+    console.log('filteredNavMain:', filteredNavMain);  // Логирование отфильтрованных данных
+    
+    // const filteredNavMain = data.navMain.map((category) => ({
+    //   ...category,
+    //   isActive: category.title === "Кандидаты" ? isCandidateSection : false, 
+    //   items: category.items.filter((item) => 
+    //     item.title !== "Корзина" || managerRole === "admin"
+    //   ),
+    // }));
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -212,7 +272,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavMain} />
-        {/* <NavProjects projects={data.projects} /> */}
+        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser session={session} logout={handleLogout}  />
