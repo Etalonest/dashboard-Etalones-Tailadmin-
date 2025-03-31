@@ -17,22 +17,23 @@ import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
 import FirebaseImageUpload from "../../UploadForm/UploadForm";
 import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseImagesUpload";
+import { Partner } from "@/src/types/partner";
+import { PartnerSelect } from "./PartnerSelect";
+import { se } from "date-fns/locale";
 
-interface AddVacancyFormProps {
-  profession: any;  // Получаем профессию
-  partner: any;
-  onSubmitSuccess: () => void;
-}
 
-const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyFormProps) => {
+
+const AddVacancyForm = ({ partners }: any) => {
   const { session } = useSession();
   const { manager } = useManager();  
-  const partnerId = profession?._id || '';
   const managerId = session?.managerId || '';
   const { addNotification } = useNotifications();
-  const [selectedDrive, setSelectedDrive] = useState(partner?.drivePermis || []);
-  const [selectLangues, setSelectLangues] = useState(partner?.langue || []);
-  const [selectDocs, setSelectDocs] = useState(partner?.pDocs || []);
+  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+  const [selectedProfession, setSelectedProfession] = useState<any | null>(null);
+  const [vacancyTitle, setVacancyTitle] = useState<string>("");
+  const [selectedDrive, setSelectedDrive] = useState(selectedProfession?.drivePermis || []);
+  const [selectLangues, setSelectLangues] = useState(selectedProfession?.langue || []);
+  const [selectDocs, setSelectDocs] = useState(selectedProfession?.pDocs || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
 
@@ -98,6 +99,17 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
   const getDocsDataForSubmit = () => {
     return selectDocs;
   };
+
+  const handleSelect = (partner: Partner, profession: any) => {
+    console.log("Родительский компонент: полученные данные");
+    console.log("Партнёр:", partner);
+    console.log("Профессия:", profession);
+    setSelectedPartner(partner);
+    setSelectedProfession(profession);
+    setVacancyTitle(profession.name); // Обновляем название вакансии
+  };
+
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();    
     const formData = new FormData(event.target);
@@ -105,7 +117,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
     const languesData = getLanguesDataForSubmit();
     const docsData = getDocsDataForSubmit();
     formData.append('imageUrl', selectedImage || '');
-    formData.append('partnerId', partnerId);
+    formData.append('partnerId', selectedPartner?._id || '');
     formData.append('managerId', managerId);
     formData.append('homeImageUrl', JSON.stringify(imagesCarousel)); 
     formData.append('drivePermis', JSON.stringify(driveData));
@@ -129,7 +141,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           type: 'success',
           id: uuidv4Original(),
         });
-        onSubmitSuccess();
+        
       }
 
       if (data.error) {
@@ -146,9 +158,10 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
   };
   return (
     <Card className="m-4">
+      <PartnerSelect partners={partners}  onSelect={handleSelect} />
+
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <div>Добавить вакансию для {profession?.name}</div>
           <div className="flex gap-2">
             <div className="text-green-800 flex gap-2 justify-center items-center">
             <Label className="text-green-800">Вакансия на сайте</Label>
@@ -175,49 +188,49 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           <div>
             <div>
               <Label>Название вакансии:</Label>
-              <Input type="text" defaultValue={partner?.name} name="title"
+              <Input type="text" defaultValue={vacancyTitle|| ''} name="title"
                 className="font-bold" />
             </div>
             <div>
               <Label>Место работы:</Label>
-              <Input type="text" name="location" defaultValue={partner?.location} />
+              <Input type="text" name="location" defaultValue={selectedProfession?.location} />
             </div>
             <div>
               <Label>Стоимость проживания:</Label>
-              <Input type="text" name="homePrice" defaultValue={partner?.rentPrice} />
+              <Input type="text" name="homePrice" defaultValue={selectedProfession?.rentPrice} />
             </div>
             <div>
               <Label>Зарплата:</Label>
-              <Input type="text" name="salary" defaultValue={partner?.salary} />
+              <Input type="text" name="salary" defaultValue={selectedProfession?.salary} />
             </div>
             <div>
               <Label>Знание языков</Label>
                     <CMultiSelect options={languesData} placeholder={'Выберите языки'}
-                      value={partner?.langue || []}
+                      value={selectedProfession?.langue || []}
                       onChange={handleLangueChange} 
                       />
                   </div> 
              <div>
               <Label>Подходящие документы</Label>
                     <CMultiSelect options={documentsOptions} placeholder={'Выберите документы'}
-                      value={partner?.pDocs || []}
+                      value={selectedProfession?.pDocs || []}
                       onChange={handleDocsChange}
                       />
                   </div> 
                   <div>
               <Label>Водительское удостоверение</Label>
                     <CMultiSelect options={drivePermisData} placeholder={'Выбериите категории'}
-                      value={partner?.drivePermis || []}
+                      value={selectedProfession?.drivePermis || []}
                       onChange={handleDriveChange} 
                       />
                   </div>
                   <div>
               <Label>Свободные места:</Label>
-              <Input type="number" name="place" defaultValue={partner?.place} />
+              <Input type="number" name="place" defaultValue={selectedProfession?.place} />
             </div>
             <div>
               <Label>Потенциал объекта:</Label>
-              <Input type="text" name="workHours" defaultValue={partner?.workHours} />
+              <Input type="text" name="workHours" defaultValue={selectedProfession?.workHours} />
             </div>
             <div>
               <Label>График:</Label>
@@ -229,20 +242,20 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
           <div className="flex flex-col gap-7 h-full">
           <div>
               <Label>Навыки:</Label>
-              <Textarea  name="skills" defaultValue={partner?.skills} />
+              <Textarea  name="skills" defaultValue={selectedProfession?.skills} />
             </div>
           <div>
               <Label>Короткое описание вакансии:</Label>
-              <Textarea  name="roof_type" defaultValue={partner?.roof_type}
+              <Textarea  name="roof_type" defaultValue={selectedProfession?.roof_type}
                 className="font-bold" />
             </div>
             <div className="h-full">
             <Label>Описание работы:</Label>
-            <Textarea className="h-full" name="work_descr" defaultValue={partner?.workdescr} />
+            <Textarea className="h-full" name="work_descr" defaultValue={selectedProfession?.workdescr} />
             </div>
             <div className="h-full">
             <Label>Описание условий проживания:</Label>
-            <Textarea className="h-full" name="home_descr" defaultValue={partner?.workdescr} />
+            <Textarea className="h-full" name="home_descr" defaultValue={selectedProfession?.workdescr} />
             </div>
           </div>
           <div className="flex justify-start flex-col gap-2">
@@ -255,7 +268,7 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
              alt={""} width={450} height={300} 
              className="rounded-md max-h-max" /> */}
                    <div className="flex justify-start flex-col gap-2">
-            <FirebaseImageUpload onImageUpload={handleImageUpload} city={partner?.location} jobTitle={partner?.name} />
+            <FirebaseImageUpload onImageUpload={handleImageUpload} city={selectedProfession?.location} jobTitle={selectedProfession?.name} />
             {selectedImage && (
               <Image src={selectedImage} alt="Selected Image" width={450} height={300} className="rounded-md" />
             )}
@@ -266,8 +279,8 @@ const AddVacancyForm = ({ profession, partner, onSubmitSuccess }: AddVacancyForm
             {/* <Input type="file" multiple name="homeImages" className="col-span-2" 
             onChange={handleImageCarouselChange}/> */}
             <FirebaseImagesUpload
-              city={partner?.location} 
-              jobTitle={partner?.name}  
+              city={selectedProfession?.location} 
+              jobTitle={selectedProfession?.name}  
               onImagesUpload={handleImagesUpload}  
             />
 

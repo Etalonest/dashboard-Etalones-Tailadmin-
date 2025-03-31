@@ -10,8 +10,8 @@ interface ManagerContextType {
   candidates: any[];  
   candidateFromInterview?: any[];
   setCandidates: (candidates: any[]) => void;
-  partner: any[];
-  setPartner: (partner: any[]) => void;
+  partners: Partner[];
+  setPartners: (partners: any[]) => void;
   isLoading: boolean;  // Индикатор загрузки
   error: string | null;  // Ошибка
 }
@@ -22,7 +22,7 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [manager, setManager] = useState<Manager | null>(null);
   const [candidates, setCandidates] = useState<any[]>([]); 
   const [candidateFromInterview, setCandidateFromInterview] = useState<any[]>([]);
-  const [partner, setPartner] = useState<any[]>([]); // Состояние для партнеров
+  const [partners, setPartners] = useState<Partner[]>([]); // Состояние для партнеров
   const [isLoading, setIsLoading] = useState<boolean>(false);  // Индикатор загрузки
   const [error, setError] = useState<string | null>(null);  // Ошибка при загрузке данных
   const { session } = useSession();
@@ -48,7 +48,7 @@ console.log("candidateFromInterview", candidateFromInterview);
           setManager(data.manager);  // Сохраняем данные менеджера
           setCandidates(data.manager.candidates || []); 
           setCandidateFromInterview(data.manager.candidateFromInterview || []);
-          setPartner(data.manager.partner);
+          setPartners(data.manager.partners);
         }
       } catch (error) {
         console.error('Error fetching manager:', error);
@@ -62,7 +62,7 @@ console.log("candidateFromInterview", candidateFromInterview);
   }, [managerId]);
 
   return (
-    <ManagerContext.Provider value={{ manager, setManager, candidates, candidateFromInterview, setCandidates, partner, setPartner, isLoading, error }}>
+    <ManagerContext.Provider value={{ manager, setManager, candidates, candidateFromInterview, setCandidates, partners, setPartners, isLoading, error }}>
       {children}
     </ManagerContext.Provider>
   );

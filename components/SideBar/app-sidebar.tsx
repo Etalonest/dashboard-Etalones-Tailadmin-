@@ -135,12 +135,12 @@ const data = {
         {
           icon: Plus,
           title: "Партнёра",
-          url: "#",
+          url: "/partner/add",
         },
         {
           icon: Plus,
           title: "Вакансию",
-          url: "#",
+          url: "/vacancy/add",
         },
        
       ],

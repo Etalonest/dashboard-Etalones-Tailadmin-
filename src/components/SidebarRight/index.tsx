@@ -49,7 +49,7 @@ console.log("SelectedPartner index sidebarR", selectedPartner);
       case "viewPartner":
         return <ViewPartnerForm partner={selectedPartner} />;
       case "addVacancy":
-        return <AddVacancyForm profession={selectedProfession} partner={selectedPartner} onSubmitSuccess={closeSidebar} />;
+        return <AddVacancyForm  partners={partners}  />;
       case "editVacancy":
         return <EditVacancyForm vacancy={selectedVacancy} onSubmitSuccess={closeSidebar} />;
         case "viewVacancy":
