@@ -99,9 +99,10 @@ const ViewVacancy = ({ vacancy }: any) => {
                                 ))}
                             </Card>
                         </div>
+                        <div className="flex flex-col"> …
                         <div className="mt-8 col-span-2 flex gap-10 justify-center">
                             <div>
-                                <Label>Зароботная плата</Label>
+                                <Label>Заработная плата</Label>
                                 <div className="flex gap-2 items-center">
                                     <HandCoins />
                                     <span className="text-2xl font-bold">{vacancyH.salary}</span>
@@ -109,13 +110,23 @@ const ViewVacancy = ({ vacancy }: any) => {
                                 </div>
                             </div>
                         </div>
+                        <div className="mt-8 col-span-2 flex gap-10 justify-center">
+                            <div>
+                                <Label>Проживание</Label>
+                                <div className="flex gap-2 items-center">
+                                    <HandCoins />
+                                    <span className="text-2xl font-bold">{vacancyH.homePrice}</span>
+                                    <span className="text-sm text-gray-600">НЕТТО</span>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
                         <Image src={vacancyH.imageFB || "/images/logo/logo-red.png"}
                             alt="Фото вакансии" width={350} height={200}
-                            className="rounded-md max-h-max" />
+                            className="rounded-md max-h-max absolute top-3 right-3" />
                     </div>
-
                     <div className="grid grid-cols-3 gap-10">
-                        <div className="col-span-2">
+                        <div >
                             <Label className="text-xl font-bold my-2">О работе</Label>
                             {vacancyH.work_descr?.split(';').map((item: string, index: number) => (
                                 <div key={index} className="flex gap-2 justify-start items-start my-1">
@@ -123,8 +134,28 @@ const ViewVacancy = ({ vacancy }: any) => {
                                 </div>
                             ))}
                         </div>
+                        <div>
+                            <Label className="text-xl font-bold my-2">Быт</Label>
+                            {vacancyH.home_descr?.split(';').map((item: string, index: number) => (
+                                <div key={index} className="flex gap-2 justify-start items-start my-1">
+                                    <Minus className="w-5 h-5 mt-0.5 flex-shrink-0" /> {item}
+                                </div>
+                            ))}
                     </div>
+                    <div>
+  {vacancyH.grafik && vacancyH.grafik.trim() !== '' && (
+    <>
+      <Label className="text-xl font-bold my-2">График</Label>
+      {vacancyH.grafik.split(';').map((item: string, index: number) => (
+        <div key={index} className="flex gap-2 justify-start items-start my-1">
+          <Minus className="w-5 h-5 mt-0.5 flex-shrink-0" /> {item}
+        </div>
+      ))}
+    </>
+  )}
+</div>
 
+                    </div>
                     {vacancyH.homeImageFB && (
                         <div>
                             <Label className="text-xl font-bold my-2">Фото жилья</Label>

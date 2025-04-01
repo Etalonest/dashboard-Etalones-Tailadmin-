@@ -105,7 +105,7 @@ const data = {
       items: [
         {
           title: "Все вакансии",
-          url: "#",
+          url: "/vacancy/all",
         },
         {
           title: "Актуальные вакансии",
