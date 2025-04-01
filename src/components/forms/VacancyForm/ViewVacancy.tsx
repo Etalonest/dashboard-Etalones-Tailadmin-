@@ -200,7 +200,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                     </div>
                 </CardFooter>
 
-                <CandidateVacancy candidates={candidates} />
+                {/* <CandidateVacancy candidates={candidates} /> */}
             </Card>
         </div>
     );
