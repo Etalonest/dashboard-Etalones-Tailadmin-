@@ -9,7 +9,7 @@ import { VacancyType } from "@/src/types/vacancy";
 import { MapPinned, HandCoins, HousePlus } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export function DrawerBody({ candidate, managerId }: { candidate: any; managerId: any }) {
+export function DrawerBody({ candidate, managerId}: { candidate: any; managerId: any;}) {
   const { toast } = useToast()
   const [vacancies, setVacancies] = useState<VacancyType[]>([]); 
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyType | null>(null);

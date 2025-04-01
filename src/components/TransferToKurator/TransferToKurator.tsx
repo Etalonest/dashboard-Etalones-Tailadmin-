@@ -7,6 +7,7 @@ import {
     DrawerClose,
     DrawerContent,
     DrawerDescription,
+    DrawerFooter,
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger,
@@ -18,13 +19,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useSession } from "@/src/context/SessionContext";
+import { useSidebarR } from "@/src/context/SidebarRContext";
+import { VacancyType } from "@/src/types/vacancy";
+import { DrawerBody } from "../Drawer/DrawerBody/DrawerBodyToInterview";
 const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
     const { session } = useSession();
+    const { 
+        setSelectedVacancy,
+        setSidebarROpen,
+        setFormType,
+     } = useSidebarR();
     const appointed = session?.managerId ?? 'defaultManagerId';
     const [filteredVacancies, setFilteredVacancies] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [vacanciesCache, setVacanciesCache] = useState<any[]>([]); 
-    const [selectedVacancy, setSelectedVacancy] = useState<any | null>(null); // Состояние для выбранной вакансии
+    // const [selectedVacancy, setSelectedVacancy] = useState<any | null>(null); // Состояние для выбранной вакансии
     const [comment, setComment] = useState<string>(''); // Для комментария
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -69,41 +78,41 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
         fetchVacancies();
     }, [selectedProfessions, vacanciesCache]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
     
-        if (!selectedVacancy || !comment) {
-            alert("Пожалуйста, выберите вакансию и добавьте комментарий.");
-            return;
-        }
+    //     if (!selectedVacancy || !comment) {
+    //         alert("Пожалуйста, выберите вакансию и добавьте комментарий.");
+    //         return;
+    //     }
     
-        // Создаем объект FormData
-        const formData = new FormData();
-        formData.append('appointed', appointed); 
-        formData.append('status', 'in-progress'); // Статус
-        formData.append('responsible', selectedVacancy.manager._id); // Менеджер вакансии
-        formData.append('comment', comment); // Комментарий
-        formData.append('vacancy', selectedVacancy._id); // ID вакансии
-        formData.append('candidateId', candidate._id); // ID кандидата
+    //     // Создаем объект FormData
+    //     const formData = new FormData();
+    //     formData.append('appointed', appointed); 
+    //     formData.append('status', 'in-progress'); // Статус
+    //     formData.append('responsible', selectedVacancy.manager._id); // Менеджер вакансии
+    //     formData.append('comment', comment); // Комментарий
+    //     formData.append('vacancy', selectedVacancy._id); // ID вакансии
+    //     formData.append('candidateId', candidate._id); // ID кандидата
     
-        try {
-            const response = await fetch(`/api/candidates/${candidate._id}/stages/curator`, {
-                method: 'POST',
-                body: formData, 
-            });
+    //     try {
+    //         const response = await fetch(`/api/candidates/${candidate._id}/stages/curator`, {
+    //             method: 'POST',
+    //             body: formData, 
+    //         });
     
-            const data = await response.json();
-            if (data.message) {
-                alert('Кандидат успешно передан куратору!');
-                setIsDrawerOpen(false);
-            } else {
-                alert('Ошибка при передаче кандидата.');
-            }
-        } catch (error) {
-            console.error('Ошибка при отправке данных:', error);
-            alert('Ошибка при отправке данных.');
-        }
-    };
+    //         const data = await response.json();
+    //         if (data.message) {
+    //             alert('Кандидат успешно передан куратору!');
+    //             setIsDrawerOpen(false);
+    //         } else {
+    //             alert('Ошибка при передаче кандидата.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Ошибка при отправке данных:', error);
+    //         alert('Ошибка при отправке данных.');
+    //     }
+    // };
     
 
     const handleSelectVacancy = (vacancy: any) => {
@@ -134,6 +143,11 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
         } catch (error) {
             console.error(`Ошибка при ${action === 'like' ? 'ставлении лайка' : 'ставлении дизлайка'}:`, error);
         }
+    };
+    const toggleSidebar = (type:  'viewVacancy',vacancy:any ) => {
+        setFormType(type);
+        setSelectedVacancy(vacancy);
+        setSidebarROpen(true);
     };
     return (
         <div>
@@ -186,19 +200,33 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
 
                                   </Card>
                                 <div className="flex flex-col items-start h-full">
-                                    <Link href={`/vacancy/${vacancy._id}`} passHref target="blank"
+                                    {/* <Link href={`/vacancy/${vacancy._id}`} passHref target="blank"
                                     className="p-2 rounded-md bg-slate-100 text-black hover:bg-slate-200 mt-8"
-                                    >
-                                           <p> Посмотреть вакансию</p>
-                                    </Link>
+                                    > */}
+                                           <p onClick={() => toggleSidebar("viewVacancy", vacancy)}> Посмотреть вакансию</p>
+                                    {/* </Link> */}
                                     <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                                         <DrawerTrigger>
                                             <div className="p-2 rounded-md bg-slate-100 text-black hover:bg-slate-200 mt-8" onClick={() => handleSelectVacancy(vacancy)}>
                                                 Передать куратору
                                             </div>
                                         </DrawerTrigger>
-                                        <DrawerContent className="bg-black text-white h-[50%]">
-                                            <form onSubmit={handleSubmit}>
+                                        <DrawerContent>
+                                                  <DrawerHeader>
+                                                    <DrawerTitle><p>Выберите результат собеседования по вакансии &quot;{candidate?.events[0]?.vacancy?.title}&quot; для кандидптп {candidate.name}?</p></DrawerTitle>
+                                                    <DrawerDescription>Город зарплата</DrawerDescription>
+                                                  </DrawerHeader>
+                                                  <DrawerBody candidate={candidate} managerId={session?.managerId} />
+                                                  <DrawerFooter>
+                                                    <DrawerClose asChild>
+                                                      <Button variant="outline">Отмена</Button>
+                                                    </DrawerClose>
+                                                  </DrawerFooter>
+                                                </DrawerContent>
+                                        {/* <DrawerContent className="bg-black text-white h-[50%]">
+                                            <form 
+                                            // onSubmit={handleSubmit}
+                                            >
                                                 <DrawerHeader className="flex flex-col items-start justify-center">
                                                     <DrawerTitle className="flex justify-between items-center w-full">
                                                         <div>
@@ -224,7 +252,7 @@ const TransferToKurator = ({ selectedProfessions, candidate }: any) => {
                                                     <X size={18} color="red" />
                                                 </DrawerClose>
                                             </form>
-                                        </DrawerContent>
+                                        </DrawerContent> */}
                                     </Drawer>
                                 </div>
                             </div>

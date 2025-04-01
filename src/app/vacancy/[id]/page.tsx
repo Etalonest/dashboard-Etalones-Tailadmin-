@@ -22,7 +22,7 @@ const getVacancyById = async (id: string) => {
 // Страница вакансии
 export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
-
+console.log("Параметры GET", params);
   // Получаем вакансию на сервере
   const vacancy = await getVacancyById(id);
 

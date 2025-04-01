@@ -106,7 +106,7 @@ const PExx = () => {
       <h1>Upload Excel File</h1>
       <form onSubmit={handlePreview}>
         <input type="file" accept=".xlsx" onChange={handleFileChange} />
-        <button type="submit" disabled={loading}>
+        <button type="submit">
           Preview
         </button>
       </form>

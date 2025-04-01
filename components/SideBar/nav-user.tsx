@@ -86,12 +86,12 @@ export function NavUser({session, logout}: {
             </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+                <Link href="/profile"> 
               <DropdownMenuItem>
                 <BadgeCheck />
-                <Link href="/profile"> 
                 Профиль
-                </Link>
               </DropdownMenuItem>
+                </Link>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing

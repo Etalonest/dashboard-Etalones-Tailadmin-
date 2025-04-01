@@ -102,7 +102,7 @@ export default function CandidatePage(data: any) {
 
     try {
       // Отправляем запрос на удаление кандидата
-      const response = await fetch(`/api/testApi/${candidateIdToDelete}/dellete`, {
+      const response = await fetch(`/api/candidates/${candidateIdToDelete}/delete`, {
         method: 'POST',
       });
 
@@ -133,7 +133,7 @@ export default function CandidatePage(data: any) {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        const response = await fetch(`/api/testApi/stages?stageId=${stageId}`);
+        const response = await fetch(`/api/candidates/stages?stageId=${stageId}`);
         const data = await response.json();
         if (response.ok) {
           setCandidates(data);
@@ -353,9 +353,9 @@ export default function CandidatePage(data: any) {
       </DrawerTrigger>
 </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} disabled={loading}>Посмотреть</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} >Посмотреть</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} disabled={loading}>Редактировать</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} >Редактировать</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
     if (candidate._id) {
@@ -363,7 +363,7 @@ export default function CandidatePage(data: any) {
     } else {
       console.error("Candidate ID is missing");
     }
-  }} disabled={loading}>Удалить</DropdownMenuItem>
+  }} >Удалить</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <DrawerContent>
@@ -409,18 +409,15 @@ export default function CandidatePage(data: any) {
     setSidebarROpen(true); // Открытие сайдбара
   };
   return (
-    <div className="w-full">
-        <SidebarRight/>
+    <><div className="w-full">
+      <SidebarRight />
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-       
+          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+          className="max-w-sm" />
+
       </div>
       <div className="rounded-md border">
         <Table>
@@ -484,25 +481,27 @@ export default function CandidatePage(data: any) {
           </Button>
         </div>
       </div>
+      
       <div>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
-        <DialogContent className="w-[800px] p-4 flex flex-col justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <DialogHeader>
-            <DialogTitle>Вы уверены?</DialogTitle>
-            <DialogDescription className="w-2/3 text-start p-5">
-              Это действие нельзя будет отменить. Вы уверены, что хотите удалить этого кандидата?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex gap-2">
-            <Button variant="outline"  onClick={closeDialog}>Отмена</Button>
-            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} disabled={loading}>
-              {loading ? "Удаление..." : "Подтвердить"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="w-[800px] p-4 flex flex-col justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <DialogHeader>
+              <DialogTitle>Вы уверены?</DialogTitle>
+              <DialogDescription className="w-2/3 text-start p-5">
+                Это действие нельзя будет отменить. Вы уверены, что хотите удалить этого кандидата?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex gap-2">
+              <Button variant="outline" onClick={closeDialog}>Отмена</Button>
+              <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete}>
+                Удалить
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-     
+
     </div>
+    </>
   );
 }

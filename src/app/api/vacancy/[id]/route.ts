@@ -289,6 +289,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
     const { id } = params;
+    console.log("Параметры GET", params);
     await connectDB();
   
     const vacancy = await Vacancies.findById(id)

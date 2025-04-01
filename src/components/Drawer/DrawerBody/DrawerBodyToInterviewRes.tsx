@@ -40,7 +40,7 @@ export function DrawerBody({ candidate, managerId, vacancy }: { candidate: any; 
     if (response === 'negative') {
       requestBody.comment = reason; // Комментарий для отрицательного ответа
     }
-
+    console.log("Отправляемый запрос:", requestBody);
     try {
       const apiEndpoint = response === 'positive' 
         ? '/api/candidates/stage/onInterview/success'
@@ -63,7 +63,6 @@ export function DrawerBody({ candidate, managerId, vacancy }: { candidate: any; 
         variant: "destructive",
       });
 
-      // Сброс состояния после отправки данных
       setComment(""); // Очистить комментарий
       setResponse(null); // Очистить состояние выбора
       setArrivalDate(null); // Очистить дату

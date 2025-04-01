@@ -103,7 +103,7 @@ export default function CandidatesTable({ data }: { data: Candidate[] }) {
 
     try {
       // Отправляем запрос на удаление кандидата
-      const response = await fetch(`/api/testApi/${candidateIdToDelete}/dellete`, {
+      const response = await fetch(`/api/candidates/${candidateIdToDelete}/delete`, {
         method: 'POST',
       });
 
@@ -471,8 +471,8 @@ export default function CandidatesTable({ data }: { data: Candidate[] }) {
           </DialogHeader>
           <DialogFooter className="flex gap-2">
             <Button variant="outline"  onClick={closeDialog}>Отмена</Button>
-            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} disabled={loading}>
-              {loading ? "Удаление..." : "Подтвердить"}
+            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} >
+            Удалить
             </Button>
           </DialogFooter>
         </DialogContent>

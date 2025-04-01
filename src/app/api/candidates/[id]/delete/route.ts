@@ -49,8 +49,8 @@ export const POST = async (req: Request, { params }: any) => {
 
     // Удаляем кандидата из всех массивов у менеджеров
     for (let manager of managers) {
-      manager.candidates = manager.candidates.filter((cId: any) => cId.toString() !== id);
-      manager.interviewCandidates = manager.interviewCandidates.filter((cId: any) => cId.toString() !== id);
+      manager.candidates = manager?.candidates?.filter((cId: any) => cId.toString() !== id);
+      manager.candidateFromInterview = manager?.candidateFromInterview?.filter((cId: any) => cId.toString() !== id);
       await manager.save();
     }
 

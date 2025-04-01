@@ -89,7 +89,7 @@ export default function TestPage(data: any) {
 
     try {
       // Отправляем запрос на удаление кандидата
-      const response = await fetch(`/api/testApi/${candidateIdToDelete}/dellete`, {
+      const response = await fetch(`/api/candidate/${candidateIdToDelete}/delete`, {
         method: 'POST',
       });
 
@@ -332,9 +332,9 @@ export default function TestPage(data: any) {
   Copy candidate ID
 </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} disabled={loading}>Посмотреть</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} >Посмотреть</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} disabled={loading}>Редактировать</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} >Редактировать</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
     if (candidate._id) {
@@ -342,7 +342,7 @@ export default function TestPage(data: any) {
     } else {
       console.error("Candidate ID is missing");
     }
-  }} disabled={loading}>Удалить</DropdownMenuItem>
+  }} >Удалить</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -472,8 +472,8 @@ export default function TestPage(data: any) {
           </DialogHeader>
           <DialogFooter className="flex gap-2">
             <Button variant="outline"  onClick={closeDialog}>Отмена</Button>
-            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} disabled={loading}>
-              {loading ? "Удаление..." : "Подтвердить"}
+            <Button type="submit" className="bg-red-500 text-white" onClick={handleDelete} >
+            Удалить
             </Button>
           </DialogFooter>
         </DialogContent>
