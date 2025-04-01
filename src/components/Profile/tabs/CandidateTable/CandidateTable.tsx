@@ -328,8 +328,6 @@ export default function CandidatesTable({ data }: { data: Candidate[] }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => toggleSidebar("viewCandidate", candidate)} >Посмотреть кандидата</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleSidebar("viewVacancy", candidate?.events[0]?.vacancy)} >Посмотреть вакансию</DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => toggleSidebar("editCandidate", candidate)} >Редактировать</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => {
@@ -380,7 +378,7 @@ export default function CandidatesTable({ data }: { data: Candidate[] }) {
   });
   const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate' | 'viewVacancy', candidate?: Candidate, ) => {
     setFormType(type);
-    const selectedVacancy =  candidate?.events[0].vacancy as VacancyType;
+    const selectedVacancy =  candidate?.events[0]?.vacancy as VacancyType;
     setSelectedVacancy(selectedVacancy);
     setSelectedCandidate(candidate || null);
     setSidebarROpen(true);

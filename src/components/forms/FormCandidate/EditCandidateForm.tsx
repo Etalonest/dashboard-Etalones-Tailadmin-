@@ -62,6 +62,7 @@ const EditCandidateForm = ({ candidate,onSubmitSuccess }: any) => {
     handleChangePhone,
     handleChangeAge,
     handleChangeLocations,
+    handleChangeCitizenship
   } = useCandidateData(candidate);
   const [invitation, setInvitation] = useState({
     status: '',
@@ -206,7 +207,7 @@ const fetchProfessions = async () => {
   const handleDriveChange = (selected: string[]) => {
     setSelectDrive(selected);
   };
-
+  
   const addAdditionalPhone = () => {
     setAdditionalPhones([...additionalPhones, ""]);
   };
@@ -647,6 +648,7 @@ const fetchProfessions = async () => {
             </div>
             <Select label={'Гражданство'} id="citizenship" name="citizenship" placeholder='Выберите гражданство' 
             value={citizenship}
+            onChange={handleChangeCitizenship}
             options={citizenshipOptions} />
             <div>
             <Label>Местоположение</Label>

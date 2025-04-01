@@ -8,10 +8,10 @@ import SidebarRight from '../SidebarRight';
 const CandidateVacancy = ({ candidates }: { candidates: any[] }) => {
     const { setSidebarROpen, setFormType, setSelectedCandidate } = useSidebarR();
 
-    // Логируем список кандидатов, который поступает в компонент
     useEffect(() => {
-        console.log("Полученные кандидаты:", candidates);
-    }, [candidates]); // Выводим в лог каждый раз, когда кандидаты обновляются
+        console.log("Кандидаты в CandidateVacancy:", candidates);
+    }, [candidates]);
+    
 
     const toggleSidebar = (type: 'addCandidate' | 'editCandidate' | 'viewCandidate', candidate?: any) => {
         setFormType(type);

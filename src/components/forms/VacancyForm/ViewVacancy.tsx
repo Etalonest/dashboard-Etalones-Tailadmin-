@@ -19,22 +19,25 @@ const ViewVacancy = ({ vacancy }: any) => {
     console.log("Vacancy in viewVacancy:", vacancy);
     const [vacancyH, setVacancyH] = useState<any>(vacancy || null);
     const [candidates, setCandidates] = useState<any[]>([]);
+    console.log("Candidates in viewVacancy:", candidates);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Функция загрузки кандидатов
     const fetchCandidates = useCallback(async () => {
         if (!vacancyH?._id) return; // Если нет ID вакансии, не делаем запрос
-
+    
+        console.log("Начинаем загрузку кандидатов..."); // Лог до запроса
         setLoading(true);
         setError(null);
-
+    
         try {
             const response = await fetch(`/api/candidates/forVacancy?vacancyId=${vacancyH._id}`);
             if (!response.ok) throw new Error(`Ошибка API: ${response.statusText}`);
-
+    
             const data = await response.json();
-            setCandidates(data.candidates || []);
+            console.log("Полученные данные кандидатов:", data); // Лог данных после получения
+    
+            setCandidates(data.candidates);
         } catch (error) {
             setError('Ошибка при загрузке кандидатов');
             console.error('Ошибка при загрузке кандидатов:', error);
@@ -42,18 +45,18 @@ const ViewVacancy = ({ vacancy }: any) => {
             setLoading(false);
         }
     }, [vacancyH?._id]);
-
+    
     useEffect(() => {
-        if (vacancy) {
-            setVacancyH(vacancy);
-        }
-    }, [vacancy]);
-
-    useEffect(() => {
+        console.log("Обновление vacancyH:", vacancyH); // Логируем переменную vacancyH
         if (vacancyH?._id) {
             fetchCandidates();
         }
     }, [vacancyH, fetchCandidates]);
+    
+    useEffect(() => {
+        console.log("Обновление списка кандидатов в ViewVacancy:", candidates);
+    }, [candidates]); // Логируем, когда кандидаты обновляются
+    
 
     if (!vacancyH) {
         return <p className="text-center text-gray-500">Загрузка вакансии...</p>;
@@ -197,7 +200,7 @@ const ViewVacancy = ({ vacancy }: any) => {
                     </div>
                 </CardFooter>
 
-                {/* <CandidateVacancy candidates={candidates} /> */}
+                <CandidateVacancy candidates={candidates} />
             </Card>
         </div>
     );

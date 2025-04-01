@@ -39,7 +39,7 @@ const AddCandidateForm = ({onSubmitSuccess}: any) => {
   const [additionalPhones, setAdditionalPhones] = useState<string[]>([]);
   const [documentEntries, setDocumentEntries] = useState<DocumentEntry[]>([]);
   const [professionEntries, setProfessionEntries] = useState<Profession[]>([]);
-
+  
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhone(e.target.value);
