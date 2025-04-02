@@ -218,6 +218,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     newCandidatesCount: 0,
     inProcessCandidatesCount: 0,
     interviewCandidatesCount: 0,
+    interviewSuccessCount: 0,
     onObjectCount: 0,
     interviewRejectedCount: 0,
     
@@ -232,8 +233,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   
         setCandidateCounts({
           newCandidatesCount: data['Новые кандидаты'] || 0,
-          inProcessCandidatesCount: data['В обработке'] || 0,
+          inProcessCandidatesCount: data['Рекрутируются'] || 0,
           interviewCandidatesCount: data['На собеседовании'] || 0,
+          interviewSuccessCount: data['Прошли собеседование'] || 0,
           onObjectCount: data['На объекте'] || 0,
           interviewRejectedCount: data['Отклонены'] || 0,
         });
@@ -264,7 +266,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           return { ...item, badge: candidateCounts.interviewCandidatesCount };
         }
         if (item.title === "Прошли собеседования") {
-          return { ...item, badge: candidateCounts.interviewCandidatesCount };
+          return { ...item, badge: candidateCounts.interviewSuccessCount };
         }
         if (item.title === "На объекте") {
           return { ...item, badge: candidateCounts.onObjectCount };

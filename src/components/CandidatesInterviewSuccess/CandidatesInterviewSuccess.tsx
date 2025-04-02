@@ -143,7 +143,7 @@ export default function CandidatesInterviewSuccess({ data }: { data: Candidate[]
         cell: ({ row }) => <div className="font-semibold">{row.getValue("name")}</div>,
       },
     {
-        accessorKey: "manager",  // Здесь имя поля может быть любое, но мы не будем использовать его для отображения
+        accessorKey: "manager", 
         header: ({ column }) => (
           <Button
             variant="ghost"

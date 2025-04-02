@@ -14,7 +14,7 @@ export default function Page() {
         if (session?.managerRole === 'admin') {
             const fetchData = async () => {
                 try {
-                    const response = await fetch(`/api/candidate/stages?stageId=${stageId}`);
+                    const response = await fetch(`/api/candidates/stages?stageId=${stageId}`);
                     const data = await response.json();
                     setAdminData(data);
                 } catch (error) {

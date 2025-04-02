@@ -149,7 +149,7 @@ export default function CandidatePage(data: any) {
     
     setLoading(true);
     fetchCandidates();
-  }, [stageId]); // только зависимость от stageId
+  }, [stageId]); 
   
   
 
@@ -481,7 +481,6 @@ export default function CandidatePage(data: any) {
           </Button>
         </div>
       </div>
-      
       <div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="w-[800px] p-4 flex flex-col justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

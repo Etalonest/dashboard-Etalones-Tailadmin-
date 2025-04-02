@@ -16,12 +16,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import CandidateVacancy from '@/src/components/CandidateVacancy/CandidateVacancy';
 
 const ViewVacancy = ({ vacancy }: any) => {
-    console.log("Vacancy in viewVacancy:", vacancy);
-    const [vacancyH, setVacancyH] = useState<any>(vacancy || null);
-    const [candidates, setCandidates] = useState<any[]>([]);
-    console.log("Candidates in viewVacancy:", vacancyH?.interviews);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+const vacancyH = vacancy;
 
     // const fetchCandidates = useCallback(async () => {
     //     if (!vacancyH?._id) return; // Если нет ID вакансии, не делаем запрос
@@ -58,9 +53,6 @@ const ViewVacancy = ({ vacancy }: any) => {
     // }, [candidates]); // Логируем, когда кандидаты обновляются
     
 
-    if (!vacancyH) {
-        return <p className="text-center text-gray-500">Загрузка вакансии...</p>;
-    }
 
     return (
         <div>
@@ -194,13 +186,14 @@ const ViewVacancy = ({ vacancy }: any) => {
                         <Label className="my-2">На собеседовании:</Label>
                         {vacancyH.interviews.map((interview: any, index: any) => (
                             <div key={index} className="flex gap-2 justify-start items-center my-1">
-                                <span className="font-semibold">{interview}</span>
+                                <p className="font-semibold">{interview?.name}</p>
+                                
                             </div>
                         ))}
                     </div>
                     <div className="flex gap-2 items-center">
                         <Label className="my-2">Партнёр:</Label>
-                        <span className="font-semibold">{vacancyH.partner?.companyName}</span>
+                        <span className="font-semibold">{vacancyH.partner?.companyName}-{vacancyH.partner?.location}</span>
                     </div>
                     <div className="flex gap-2 items-center">
                         <Label className="my-2">Куратор:</Label>
