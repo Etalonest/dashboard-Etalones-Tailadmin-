@@ -103,7 +103,7 @@ const VacanciesSchema = new Schema({
       }],
       interviews: [{
         type: Schema.Types.ObjectId,
-        ref: 'Interview'
+        ref: 'Candidate'
       }],
       candidates:[{
         type: Schema.Types.ObjectId,

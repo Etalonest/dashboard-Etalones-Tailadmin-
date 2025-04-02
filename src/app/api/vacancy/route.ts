@@ -10,19 +10,8 @@ export const GET = async (req: Request) => {
     await connectDB();
 
     const vacancy = await Vacancies.find().sort({ createdAt: -1 })
-    .populate({
-      path: 'manager',
-      select: 'name',
-    }) 
-    .populate({
-      path: 'interviews',
-      select: 'name',
-    })
-    .populate({
-      path: 'candidates',
-      select: 'name',
-    })
-
+    .populate(['manager', 'partner','interviews'])
+   
 
 
     return new NextResponse(JSON.stringify(vacancy), { status: 200 });

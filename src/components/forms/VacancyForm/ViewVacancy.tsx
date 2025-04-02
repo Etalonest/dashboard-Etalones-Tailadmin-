@@ -19,43 +19,43 @@ const ViewVacancy = ({ vacancy }: any) => {
     console.log("Vacancy in viewVacancy:", vacancy);
     const [vacancyH, setVacancyH] = useState<any>(vacancy || null);
     const [candidates, setCandidates] = useState<any[]>([]);
-    console.log("Candidates in viewVacancy:", candidates);
+    console.log("Candidates in viewVacancy:", vacancyH?.interviews);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchCandidates = useCallback(async () => {
-        if (!vacancyH?._id) return; // Если нет ID вакансии, не делаем запрос
+    // const fetchCandidates = useCallback(async () => {
+    //     if (!vacancyH?._id) return; // Если нет ID вакансии, не делаем запрос
     
-        console.log("Начинаем загрузку кандидатов..."); // Лог до запроса
-        setLoading(true);
-        setError(null);
+    //     console.log("Начинаем загрузку кандидатов..."); // Лог до запроса
+    //     setLoading(true);
+    //     setError(null);
     
-        try {
-            const response = await fetch(`/api/candidates/forVacancy?vacancyId=${vacancyH._id}`);
-            if (!response.ok) throw new Error(`Ошибка API: ${response.statusText}`);
+    //     try {
+    //         const response = await fetch(`/api/candidates/forVacancy?vacancyId=${vacancyH._id}`);
+    //         if (!response.ok) throw new Error(`Ошибка API: ${response.statusText}`);
     
-            const data = await response.json();
-            console.log("Полученные данные кандидатов:", data); // Лог данных после получения
+    //         const data = await response.json();
+    //         console.log("Полученные данные кандидатов:", data); // Лог данных после получения
     
-            setCandidates(data.candidates);
-        } catch (error) {
-            setError('Ошибка при загрузке кандидатов');
-            console.error('Ошибка при загрузке кандидатов:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, [vacancyH?._id]);
+    //         setCandidates(data.candidates);
+    //     } catch (error) {
+    //         setError('Ошибка при загрузке кандидатов');
+    //         console.error('Ошибка при загрузке кандидатов:', error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }, [vacancyH?._id]);
     
-    useEffect(() => {
-        console.log("Обновление vacancyH:", vacancyH); // Логируем переменную vacancyH
-        if (vacancyH?._id) {
-            fetchCandidates();
-        }
-    }, [vacancyH, fetchCandidates]);
+    // useEffect(() => {
+    //     console.log("Обновление vacancyH:", vacancyH); // Логируем переменную vacancyH
+    //     if (vacancyH?._id) {
+    //         fetchCandidates();
+    //     }
+    // }, [vacancyH, fetchCandidates]);
     
-    useEffect(() => {
-        console.log("Обновление списка кандидатов в ViewVacancy:", candidates);
-    }, [candidates]); // Логируем, когда кандидаты обновляются
+    // useEffect(() => {
+    //     console.log("Обновление списка кандидатов в ViewVacancy:", candidates);
+    // }, [candidates]); // Логируем, когда кандидаты обновляются
     
 
     if (!vacancyH) {
@@ -190,6 +190,14 @@ const ViewVacancy = ({ vacancy }: any) => {
                 </CardContent>
 
                 <CardFooter className="flex flex-col items-start">
+                <div className="flex gap-2 items-center">
+                        <Label className="my-2">На собеседовании:</Label>
+                        {vacancyH.interviews.map((interview: any, index: any) => (
+                            <div key={index} className="flex gap-2 justify-start items-center my-1">
+                                <span className="font-semibold">{interview}</span>
+                            </div>
+                        ))}
+                    </div>
                     <div className="flex gap-2 items-center">
                         <Label className="my-2">Партнёр:</Label>
                         <span className="font-semibold">{vacancyH.partner?.companyName}</span>
