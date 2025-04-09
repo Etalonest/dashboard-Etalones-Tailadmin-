@@ -33,7 +33,7 @@ export const VacancyAll: React.FC = () => {
     fetchData();
   }, []);
 
-  const toggleSidebar = (type: "viewVacancy", vacancy?: VacancyType) => {
+  const toggleSidebar = (type: "viewVacancy" | "editVacancy", vacancy?: VacancyType) => {
     setFormType(type);                
     setSelectedVacancy(vacancy || null); 
     console.log("SELECTEDVACANCY", vacancy)
@@ -50,9 +50,7 @@ export const VacancyAll: React.FC = () => {
         vacancies.map((vacancy, index) => (
           <Card
             className="rounded-md p-2 w-full cursor-pointer flex justify-center items-center"
-            key={index}
-            
-            onClick={() => toggleSidebar("viewVacancy", vacancy)} 
+            key={index} 
           >
             <CardHeader>
               <Image
@@ -78,6 +76,14 @@ export const VacancyAll: React.FC = () => {
                 <span className="font-bold">{vacancy.homePrice}</span>
               </div>
             </CardContent>
+            <div className='flex gap-2'>
+            <div onClick={() => toggleSidebar("viewVacancy", vacancy)}>
+              Посмотреть
+            </div>
+            <div onClick={() => toggleSidebar("editVacancy", vacancy)}>
+              Редактировать
+            </div>
+            </div>
             <div className='flex flex-col justify-center items-end w-full'>
               <div>Свободных мест: {vacancy.place}</div>
               {vacancy.interviews.length > 0 && (

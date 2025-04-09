@@ -16,10 +16,10 @@ const VacanciesSchema = new Schema({
     homeImageFB: [{
       type: String
     }],
-    homeImages:[{
-        type: Schema.Types.ObjectId,
-        ref: 'HomeImages'
+    workImageFB: [{
+      type: String
     }],
+    
       title: {
         type: String
       },

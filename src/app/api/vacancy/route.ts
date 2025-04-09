@@ -4,7 +4,11 @@ import Vacancies from "@/src/models/Vacancies";
 import Partner from "@/src/models/Partner";
 import Manager from "@/src/models/Manager";
 import EventLog from "@/src/models/EventLog";
+import Stage from "@/src/models/Stage";
 
+
+const STAGE_NEW = process.env.NEXT_PUBLIC_VACANCYS_STAGE_NEW;
+const STAGE_ALL = process.env.NEXT_PUBLIC_VACANCYS_STAGE_ALL;
 export const GET = async (req: Request) => {
   try {
     await connectDB();
@@ -43,6 +47,9 @@ export const POST = async (request: Request) => {
     const homeImageFB = formData.get("homeImageUrl");
     const homeImageUrls = homeImageFB ? JSON.parse(homeImageFB as string) : [];
     const homeImages = Array.isArray(homeImageUrls) ? homeImageUrls : [homeImageUrls];
+    const workImageFB = formData.get("workImageUrl");
+    const workImageUrls = workImageFB ? JSON.parse(workImageFB as string) : [];
+    const workImages = Array.isArray(workImageUrls) ? workImageUrls : [workImageUrls];
     const languesRaw = formData.get('langue');
     const langues = languesRaw ? JSON.parse(languesRaw as string) : [];
     const documentsRaw = formData.get('documents');
@@ -69,6 +76,7 @@ export const POST = async (request: Request) => {
       langues,
       documents,
       homeImageFB: homeImages,
+      workImageFB: workImages,
       manager: managerId,
       partner: partnerId, 
     };
@@ -123,6 +131,22 @@ export const POST = async (request: Request) => {
   
         console.log("Updated Manager:", updatedManager);
       }
+      const stageNewId = STAGE_NEW;
+      const stageAllId = STAGE_ALL;
+      if (stageNewId) {
+        await Stage.findByIdAndUpdate(
+          stageNewId,
+          { $push: { vacancy: newVacancy._id } },
+          { new: true }
+        );
+      }
+      if (stageAllId) {
+        await Stage.findByIdAndUpdate(
+          stageAllId,
+          { $push: { vacancy: newVacancy._id } },
+          { new: true }
+        );
+      }
       const eventLog = new EventLog({
         eventType: 'Создана вакансия',
         relatedId: newVacancy._id,
@@ -131,6 +155,8 @@ export const POST = async (request: Request) => {
       });
       console.log("EVENTLOG", eventLog)
       await eventLog.save();
+
+     
     return new NextResponse(
       JSON.stringify({ 
         message: "Новая вакансия создана успешно",

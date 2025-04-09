@@ -25,7 +25,7 @@ export async function GET({ params }: any) {
     // Лог перед подсчетом кандидатов
     console.log("Подсчитываем количество кандидатов для менеджера...");
     const totalCandidates = await Candidate.countDocuments({ manager: id });
-    console.log("Количество кандидатов:", totalCandidates);  // Лог количества кандидатов
+    console.log("Количество кандидатов:", totalCandidates);  
 
     // Лог перед подсчетом партнеров
     console.log("Подсчитываем количество партнеров для менеджера...");

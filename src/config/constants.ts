@@ -12,13 +12,14 @@ export const pDocsData = [
   { label: "Не важно", value: "Не важно" },
 ]
 export const drivePermisData = [
-    { label: "no", value: "Нет удостоверения" },
-    { label: "В", value: "B" },
-    { label: "C", value: "C" },
-    { label: "D", value: "D" },
-    { label: "E", value: "E" },
-    { label: "Код 95", value: "Код 95" },
-    { label: "Есть своё авто", value: "Есть своё авто" },
+  { label: "Предоставляем", value: "Предоставляем" },
+    { label: "Не требуется", value: "Не требуется" },
+    { label: "Требуется кат. В", value: "Требуется кат. В" },
+    { label: "Требуется кат. C", value: "Требуется кат. C" },
+    { label: "Требуется кат. D", value: "Требуется кат. D" },
+    { label: "Требуется кат. E", value: "Требуется кат. E" },
+    { label: "Требуется Код 95", value: "Требуется Код 95" },
+    { label: "Требуется своё авто", value: "Требуется своё авто" },
   ];
   export const statusCandidate = [
     { value: 'Не обработан', label: 'Не обработан' },
@@ -114,6 +115,7 @@ export const expiriences = [
   ];
 
 export const languesData = [
+  { value: 'Только Русский', label: 'Только Русский' },
   { value: 'Русский', label: 'Русский' },
   { value: 'Английский', label: 'Английский' },
   { value: 'Немецкий', label: 'Немецкий' },

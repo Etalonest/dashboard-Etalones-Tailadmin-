@@ -17,13 +17,15 @@ import { useNotifications } from "@/src/context/NotificationContext";
 import { v4 as uuidv4Original } from 'uuid';
 import FirebaseImageUpload from "../../UploadForm/UploadForm";
 import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseImagesUpload";
+import FirebaseWorkImagesUpload from "../../firebase/FirebaseWorkImagesUpload/FirebaseWorkImagesUpload";
 
 
 
-const EditVacancyForm = ({ selectedVacancy, onSubmitSuccess }: any) => {
-  console.log("VACANCY from props:", selectedVacancy);
+const EditVacancyForm = ({ vacancy, onSubmitSuccess }: any) => {
+  
+  // console.log("VACANCY from props:", selectedVacancy);
 
-  const vacancyH= selectedVacancy;
+  const vacancyH= vacancy;
   console.log("VACANCY", vacancyH);
   const { session } = useSession();
   const { manager } = useManager();
@@ -34,7 +36,7 @@ const EditVacancyForm = ({ selectedVacancy, onSubmitSuccess }: any) => {
   const [documents, setDocuments] = useState(vacancyH?.documents || []);
   const [selectedImage, setSelectedImage] = useState(vacancyH?.image || '');
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
-
+  const [imagesCarouselWork, setImagesCarouselWork] = useState<string[]>([]);
 
   const [published, setPublished] = useState(vacancyH?.published || false);
   const [urgently, setUrgently] = useState(vacancyH?.urgently || false);
@@ -47,7 +49,8 @@ const EditVacancyForm = ({ selectedVacancy, onSubmitSuccess }: any) => {
       setLangues(vacancyH.langues || []);
       setDocuments(vacancyH.documents || []);
       setSelectedImage(vacancyH.image || '');
-      setImagesCarousel(vacancyH.images || []); 
+      setImagesCarousel(vacancyH.images || []);
+      setImagesCarouselWork(vacancyH.workImageFB || []);
     }
   }, [vacancyH]);
   useEffect(() => {
@@ -61,6 +64,7 @@ const EditVacancyForm = ({ selectedVacancy, onSubmitSuccess }: any) => {
       setImagesCarousel(images);
     }
   }, [vacancyH]);
+  
   const handleImageUpload = (imageUrl: string) => {
     setSelectedImage(imageUrl);  // Set the URL of the uploaded image
   };
@@ -358,7 +362,50 @@ const EditVacancyForm = ({ selectedVacancy, onSubmitSuccess }: any) => {
     </CarouselNext>
   </Carousel>
 </div>
-     
+<div className="flex justify-start flex-col gap-2">
+            <div className="grid grid-cols-3 gap-2">
+            {/* <Input type="file" multiple name="homeImages" className="col-span-2" 
+            onChange={handleImageCarouselChange}/> */}
+            <FirebaseWorkImagesUpload
+              city={vacancyH?.location} 
+              jobTitle={vacancyH?.name}  
+              onImagesUpload={vacancyH}  
+            />
+
+            </div>
+            <Carousel 
+  orientation="horizontal"
+  opts={{
+    align: "center", 
+    loop: true,     
+  }}
+  className="w-full"
+>
+  <CarouselContent className="-ml-4 flex">
+  {imagesCarouselWork.map((image, index) => (
+  <CarouselItem key={index} className="w-full flex-shrink-0 pl-4">
+    <div className="p-1">
+      <Image
+        src={image}
+        alt={`Image ${index + 1}`}
+        width={350}
+        height={200}
+        className="rounded-md max-h-max mx-auto"
+      />
+    </div>
+  </CarouselItem>
+))}
+
+  </CarouselContent>
+  <CarouselPrevious type='button' className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
+    &lt;
+  </CarouselPrevious>
+  <CarouselNext type="button" className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
+    &gt;
+  </CarouselNext>
+</Carousel>
+
+          </div>   
         
           </div>
         </form>

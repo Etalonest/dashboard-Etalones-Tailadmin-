@@ -20,6 +20,7 @@ import FirebaseImagesUpload from "../../firebase/FirebaseImagesUpload/FirebaseIm
 import { Partner } from "@/src/types/partner";
 import { PartnerSelect } from "./PartnerSelect";
 import { se } from "date-fns/locale";
+import FirebaseWorkImagesUpload from "../../firebase/FirebaseWorkImagesUpload/FirebaseWorkImagesUpload";
 
 
 
@@ -36,7 +37,7 @@ const AddVacancyForm = ({ partners }: any) => {
   const [selectDocs, setSelectDocs] = useState(selectedProfession?.pDocs || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagesCarousel, setImagesCarousel] = useState<string[]>([]);
-
+  const [imagesCarouselWork, setImagesCarouselWork] = useState<string[]>([]);
 
   const [published, setPublished] = useState(false);
   const [urgently, setUrgently] = useState(false);
@@ -48,22 +49,30 @@ const AddVacancyForm = ({ partners }: any) => {
   const handleImagesUpload = (urls: string[]) => {
     setImagesCarousel(urls); // Обновляем состояние с новыми URL-ами изображений
   };
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string); 
-      };
-      reader.readAsDataURL(file); 
-    }
+  const handleImagesUploadWork = (urls: string[]) => {
+    setImagesCarouselWork(urls); // Обновляем состояние с новыми URL-ами изображений
   };
+  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setSelectedImage(reader.result as string); 
+  //     };
+  //     reader.readAsDataURL(file); 
+  //   }
+  // };
   useEffect(() => {
     if (selectedImage) {
       console.log("Selected Image", selectedImage);
     }
   }, [selectedImage]);
-  
+  useEffect(() => {
+    if (imagesCarouselWork.length > 0) {
+      console.log("Selected Image Carousel (base64)", imagesCarouselWork);
+    }
+  }, [imagesCarouselWork]);
+
   useEffect(() => {
     if (imagesCarousel.length > 0) {
       console.log("Selected Image Carousel (base64)", imagesCarousel);
@@ -104,6 +113,7 @@ const AddVacancyForm = ({ partners }: any) => {
     console.log("Родительский компонент: полученные данные");
     console.log("Партнёр:", partner);
     console.log("Профессия:", profession);
+    
     setSelectedPartner(partner);
     setSelectedProfession(profession);
     setVacancyTitle(profession.name); // Обновляем название вакансии
@@ -120,6 +130,7 @@ const AddVacancyForm = ({ partners }: any) => {
     formData.append('partnerId', selectedPartner?._id || '');
     formData.append('managerId', managerId);
     formData.append('homeImageUrl', JSON.stringify(imagesCarousel)); 
+    formData.append('workImageUrl', JSON.stringify(imagesCarouselWork));
     formData.append('drivePermis', JSON.stringify(driveData));
     formData.append('langue', JSON.stringify(languesData));
     formData.append('documents', JSON.stringify(docsData));
@@ -218,7 +229,7 @@ const AddVacancyForm = ({ partners }: any) => {
                       />
                   </div> 
                   <div>
-              <Label>Водительское удостоверение</Label>
+              <Label>Транспорт</Label>
                     <CMultiSelect options={drivePermisData} placeholder={'Выбериите категории'}
                       value={selectedProfession?.drivePermis || []}
                       onChange={handleDriveChange} 
@@ -229,7 +240,7 @@ const AddVacancyForm = ({ partners }: any) => {
               <Input type="number" name="place" defaultValue={selectedProfession?.place} />
             </div>
             <div>
-              <Label>Потенциал объекта:</Label>
+              <Label>Часы в месяц:</Label>
               <Input type="text" name="workHours" defaultValue={selectedProfession?.workHours} />
             </div>
             <div>
@@ -295,6 +306,50 @@ const AddVacancyForm = ({ partners }: any) => {
 >
   <CarouselContent className="-ml-4 flex">
   {imagesCarousel.map((image, index) => (
+  <CarouselItem key={index} className="w-full flex-shrink-0 pl-4">
+    <div className="p-1">
+      <Image
+        src={image}
+        alt={`Image ${index + 1}`}
+        width={350}
+        height={200}
+        className="rounded-md max-h-max mx-auto"
+      />
+    </div>
+  </CarouselItem>
+))}
+
+  </CarouselContent>
+  <CarouselPrevious type='button' className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
+    &lt;
+  </CarouselPrevious>
+  <CarouselNext type="button" className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 cursor-pointer">
+    &gt;
+  </CarouselNext>
+</Carousel>
+
+          </div>
+          <div className="flex justify-start flex-col gap-2">
+            <div className="grid grid-cols-3 gap-2">
+            {/* <Input type="file" multiple name="homeImages" className="col-span-2" 
+            onChange={handleImageCarouselChange}/> */}
+            <FirebaseWorkImagesUpload
+              city={selectedProfession?.location} 
+              jobTitle={selectedProfession?.name}  
+              onImagesUpload={handleImagesUploadWork}  
+            />
+
+            </div>
+            <Carousel 
+  orientation="horizontal"
+  opts={{
+    align: "center", 
+    loop: true,     
+  }}
+  className="w-full"
+>
+  <CarouselContent className="-ml-4 flex">
+  {imagesCarouselWork.map((image, index) => (
   <CarouselItem key={index} className="w-full flex-shrink-0 pl-4">
     <div className="p-1">
       <Image
