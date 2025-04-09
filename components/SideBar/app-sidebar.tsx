@@ -94,7 +94,7 @@ const data = {
         },
         {
           title: "Люди на объекте",
-          url: "#",
+          url: "/partners/onObject",
         },
       ],
     },

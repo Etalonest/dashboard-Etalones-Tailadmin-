@@ -86,16 +86,15 @@ export const PUT = async (request: NextRequest, { params }: any) => {
 };
 
 
-
 export async function GET(request: Request, { params }: any) {
   const { id } = params;
   console.log("Запрос GET для получения менеджера с ID:", request.url);
 
   try {
-      await connectDB();
-      console.log("Подключение к базе данных успешно выполнено.");
+    await connectDB();
+    console.log("Подключение к базе данных успешно выполнено.");
 
-      const manager = await Manager.findById(id)
+    const manager = await Manager.findById(id)
       .populate('events')
       .populate({
         path: 'candidates',
@@ -103,7 +102,7 @@ export async function GET(request: Request, { params }: any) {
         populate: [
           {
             path: 'events',
-            select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
+            select: ['eventType', 'description', 'comment', 'createdAt', 'manager', 'vacancy'],
           },
           {
             path: 'documents',
@@ -119,28 +118,29 @@ export async function GET(request: Request, { params }: any) {
         ]
       })
       .populate({
-        path:'candidateFromInterview',
+        path: 'candidateFromInterview',
         options: { sort: { updatedAt: -1 } },
         populate: [
           {
-            path:'recruiter',
+            path: 'recruiter',
             select: 'name'
           },
           {
-            path:'manager',
+            path: 'manager',
             select: 'name'
           },
           {
-            path:'events',
-            select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
-            populate: [{
-              path: 'manager',
-              select: 'name'   
-            },
-            {
-              path: 'vacancy',
-              select: ''
-            }
+            path: 'events',
+            select: ['eventType', 'description', 'comment', 'createdAt', 'manager', 'vacancy'],
+            populate: [
+              {
+                path: 'manager',
+                select: 'name'
+              },
+              {
+                path: 'vacancy',
+                select: ''
+              }
             ]
           }
         ],
@@ -152,7 +152,7 @@ export async function GET(request: Request, { params }: any) {
         populate: [
           {
             path: 'manager',
-            select: 'name phone '
+            select: 'name phone'
           },
           {
             path: 'documents',
@@ -166,23 +166,178 @@ export async function GET(request: Request, { params }: any) {
             populate: {
               path: 'vacancy',
               select: '',
-              }
+            }
+          }
+        ]
+      })
+      .populate({
+        path: 'partnersStage',
+        options: { sort: { updatedAt: -1 } },
+        populate: [
+          {
+            path: 'peopleOnObj',
+            populate: {
+              path: 'manager',
+              select: 'name phone'
+            }
+          },
+          {
+            path: 'documents',
+            populate: {
+              path: 'file',
+              select: 'name contentType',
+            },
+          },
+          {
+            path: 'professions',
+            populate: {
+              path: 'vacancy',
+              select: '',
+            }
           }
         ]
       });
-      
-      console.log('Количество кандидатов:', manager?.candidates?.length); 
-      if (!manager) {
 
-          console.log("Менеджер с ID", id, "не найден.");
-          return NextResponse.json({ error: "Manager not found" }, { status: 404 });
-      }
+    // Логирование менеджера для отладки
+    console.log("Менеджер с ID:", id);
+    console.log("Данные менеджера:", JSON.stringify(manager, null, 2));
 
-      return NextResponse.json({ manager }, { status: 200 });
+    if (!manager) {
+      console.log("Менеджер с ID", id, "не найден.");
+      return NextResponse.json({ error: "Manager not found" }, { status: 404 });
+    }
 
+    return NextResponse.json({ manager }, { status: 200 });
 
   } catch (error) {
-      console.error("Ошибка при получении данных менеджера:", error);
-      return NextResponse.json({ error: "Failed to fetch manager data" }, { status: 500 });
+    console.error("Ошибка при получении данных менеджера:", error);
+    return NextResponse.json({ error: "Failed to fetch manager data" }, { status: 500 });
   }
 }
+
+// export async function GET(request: Request, { params }: any) {
+//   const { id } = params;
+//   console.log("Запрос GET для получения менеджера с ID:", request.url);
+
+//   try {
+//       await connectDB();
+//       console.log("Подключение к базе данных успешно выполнено.");
+
+//       const manager = await Manager.findById(id)
+//       .populate('events')
+//       .populate({
+//         path: 'candidates',
+//         options: { sort: { updatedAt: -1 } },
+//         populate: [
+//           {
+//             path: 'events',
+//             select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
+//           },
+//           {
+//             path: 'documents',
+//             populate: {
+//               path: 'file',
+//               select: 'name contentType',
+//             },
+//           },
+//           {
+//             path: 'dialogs',
+//             select: 'text date author',
+//           }
+//         ]
+//       })
+//       .populate({
+//         path:'candidateFromInterview',
+//         options: { sort: { updatedAt: -1 } },
+//         populate: [
+//           {
+//             path:'recruiter',
+//             select: 'name'
+//           },
+//           {
+//             path:'manager',
+//             select: 'name'
+//           },
+//           {
+//             path:'events',
+//             select: ['eventType','description','comment', 'createdAt','manager', 'vacancy'],
+//             populate: [{
+//               path: 'manager',
+//               select: 'name'   
+//             },
+//             {
+//               path: 'vacancy',
+//               select: ''
+//             }
+//             ]
+//           }
+//         ],
+//       })
+//       .populate('role')
+//       .populate({
+//         path: 'partners',
+//         options: { sort: { updatedAt: -1 } },
+//         populate: [
+//           {
+//             path: 'manager',
+//             select: 'name phone '
+//           },
+//           {
+//             path: 'documents',
+//             populate: {
+//               path: 'file',
+//               select: 'name contentType',
+//             },
+//           },
+//           {
+//             path: 'professions',
+//             populate: {
+//               path: 'vacancy',
+//               select: '',
+//               }
+//           }
+//         ]
+//       })
+//       .populate({
+//         path: 'partnersStage',
+//         options: { sort: { updatedAt: -1 } },
+//         populate: [
+//           {
+//             path: 'peopleOnObj', // В поле peopleOnObj будут ObjectId партнёров, если они есть
+//             populate: {
+//               path: 'manager', // Если partner имеет поле manager
+//               select: 'name phone'
+//             }
+//           },
+//           {
+//             path: 'documents',
+//             populate: {
+//               path: 'file',
+//               select: 'name contentType',
+//             },
+//           },
+//           {
+//             path: 'professions',
+//             populate: {
+//               path: 'vacancy',
+//               select: '',
+//             }
+//           }
+//         ]
+//       });
+      
+//       console.log('Количество кандидатов:', manager?.candidates?.length); 
+//       if (!manager) {
+
+//           console.log("Менеджер с ID", id, "не найден.");
+//           return NextResponse.json({ error: "Manager not found" }, { status: 404 });
+//       }
+
+//       return NextResponse.json({ manager }, { status: 200 });
+
+
+//   } catch (error) {
+//       console.error("Ошибка при получении данных менеджера:", error);
+//       return NextResponse.json({ error: "Failed to fetch manager data" }, { status: 500 });
+//   }
+// }

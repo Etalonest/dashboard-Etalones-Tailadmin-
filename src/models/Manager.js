@@ -69,6 +69,18 @@ const ManagerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Partner'
       }],
+      partnersStage:[
+        {peopleOnObj:
+          [{
+              type: Schema.Types.ObjectId,
+              ref: 'Partner'
+            }]},
+        {inWork:
+          [{
+              type: Schema.Types.ObjectId,
+              ref: 'Partner'
+            }]},    
+      ],
       tasks: [{
         type: Schema.Types.ObjectId,
         ref: 'Task'

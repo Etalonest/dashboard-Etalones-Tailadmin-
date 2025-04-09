@@ -1,7 +1,7 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSession } from '@/src/context/SessionContext';
-import { Manager } from '../types/manager';
+import { Manager, PartnerStage } from '../types/manager';
 import { Partner } from '../types/partner';
 
 interface ManagerContextType {
@@ -12,8 +12,10 @@ interface ManagerContextType {
   setCandidates: (candidates: any[]) => void;
   partners: Partner[];
   setPartners: (partners: any[]) => void;
-  isLoading: boolean;  // Индикатор загрузки
-  error: string | null;  // Ошибка
+  partnersStage: PartnerStage[];  
+  setPartnersStage: (partnersStage: PartnerStage[]) => void
+  isLoading: boolean;  
+  error: string | null;  
 }
 
 const ManagerContext = createContext<ManagerContextType | undefined>(undefined);
@@ -22,9 +24,10 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [manager, setManager] = useState<Manager | null>(null);
   const [candidates, setCandidates] = useState<any[]>([]); 
   const [candidateFromInterview, setCandidateFromInterview] = useState<any[]>([]);
-  const [partners, setPartners] = useState<Partner[]>([]); // Состояние для партнеров
-  const [isLoading, setIsLoading] = useState<boolean>(false);  // Индикатор загрузки
-  const [error, setError] = useState<string | null>(null);  // Ошибка при загрузке данных
+  const [partners, setPartners] = useState<Partner[]>([]); 
+  const [partnersStage, setPartnersStage] = useState<PartnerStage[]>([]); 
+  const [isLoading, setIsLoading] = useState<boolean>(false);  
+  const [error, setError] = useState<string | null>(null);  
   const { session } = useSession();
 console.log("candidateFromInterview", candidateFromInterview);
   const managerId = session?.managerId;
@@ -45,10 +48,24 @@ console.log("candidateFromInterview", candidateFromInterview);
         const data = await response.json();
         console.log('MANAGER CONTEXT', data);
         if (data.manager) {
-          setManager(data.manager);  // Сохраняем данные менеджера
+          setManager(data.manager); 
           setCandidates(data.manager.candidates || []); 
           setCandidateFromInterview(data.manager.candidateFromInterview || []);
           setPartners(data.manager.partners);
+          if (Array.isArray(data.manager.partnersStage)) {
+            const validatedPartnersStage = data.manager.partnersStage.map((stage: { peopleOnObj: any[]; inWork: any[]; }) => {
+              if (stage.peopleOnObj && Array.isArray(stage.peopleOnObj)) {
+                stage.peopleOnObj = stage.peopleOnObj.map(id => id.toString());
+              }
+              if (stage.inWork && Array.isArray(stage.inWork)) {
+                stage.inWork = stage.inWork.map(id => id.toString());
+              }
+              return stage;
+            });
+            setPartnersStage(validatedPartnersStage);
+          } else {
+            setPartnersStage([]);  // Если данные неверны, ставим пустой массив
+          }
         }
       } catch (error) {
         console.error('Error fetching manager:', error);
@@ -62,7 +79,7 @@ console.log("candidateFromInterview", candidateFromInterview);
   }, [managerId]);
 
   return (
-    <ManagerContext.Provider value={{ manager, setManager, candidates, candidateFromInterview, setCandidates, partners, setPartners, isLoading, error }}>
+    <ManagerContext.Provider value={{ manager, setManager, candidates, candidateFromInterview, setCandidates, partners, setPartners, partnersStage, setPartnersStage, isLoading, error }}> 
       {children}
     </ManagerContext.Provider>
   );
