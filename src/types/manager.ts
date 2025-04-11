@@ -34,9 +34,9 @@ export interface ManagerImage {
     email: string;
   }
   
-  export interface PartnerStage {
+  export interface PartnersStage {
     peopleOnObj: Partner[];
-    inWork: Partner[];
+    checkPeople: Partner[];
   }
   // Основной тип для менеджера
   export interface Manager {
@@ -51,7 +51,7 @@ export interface ManagerImage {
     viber?: string;
     whatsapp?: string;
     email?: string;
-    partnersStage?: PartnerStage;
+    partnersStage?: PartnersStage[];
     __v?: { $numberInt: string };
     candidates?: Candidate[];
     partners?: Partner[];

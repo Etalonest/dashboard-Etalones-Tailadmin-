@@ -75,7 +75,7 @@ const ManagerSchema = new Schema({
               type: Schema.Types.ObjectId,
               ref: 'Partner'
             }]},
-        {inWork:
+        {checkPeople:
           [{
               type: Schema.Types.ObjectId,
               ref: 'Partner'

@@ -84,7 +84,6 @@ export async function GET(req: Request): Promise<Response> {
     ];
 
     // Логируем список идентификаторов стадий
-    console.log('Идентификаторы стадий:', stagesIds);
 
     // Выполняем запрос к базе данных для получения стадий
     const stages = await Stage.find({
@@ -92,7 +91,6 @@ export async function GET(req: Request): Promise<Response> {
     });
 
     // Логируем стадии, которые были получены
-    console.log('Полученные стадии:', stages);
 
     // Объект для хранения всех кандидатов и стадий, где они находятся
     const candidateStageMap: CandidateStageMap = {};
@@ -119,7 +117,6 @@ export async function GET(req: Request): Promise<Response> {
     // Логируем дублированных кандидатов
     const duplicates = Object.keys(candidateStageMap).filter(candidateId => candidateStageMap[candidateId].length > 1);
     if (duplicates.length > 0) {
-      console.log('Дублированные кандидаты:');
       duplicates.forEach(candidateId => {
         console.log(`Кандидат ID: ${candidateId} находится на следующих стадиях: ${candidateStageMap[candidateId].join(', ')}`);
       });
@@ -128,7 +125,7 @@ export async function GET(req: Request): Promise<Response> {
     }
 
     // Логируем итоговые данные
-    console.log('Подсчитанные данные по кандидатам:', counts);
+    // console.log('Подсчитанные данные по кандидатам:', counts);
 
     // Отправляем результат
     return new Response(JSON.stringify(counts), {

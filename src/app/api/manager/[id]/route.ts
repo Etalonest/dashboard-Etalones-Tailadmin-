@@ -7,13 +7,13 @@ import { NextRequest, NextResponse } from "next/server";
 export const PUT = async (request: NextRequest, { params }: any) => {
   try {
       // Логируем начало выполнения запроса
-      console.log("Запрос PUT для обновления менеджера");
+      // console.log("Запрос PUT для обновления менеджера");
 
       // Подключаемся к базе данных
       await connectDB();
 
       const id = params.id;
-      console.log("ID менеджера для обновления:", id);  // Логируем id
+      // console.log("ID менеджера для обновления:", id);  // Логируем id
 
       const data = await request.formData();
       const file = data.get('file');  // Получаем файл из formData
@@ -41,16 +41,16 @@ export const PUT = async (request: NextRequest, { params }: any) => {
           };
 
           // Лог перед выполнением поиска
-          console.log("Обновляем данные менеджера с ID:", id);
+          // console.log("Обновляем данные менеджера с ID:", id);
           const updatedManagerDoc = await Manager.findByIdAndUpdate(id, updatedManager, { new: true });
 
           if (!updatedManagerDoc) {
-              console.log("Менеджер с ID", id, "не найден.");
+              // console.log("Менеджер с ID", id, "не найден.");
               return new NextResponse(JSON.stringify({ success: false, message: "Manager not found" }), { status: 404 });
           }
 
           // Лог успешного обновления
-          console.log("Менеджер обновлен:", updatedManagerDoc);
+          // console.log("Менеджер обновлен:", updatedManagerDoc);
           return new NextResponse(JSON.stringify({ success: true, message: "Manager updated", manager: updatedManagerDoc }), { status: 200 });
       } else {
           // Если файл не выбран, обновляем без изображения
@@ -66,7 +66,7 @@ export const PUT = async (request: NextRequest, { params }: any) => {
           };
 
           // Лог перед выполнением поиска
-          console.log("Обновляем данные менеджера с ID:", id);
+          // console.log("Обновляем данные менеджера с ID:", id);
           const updatedManagerDoc = await Manager.findByIdAndUpdate(id, updatedManager, { new: true });
 
           if (!updatedManagerDoc) {
@@ -75,7 +75,7 @@ export const PUT = async (request: NextRequest, { params }: any) => {
           }
 
           // Лог успешного обновления
-          console.log("Менеджер обновлен:", updatedManagerDoc);
+          // console.log("Менеджер обновлен:", updatedManagerDoc);
           return new NextResponse(JSON.stringify({ success: true, message: "Manager updated", manager: updatedManagerDoc }), { status: 200 });
       }
   } catch (error) {
@@ -88,12 +88,14 @@ export const PUT = async (request: NextRequest, { params }: any) => {
 
 export async function GET(request: Request, { params }: any) {
   const { id } = params;
-  console.log("Запрос GET для получения менеджера с ID:", request.url);
+  console.log("Запрос GET для получения менеджера с ID:", id);
 
   try {
+    // Подключение к базе данных
     await connectDB();
     console.log("Подключение к базе данных успешно выполнено.");
 
+    // Запрос для получения менеджера с использованием populate
     const manager = await Manager.findById(id)
       .populate('events')
       .populate({
@@ -172,40 +174,26 @@ export async function GET(request: Request, { params }: any) {
       })
       .populate({
         path: 'partnersStage',
-        options: { sort: { updatedAt: -1 } },
         populate: [
           {
             path: 'peopleOnObj',
-            populate: {
-              path: 'manager',
-              select: 'name phone'
-            }
+            model: 'Partner',
+            select: 'name phone email'
           },
           {
-            path: 'documents',
-            populate: {
-              path: 'file',
-              select: 'name contentType',
-            },
-          },
-          {
-            path: 'professions',
-            populate: {
-              path: 'vacancy',
-              select: '',
-            }
+            path: 'checkPeople',
+            model: 'Partner',
+            select: 'name phone email'
           }
         ]
-      });
-
-    // Логирование менеджера для отладки
-    console.log("Менеджер с ID:", id);
-    console.log("Данные менеджера:", JSON.stringify(manager, null, 2));
+      })
+      .lean();
 
     if (!manager) {
       console.log("Менеджер с ID", id, "не найден.");
       return NextResponse.json({ error: "Manager not found" }, { status: 404 });
     }
+
 
     return NextResponse.json({ manager }, { status: 200 });
 

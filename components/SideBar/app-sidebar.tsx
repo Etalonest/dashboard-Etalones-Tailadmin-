@@ -90,11 +90,11 @@ const data = {
         },
         {
           title: "Ждёт людей",
-          url: "#",
+          url: "/partners/checkPeople",
         },
         {
           title: "Люди на объекте",
-          url: "/partners/onObject",
+          url: "/partners/peopleOnObj",
         },
       ],
     },
