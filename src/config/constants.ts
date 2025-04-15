@@ -103,6 +103,7 @@ export const drivePermisData = [
     { value: 'Казахстан', label: 'Казахстан' },
     { value: 'Туркменистан', label: 'Туркменистан' },
     { value: 'Другое', label: 'Другое' }
+    
   ];
 
 export const expiriences = [
