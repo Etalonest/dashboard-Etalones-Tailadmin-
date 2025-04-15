@@ -36,6 +36,9 @@ export interface ManagerImage {
   
   export interface PartnersStage {
     peopleOnObj: Partner[];
+    searchPeople: Partner[];
+    waitContract: Partner[];
+    oneCall: Partner[];
     checkPeople: Partner[];
   }
   // Основной тип для менеджера

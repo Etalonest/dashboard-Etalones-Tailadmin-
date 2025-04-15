@@ -176,14 +176,48 @@ export async function GET(request: Request, { params }: any) {
         path: 'partnersStage',
         populate: [
           {
+            path: 'all',
+            model: 'Partner',
+            populate: [
+              {
+                path: 'manager',
+                select: 'name phone'
+              },
+              {
+                path: 'documents',
+                populate: {
+                  path: 'file',
+                  select: 'name contentType',
+                },
+              },
+              {
+                path: 'professions',
+                populate: {
+                  path: 'vacancy',
+                  select: '',
+                }
+              }
+            ]
+          },
+          {
             path: 'peopleOnObj',
             model: 'Partner',
-            select: 'name phone email'
+            select: ''
           },
           {
             path: 'checkPeople',
             model: 'Partner',
-            select: 'name phone email'
+            select: ''
+          },
+          {
+            path: 'oneCall',
+            model: 'Partner',
+            select: ''
+          },
+          {
+            path: 'waitContract',
+            model: 'Partner',
+            select: ''
           }
         ]
       })

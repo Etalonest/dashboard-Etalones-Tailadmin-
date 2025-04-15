@@ -101,10 +101,17 @@ export const drivePermisData = [
     { value: 'Армении', label: 'Армении' },
     { value: 'Грузии', label: 'Грузии' },
     { value: 'Казахстан', label: 'Казахстан' },
+    { value: 'Туркменистан', label: 'Туркменистан' },
     { value: 'Другое', label: 'Другое' }
   ];
 
 export const expiriences = [
+  { value: '1 год', label: '1 год'},
+  { value: '2 года', label: '2 года'},
+  { value: '3 года', label: '3 года'},
+  { value: '4 года', label: '4 года'},
+  { value: '5 лет', label: '5 лет'},
+  { value: 'Более 5 лет', label: 'Более 5 лет'},
     { value: 'Новичок', label: 'Новичок' },
     { value: 'Около 6 месяцев', label: 'Около 6 месяцев' },
     { value: '6 - 12 месяцев', label: '6 - 12 месяцев' },

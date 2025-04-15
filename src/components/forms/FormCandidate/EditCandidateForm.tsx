@@ -634,6 +634,11 @@ const fetchProfessions = async () => {
                 <select className="flex h-9 w-[85%] rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300" 
                 value={prof.expirience || ''} onChange={e => handleProfessionChange(index, 'expirience', e.target.value || '')}>
                   <option value={'Без опыта'}>Без опыта</option>
+                  <option value={'1 год'}>1 год</option>
+                              <option value={'2 года'}>2 года</option>
+                              <option value={'3 года'}>3 года</option>
+                              <option value={'4 года'}>4 года</option>
+                              <option value={'5 лет'}>5 лет</option>
                   <option value={'Меньше года'}>Меньше года</option>
                   <option value={'Более года'}>Более года</option>
                   <option value={'От 2-х лет'}>От 2-х лет</option>

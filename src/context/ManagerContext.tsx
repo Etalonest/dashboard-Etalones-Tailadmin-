@@ -144,11 +144,13 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setCandidateFromInterview(parsed.candidateFromInterview || []);
         setPartners(parsed.partners || []);
         setPartnersStage(parsed.partnersStage || []);
-        console.log("🗃️ Загрузка из localStorage:", parsed);
+        
+        console.log("📦 [SOURCE: localStorage] Данные загружены из localStorage:", parsed);
       } catch (e) {
         console.warn('⚠️ Ошибка при чтении кэша:', e);
       }
     }
+    
   }, [managerId]);
 
   // 🔄 Загрузка с сервера
@@ -175,17 +177,17 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
               partnersStage = [],
             },
           } = data;
-
+        
           if (!Array.isArray(partnersStage)) {
             throw new Error('partnersStage должен быть массивом');
           }
-
+        
           setManager(manager);
           setCandidates(candidates);
           setCandidateFromInterview(candidateFromInterview);
           setPartners(partners);
           setPartnersStage(partnersStage);
-
+        
           const cacheToStore = {
             manager,
             candidates,
@@ -194,7 +196,11 @@ export const ManagerProvider: React.FC<{ children: React.ReactNode }> = ({ child
             partnersStage,
           };
           localStorage.setItem(STORAGE_KEY, JSON.stringify(cacheToStore));
+        
+          console.log("🌐 [SOURCE: server] Данные загружены с сервера и сохранены в localStorage:", cacheToStore);
         }
+        
+        
       } catch (error) {
         console.error('❌ Ошибка при загрузке manager:', error);
         setError(error instanceof Error ? error.message : 'Unknown error');

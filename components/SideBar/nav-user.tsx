@@ -6,6 +6,7 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Settings,
   Sparkles,
 } from "lucide-react"
 
@@ -92,10 +93,12 @@ export function NavUser({session, logout}: {
                 Профиль
               </DropdownMenuItem>
                 </Link>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+                <Link href="/settings">
+              <DropdownMenuItem >
+                <Settings />
+                Настройки
               </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>
                 <Bell />
                 Уведомления

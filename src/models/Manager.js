@@ -70,6 +70,11 @@ const ManagerSchema = new Schema({
         ref: 'Partner'
       }],
       partnersStage:[
+        {all:
+          [{
+              type: Schema.Types.ObjectId,
+              ref: 'Partner'
+            }]},
         {peopleOnObj:
           [{
               type: Schema.Types.ObjectId,
@@ -79,7 +84,17 @@ const ManagerSchema = new Schema({
           [{
               type: Schema.Types.ObjectId,
               ref: 'Partner'
-            }]},    
+            }]},
+        {waitContract:
+              [{
+                  type: Schema.Types.ObjectId,
+                  ref: 'Partner'
+                }]},
+        {oneCall:
+                  [{
+                      type: Schema.Types.ObjectId,
+                      ref: 'Partner'
+                    }]},    
       ],
       tasks: [{
         type: Schema.Types.ObjectId,

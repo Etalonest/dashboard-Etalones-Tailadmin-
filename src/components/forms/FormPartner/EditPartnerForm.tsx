@@ -16,7 +16,7 @@ import { useSession } from '@/src/context/SessionContext';
 import { CommentEntry, DocumentEntry} from '../interfaces/FormCandidate.interface';
 import { ProfessionPartner } from '@/src/types/professionParnter';
 import usePartnerData from '@/src/utils/usePartnerData';
-import { useProfessionContext } from "@/src/context/ProfessionContext";
+// import { useProfessionContext } from "@/src/context/ProfessionContext";
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from '@/components/ui/drawer';
@@ -26,9 +26,12 @@ import { InputTransparent } from '../../inputs/inputTransparent';
 import { Popover, PopoverTrigger } from '@radix-ui/react-popover';
 import { PopoverContent } from '@/components/ui/popover';
 import { WorkUpChoise } from './WorkUpChoise/WorkUpChoise';
+import { Profession } from '@/src/types/partner';
 
 const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
-  const { professions } = useProfessionContext();
+    const [professions, setProfessions] = useState<Profession[]>([]);
+  
+  // const { professions } = useProfessionContext();
   const { session } = useSession();
   const userName = session?.user?.name ?? 'defaultManagerName';
   const managerId = session?.managerId || '';
@@ -66,7 +69,22 @@ const EditpartnerForm = ({partner, onSubmitSuccess}: any) => {
   );  
   const [workStatuses, setWorkStatuses] = useState<{ name: string; date: Date }[]>(partner?.statusWork || []);
 
+const fetchProfessions = async () => {
+    try {
+      const response = await fetch("/api/profession");
+      if (!response.ok) {
+        throw new Error("Ошибка при загрузке профессий");
+      }
+      const data = await response.json();
+      setProfessions(data);
+    } catch (err) {
+      console.error("Ошибка при загрузке профессий", err);
+    } 
+  };
 
+  useEffect(() => {
+    fetchProfessions(); // Запрашиваем профессии при монтировании компонента
+  }, []);
   useEffect(() => {
     if (partner?.documents) { setDocumentEntries(partner.documents); }
   }, [partner?.documents]);

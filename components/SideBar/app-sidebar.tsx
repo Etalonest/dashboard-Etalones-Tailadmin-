@@ -82,20 +82,14 @@ const data = {
       items: [
         {
           title: "Все партнёры",
-          url: "#",
+          url: "/partners/all",
         },
-        {
-          title: "В обработке",
-          url: "#",
-        },
-        {
-          title: "Ждёт людей",
-          url: "/partners/checkPeople",
-        },
-        {
-          title: "Люди на объекте",
-          url: "/partners/peopleOnObj",
-        },
+        { title: "На стадии одного звонка", url: "/partners/oneCall" },
+        { title: "Контракт на подписи", url: "/partners/waitContract" },
+        { title: "Ищем людей", url: "/partners/searchPeople" },
+        { title: "Люди на объекте", url: "/partners/peopleOnObj" },
+        
+       
       ],
     },
     {
